@@ -8,8 +8,20 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "apollo-boost": "^0.4.9",
+    "axios": "^0.19.2",
+    "bootstrap": "^4.5.0",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "graphql": "^15.3.0",
+    "jquery": "^3.5.1",
+    "materialize-css": "^1.0.0-rc.2",
+    "nprogress": "^0.2.0",
+    "v-toaster": "^1.0.3",
+    "vue": "^2.6.11",
+    "vue-apollo": "^3.0.3",
+    "vue-axios": "^2.1.5",
+    "vue-router": "^3.3.2",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.4.0",
@@ -32,7 +44,10 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": "off"
+    }
   },
   "browserslist": [
     "> 1%",
