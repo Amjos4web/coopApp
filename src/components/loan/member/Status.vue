@@ -1,296 +1,321 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Members Loan Status
-        </h3>
-        <ol class="breadcrumb">
-          <li>
-            <a>
-							<router-link to="/">
-								Dashboard
-							</router-link>
-						</a>
-          </li>
-          <li><a href="#" class="active">Members Loan Status</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> All registered members that requested for laon are being showed here</p>
+                <p><i class="fa fa-info-circle"></i> All registered members that requested for loan are being showed here</p>
                 <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
               </div>
             </div>
           </div>
-          <form action="" method="get" id="filter">
+          
             <div class="filter-result">
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>Select society</label>
-                    <select name="society" id="society" class="form-control">
+                    <select class="form-control" v-model="query.filter.society_id">
                       <option value="">Select Society</option>
+                      <option v-for="s in societies" :key="s.id" :value="s.id">{{ s.name }}</option>
                     </select>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>Enter Member's Name</label>
-                    <input type="text" name="" id="name">
+                    <input type="text" v-model="query.filter.name">
                   </div>
                 </div>
-                <div class="col-md-4">
+                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Requested Date</label>
-                    <input type="date" name="date" id="date">
+                    <label>Status</label>
+                    <select v-model="query.filter.status" class="form-control">
+                      <option value="">Choose an Option</option>
+                      <option value="approved">Approved</option>
+                      <option value="rejected">Rejected</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Requested date from</label>
+                    <input type="date" v-model="query.filter.from">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Requested date to</label>
+                    <input type="date" v-model="query.filter.to">
                   </div>
                 </div>
               </div>
             </div>
             <div class="text-center">
-              <input type="submit" value="Filter Result" class="btn-general">
+              <button type="button" class="btn-general" @click="getLoansEventHandler()">Filter Result</button>
             </div>
-          </form>
         </div>
         
         <div class="container">
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit"/>
+          <div v-if="successMsg">
+            <div class="success-div text-center">
+              <span>
+                {{ successMsg }}
+              </span>
+            </div>
+          </div>
           <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover table-striped">
               <thead>
                 <tr class="theading">
                   <th>S/N</th>
                   <th>Name</th>
                   <th>Society</th>
-                  <th>Total Assets</th>
-                  <th>Total Amount Requested</th>
+                  <th>Tot. Assets</th>
+                  <th>Tot. Amt. Requested</th>
                   <th>View Details</th>
-                  <th>View Profile</th>
+                  <th>Guarantors</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>1</td>
-                  <td>Ada Dorcas</td>
-                  <td>Odokoto Ife-Oluwa C.I.C.S</td>
-                  <td>&#x20A6;15,000</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>
-                    <button class="btn btn-info btn-sm" data-target="#loanDetails" data-toggle="modal">View Details</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-info btn-sm" data-target="#profileDetails" data-toggle="modal">View Profile</button>
-                  </td>
-                  <td>
-                    <label class="granted">Granted</label>
-                  </td>
-                </tr>
-                <tr class="tcontent">
-                  <td>1</td>
-                  <td>Ada Dorcas</td>
-                  <td>Odokoto Ife-Oluwa C.I.C.S</td>
-                  <td>&#x20A6;15,000</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>
-                    <button class="btn btn-info btn-sm">View Details</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-info btn-sm" data-target="#profileDetails" data-toggle="modal">View Profile</button>
-                  </td>
-                  <td>
-                    <label class="in-process">Processing</label>
-                  </td>
-                </tr>
-                <tr class="tcontent">
-                  <td>2</td>
-                  <td>Ayinla John</td>
-                  <td>Obaloluwa C.I.C.S</td>
-                  <td>&#x20A6;15,000</td>
-                  <td>&#x20A6;90,000</td>
-                  <td>
-                    <button class="btn btn-info btn-sm">View Details</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-info btn-sm" data-target="#profileDetails" data-toggle="modal">View Profile</button>
-                  </td>
-                  <td>
-                    <label class="in-process">Processing</label>
-                  </td>
-                </tr>
-          
-                <tr class="tcontent">
-                  <td>3</td>
-                  <td>Adegunroye Adeoba</td>
-                  <td>Obaloluwa C.I.C.S</td>
-                  <td>&#x20A6;15,000</td>
-                  <td>&#x20A6;30,000</td>
-                  <td>
-                    <button class="btn btn-info btn-sm" data-target="#loanDetails" data-toggle="modal">View Details</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-info btn-sm" data-target="#profileDetails" data-toggle="modal">View Profile</button>
-                  </td>
-                  <td>
-                    <label class="granted">Granted</label>
-                  </td>
-                </tr>
-              </tbody>
+              <LoanRequestList :loanRequests="loanRequests" 
+              :getLoanIsLoading="getLoanIsLoading"
+              :getLoanError="getLoanError" :currentPage="pagination.currentPage" 
+              :limit="pagination.limit"
+              :openLoanInterestRateModal="openLoanInterestRateModal"
+              :openLoanAmountHistoryEditModal="openLoanAmountHistoryEditModal"
+              :openAddNewLoanAmountModal="openAddNewLoanAmountModal"
+              :openLoanPaymentHistoryModal="openLoanPaymentHistoryModal"/>
             </table>
           </div>
         </div> 
+        <Pagination :pagination="pagination"/>
       </div>
     </div> 
 
-    <div class="modal fade" id="loanDetails" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Info on Ada Dorcas Loan Request Form</h4>
-          </div>
-          <form action="" method="post" id="requestLoan">
-            <div class="modal-body padtrbl">
-              <div class="container" :style="{width: '100%;'}">
-                <div class="table-responsive">
-                  <table class="table table-striped table-hover table-bordered">
-                    <tbody>
-                      <tr>
-                        <th width="50%">Name</th>
-                        <td id="name"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Number of Members</th>
-                        <td id="noOfMembers"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Date Established</th>
-                        <td id="dateEstablished"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Day of Meeting</th>
-                        <td id="dom"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Saving</th>
-                        <td id="savings"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Shares</th>
-                        <td id="shares"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Buiding Fund</th>
-                        <td id="buildingFund"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Loan Issued</th>
-                        <td id="loanIssued"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Loan Repaid</th>
-                        <td id="loanRepaid"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Total Asset</th>
-                        <td id="asset"></td>
-                      </tr>
-                      <tr>
-                        <th>Amount to grant</th>
-                        <td>
-                          <div class="form-group">
-                            <input type="text" name="amount" id="amount" class="form-control">
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>	
-              </div>
-              <div class="modal-footer">
-                <input type="submit" class="btn btn-success" value="Grant Loan">
-                <button type="button" class="btn btn-warning pull-right ml-10" data-dismiss="modal" id="cancel">Cancel</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <InterestRateModal ref="interestRateModal" :memberName="memberName" 
+    :loan_request_id="loan_request_id" 
+    :interest_rate="interest_rate"
+    :updateParentComponentForInterestRateChange="updateParentComponentForInterestRateChange"
+    :getLoanIsLoading="getLoanIsLoading"
+    :getLoanError="getLoanError"/>
 
-    <div class="modal fade" id="profileDetails" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Odokoto Ifeoluwa Details</h4>
-          </div>
-          <div class="modal-body padtrbl">
-            <div class="container" :style="{width: '100%;'}">
-              <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered">
-                  <tbody>
-                    <tr>
-                        <th width="50%">Name</th>
-                        <td id="name"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Number of Members</th>
-                        <td id="noOfMembers"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Date Established</th>
-                        <td id="dateEstablished"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Day of Meeting</th>
-                        <td id="dom"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Saving</th>
-                        <td id="savings"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Shares</th>
-                        <td id="shares"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Buiding Fund</th>
-                        <td id="buildingFund"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Loan Issued</th>
-                        <td id="loanIssued"></td>
-                      </tr>
-                      <tr>
-                        <th>Total Loan Repaid</th>
-                        <td id="loanRepaid"></td>
-                      </tr>
-                      <tr>
-                        <th width="50%">Total Asset</th>
-                        <td id="asset"></td>
-                      </tr>
-                  </tbody>
-                </table>
-              </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> 
+    <EditLoanAmountModal ref="editLoanAmountModal" :memberName="memberName"
+    :loan_request_id="loan_request_id" 
+    :getLoanIsLoading="getLoanIsLoading"
+    :getLoanError="getLoanError"
+    />
+
+    <LoanPaymentHistory ref="loanPaymentHistoryModal" :memberName="memberName"
+    :loan_request_id="loan_request_id" 
+    :getLoanIsLoading="getLoanIsLoading"
+    :getLoanError="getLoanError"
+    />
+
+    <AddNewLoanAmountModal ref="addNewLoanAmountModal" :memberName="memberName"
+    :loan_request_id="loan_request_id" 
+    :getLoanIsLoading="getLoanIsLoading"
+    :getLoanError="getLoanError"
+    />
+</div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import LoanRequestList from '@/components/loan/member/LoanRequestList'
+import Pagination from '@/components/includes/Pagination'
+import LimitDataFetch from '@/components/includes/LimitDataFetch'
+import InterestRateModal from '@/components/loan/member/InterestRateModal'
+import EditLoanAmountModal from '@/components/loan/member/EditLoanAmountModal'
+import AddNewLoanAmountModal from '@/components/loan/member/AddNewLoanAmountModal'
+import LoanPaymentHistory from '@/components/loan/member/LoanPaymentHistory'
+import { closeNavbar, toggleAvatarDropDown, closeModal, openModal } from "../../../assets/js/helpers/utility";
+import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { turnArrayToObject } from '../../../utility';
+import $ from 'jquery'
 
 export default {
   name: 'MembersStatus',
+  components: {
+    HeaderNav,
+    PageHeader,
+    LoanRequestList,
+    Pagination,
+    LimitDataFetch,
+    InterestRateModal,
+    EditLoanAmountModal,
+    AddNewLoanAmountModal,
+    LoanPaymentHistory
+  },
+  data() {
+    return{
+      query: {
+        filter:{
+          society_id: '',
+          name: '',
+          status: '',
+          to: '',
+          from:'',
+        },
+        limit:10,
+        page:1
+      },
+      pageTitle: 'Members Loan Status',
+      previousPage: 'Dashboard',
+      notificationMessage: '',
+      loanRequests: [],
+      societies: [],
+      pagination: {},
+      fetchManyError:null,
+      memberName: '',
+      loan_request_id: '',
+      interest_rate: '',
+      successMsg: ''
+    } 
+  },
+
+  methods: {
+    ...mapActions("app/loan", ["loanIndex"]),
+    ...mapActions("app/society", ["getSocieties"]),
+    ...mapActions("app/member", ["fetchManyMember"]),
+    ...mapActions("app/society", ["fetchManySociety"]),
+    ...mapActions("app/member_payment", ["fetchManyMemberTotalAssets"]),
+
+    openLoanInterestRateModal(memberName, loan_request_id, interest_rate){
+      this.$data.memberName = memberName
+      this.$data.loan_request_id = loan_request_id
+      this.$data.interest_rate = interest_rate
+      let element = this.$refs.interestRateModal.$el
+      openModal(element)
+    },
+
+    openLoanPaymentHistoryModal(memberName, loan_request_id){
+      this.$data.memberName = memberName
+      this.$data.loan_request_id = loan_request_id
+      let element = this.$refs.loanPaymentHistoryModal.$el
+      openModal(element)
+    },
+
+    openLoanAmountHistoryEditModal(memberName, loan_request_id){
+      this.$data.memberName = memberName
+      this.$data.loan_request_id = loan_request_id
+      let element = this.$refs.editLoanAmountModal.$el
+      openModal(element)
+    },
+
+    openAddNewLoanAmountModal(memberName, loan_request_id){
+      this.$data.memberName = memberName
+      this.$data.loan_request_id = loan_request_id
+      let element = this.$refs.addNewLoanAmountModal.$el
+      openModal(element)
+    },
+
+    closeLoanAmountModal(){
+      let element = this.$refs.editLoanAmountModal.$el
+      closeModal(element)
+    },
+
+    closeLoanInterestRateModal(){
+      let element = this.$refs.interestRateModal.$el
+      closeModal(element)
+    },
+
+    getLoansEventHandler(){
+      this.loanIndex({query:this.$data.query})
+      .then(data => {
+        console.log(data)
+        if (data){
+          // get all memberIDs
+          const memberIDs = []//data.loanRequests.map(loan=>loan.member_id)
+
+          const societyIDs = []//data.loanRequests.map(loan=>loan.society_id)
+          const mappedSocietyIDWithMemberID = []
+
+          let loan = null
+
+          for(let i = 0; i < data.loanRequests.length; i++){
+            loan = data.loanRequests[i];
+            memberIDs.push(loan.member_id)
+            societyIDs.push(loan.society_id)
+            mappedSocietyIDWithMemberID.push(`${loan.society_id}:${loan.member_id}`)
+          }//end for loop
+
+          Promise.all([
+            this.fetchManyMember(memberIDs),
+            this.fetchManySociety(societyIDs),
+            this.fetchManyMemberTotalAssets(mappedSocietyIDWithMemberID),
+          ])
+          .then(results=>{
+            console.log(results)
+            const memberObj = turnArrayToObject(results[0].members)
+            const societyObj = turnArrayToObject(results[1].societies)
+            const totalAssetObj = turnArrayToObject(results[2].totalAssets)
+
+            // console.log({memberObj, societyObj, totalAssetObj});
+
+            this.$data.loanRequests = data.loanRequests.map(loan=>{
+              
+              const m = memberObj[loan.member_id]
+              const s = societyObj[loan.society_id]
+              const t = totalAssetObj[`${loan.society_id}:${loan.member_id}`]
+
+              loan.member_name = m ? m.name : "Unknown"
+              loan.member_society = s ? s.name : "Unknown"
+              loan.member_asset = t ? t.total_asset : "Unknown"
+              
+              return loan;
+            })//end map
+            this.$data.pagination = data.pagination
+            //console.log(this.$data.loanRequests);
+          })
+          .catch(e=>this.$data.fetchManyError=e)
+        }
+      })
+    },
+    
+    getLimit(event){
+      //let val = event.target.value;
+      this.$data.query.limit = event.target.value;
+      this.getLoansEventHandler()
+    },//end method getLimit,
+
+    updateParentComponentForInterestRateChange(updated){
+      if (updated){
+        this.$data.successMsg = 'Interest rate updated successfully'
+        this.closeLoanInterestRateModal()
+      }
+    },
+
+  },
+
+   created() {
+    this.getSocieties()
+    .then(data => {
+      if (data){
+        this.$data.societies = data.societies
+      }
+    })
+
+  },
+
+  computed: {
+    ...mapGetters("app/loan", {getLoanIsLoading:'isLoading', getLoanError: 'error'}),
+    ...mapGetters("app/society", {getSocietiesIsLoading:'isLoading', getSocietiesError:'error'})
+  },
+
+  mounted(){
+    toggleAvatarDropDown(),
+    closeNavbar()
+  }
 }
 </script>

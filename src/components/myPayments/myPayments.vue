@@ -1,5 +1,6 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
       <div class="header">
         <h3 class="page-header">
@@ -146,7 +147,11 @@
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
 export default {
-    name: 'myPayments'
+    name: 'myPayments',
+    components: {
+      HeaderNav
+    }
 }
 </script>

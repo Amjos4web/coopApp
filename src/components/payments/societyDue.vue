@@ -1,31 +1,25 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Society's Due
-        </h3>
-        <ol class="breadcrumb">
-          <li><a href="#">Home</a></li>
-          <li><a href="#" class="active">Society's Due</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
         <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info text-center">
-                <p style="font-size: 20px"><i class="fa fa-info-home"></i> Odokoto Ife-Oluwa C.I.C.S</p>
-              </div>
-            </div>
-          </div>
           <div class="filter-result">
             <div class="row">
               <form action="" method="get">
-                <div class="col s12">
+                <div class="col-md-6">
                   <div class="input-group col s8 m8 offset-m2">
                     <label>Select society</label>
-                    <select name="society" id="society" class="form-control">
+                    <select class="form-control">
+                      <option value="">Select Society</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-group col s8 m8 offset-m2">
+                    <label>Meeting Date</label>
+                    <select class="form-control">
                       <option value="">Select Society</option>
                     </select>
                   </div>
@@ -62,106 +56,32 @@
         </div>
       </div>
 
-      <div class="modal fade" id="paymentRecords" role="dialog" style="border-radius: 5px;">
-        <div class="modal-dialog modal-lg">
-          <!-- Modal content no 1-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Payment Records for Odokoto Ifeoluwa C.I.C.S</h4>
-            </div>
-            <div class="modal-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="payment-details">
-                  <thead>
-                    <tr>
-                      <th rowspan="2" width="8%" class="_style">Date</th>
-                      <th rowspan="2" width="12%" class="_style">Particulars</th>
-                      <th width="80%" class="_style">
-                        
-                      </th>
-                    </tr>
-                  </thead>
-                  
-                  <tbody id="tbody">
-                    <tr>
-                      <td>6/18/2020</td>
-                      <td>To Balance</td>
-                      <td>
-                        <table class="table" id="payment-types" style="height:inherit">
-                          <tbody>
-                            <tr>
-                              <th class="_style" colspan="3">Shares</th>
-                              <th class="_style" colspan="3">Savings</th>
-                              <th class="_style" colspan="3">Loans</th>
-                              <th class="_style" colspan="3">Interest</th>
-                              <th class="_style" colspan="3">Fixed Deposit</th>
-                              <th class="_style" colspan="3">Building Fund</th>
-                              <th class="_style" colspan="3">Signature</th>
-                              
-                            </tr>
-                            <tr>
-                              <td>Cr.</td>
-                              <td>Dr.</td>
-                              <td>Bal.</td>
-                              <td>Cr.</td>
-                              <td>Dr.</td>
-                              <td>Bal.</td>
-                              <td>Cr.</td>
-                              <td>Dr.</td>
-                              <td>Bal.</td>
-                              <td>Cr.</td>
-                              <td>Dr.</td>
-                              <td>Bal.</td>
-                              <td>Cr.</td>
-                              <td>Dr.</td>
-                              <td>Bal.</td>
-                              <td>Cr.</td>
-                              <td>Dr.</td>
-                              <td>Bal.</td>
-                              <td rowspan="2">Secretary</td>
-                            </tr>
-                            <tr>
-                              <td>10000</td>
-                              <td>50000</td>
-                              <td>100000</td>
-                              <td>10000</td>
-                              <td>50000</td>
-                              <td>100000</td>
-                              <td>10000</td>
-                              <td>50000</td>
-                              <td>100000</td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td>10000</td>
-                              <td>50000</td>
-                              <td>100000</td>
-                              <td>10000</td>
-                              <td>50000</td>
-                              <td>100000</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel ml-10" data-dismiss="modal" id="cancel">Ok</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PaymentRecord/>
     </div> 
   </div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PaymentRecord from '@/components/meeting/PaymentRecord'
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import { toggleAvatarDropDown, closeNavbar } from '../../assets/js/helpers/utility';
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+
 export default {
   name: 'societyDue',
+  components: {
+    HeaderNav,
+    PageHeader,
+    PaymentRecord,
+  },
+  data(){
+    return {
+      pageTitle: 'Society Monthly Payment Record',
+      previousPage: 'Dashboard',
+      notificationMessage: null,
+    }
+  },
+  
 }
 </script>

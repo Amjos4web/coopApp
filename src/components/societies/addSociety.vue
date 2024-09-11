@@ -1,168 +1,139 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Create Society
-        </h3>
-        <ol class="breadcrumb">
-          <li>
-            <a>
-							<router-link to="/">
-								Dashboard
-							</router-link>
-						</a>
-          </li>
-          <li><a href="#" class="active">Create Society</a></li>
-        </ol>
-      </div>
+     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p class="page-notification-message"><i class="fa fa-info-circle"></i> This is where society is being added </p>
-                <!-- <p class="export-btn"><button class="btn btn-info btn-sm"><i class="fa fa-download"></i>&nbsp;Import CSV</button></p> -->
-              </div>
-            </div>
+         <div v-if="error"> 
+          <div class="text-center error-div">
+            <span>
+              {{ error.message }}
+            </span>
           </div>
-          
+        </div>
+        <div v-else-if="successMsg">
+          <div class="text-center success-div">
+            <span>
+              {{ successMsg }}
+            </span>
+          </div>
+        </div>
+        <div class="container">
+          <form @submit.prevent="saveSociety()" class="col s12">
             <div class="box">
+              <div v-if="isLoading">
+                <div class="text-center">
+                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
+                </div>
+              </div>
               <div class="row">
                 <div class="form-group">
-                   <!-- <div class="row">
-                    <div class="col s12 text-center">
-                      <button class="btn btn-general" data-target="#selectMembers" data-toggle="modal"><i class="fa fa-user"></i>&nbsp;Select Members</button>
-                      <span class="" id="listOfMembers"></span>
-                      <input type="hidden" name="listOfMembers" value="">
-                    </div>
-                  </div> -->
-                  <form action="" method="get" class="col s12" id="createSociety">
                   <div class="row">
                     <div class="input-field col s12">
-                      <input type="text" name="societyName" id="societyName" class="" autofocus>
-                      <label for="Society Name">Soiety Name</label>
-                      <span class="error-message" id="societyName-error"></span>
+                      <input 
+                        type="text" 
+                        v-model="form.name"
+                        autofocus
+                      >
+                      <label for="Society Name">Soceity Name</label>
+                      <span class="error" v-if="elementHasError('name')">
+                        {{ error.errors.name[0] }}
+                      </span>
                     </div>
                   </div>
 
-                  <table class="table">
-                  <tr>
-                    <th>Choose</th>
-                    <th>Payment Type</th>
-                    <th>Amount</th>
-                  </tr>
-                  <tr>
-
-                    <td style="width: 30%"><label class="switch"><input type="checkbox" id="c-savings" value="Savings" class="payment"><span class="slider round"></span></label></td>
-                    <td style="width: 30%">Savings</td>
-                    <td style="width: 40%"><input type="text" class="form-control textInput" id="t-savings" name="savingsAmount" disabled>
-                      <span class="error-message" id="savings-error"></span>
-                    </td>
-                    
-                  </tr>
-                  <tr>
-                    <td style="width: 30%"><label class="switch"><input type="checkbox" id="shares" value="Shares" class="payment"><span class="slider round"></span></label></td>
-                    <td style="width: 30%">Shares</td>
-                    <td style="width: 40%"><input type="text" class="form-control textInput" id="t-shares" name="savingsAmount" disabled>
-                      <span class="error-message" id="shares-error"></span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="width: 30%"><label class="switch"><input type="checkbox" id="c-bf" value="Building Fund" class="payment"><span class="slider round"></span></label></td>
-                    <td style="width: 30%">Building Fund</td>
-                    <td style="width: 40%"><input type="text" class="form-control textInput" id="t-bf" name="bfAmount" disabled>
-                      <span class="error-message" id="bf-error"></span>
-                    </td>
-                  </tr>
-                </table>
-
-                 <div class="row">
+                  <div class="row">
                     <div class="input-field col s12">
-                      <textarea id="textarea1" class="materialize-textarea" name="notes"></textarea>
+                      <textarea 
+                      id="textarea1" 
+                      class="materialize-textarea" 
+                      v-model="form.notes"
+                      >
+                      </textarea>
                       <label for="notes">Notes</label>
-                      <span class="error-message" id="notes-error"></span>
+                      <span class="error" v-if="elementHasError('notes')">
+                        {{ error.errors.notes[0] }}
+                      </span>
                     </div>
                   </div>
-                </form>
+                  
                 </div>
               </div>
             </div>
             <div class="text-center">
               <input type="submit" value="Save" class="btn-general">
             </div>
-          
-        </div>
-        </div>
-      </div>
-
-    <div class="modal fade" id="selectMembers" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Select Members</h4>
-          </div>
-          <div class="modal-body padtrbl">
-            <div class="row">
-              <div class="input-field col-md-6 col-md-offset-3">
-                <input type="text" name="memberName" id="memberName">
-                <label for="Society Name">Search member</label>
-                <span class="error-message" id="societyName-error"></span>
-              </div>
-            </div>
-            <div class = "row">
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID">
-                  <label for="memberID"></label>
-                </p>
-              </div>
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID2">
-                  <label for="memberID2"></label>
-                </p>
-              </div>
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID3">
-                  <label for="memberID3"></label>
-                </p>
-              </div>
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID4">
-                  <label for="memberID4"></label>
-                </p>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
-    </div> 
+  </div> 
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import { mapActions , mapGetters, mapMutations } from 'vuex'
+import Validator from 'validatorjs'
+import { closeNavbar, toggleAvatarDropDown } from "../../assets/js/helpers/utility";
+
 export default {
   name: 'addSociety',
+  components: {
+    HeaderNav,
+    PageHeader,
+  },
+  data(){
+    return{
+      form: {
+        name: '',
+        notes: '',
+      },
+      pageTitle: 'Create Society',
+      previousPage: 'Dashboard',
+      notificationMessage: 'This is where societies are being added to the system',
+      successMsg: ''
+    } 
+  },
+  methods: {
+    ...mapActions("app/society", ["addNewSociety"]),
+    ...mapMutations("app/society", ["setError"]),
+    
+    saveSociety(){
+      this.setError(null);
 
+      let validation = new Validator(this.$data.form, {
+        name: 'required|max:200',
+        notes: 'required|max:200'
+      })
+
+      if (validation.fails()){
+        const error = new Error("You have error in your data, make neccessary change(s) and submit again.")
+        error.errors = validation.errors.errors;
+        this.setError(error)
+      } else {
+        this.addNewSociety(this.$data.form)
+        .then(message => {
+          this.$data.successMsg = 'Society added successfully'
+          this.$data.form = {}
+        })
+      }
+    },
+    elementHasError(elemID){
+      return ((
+        this.error 
+        && this.error.errors 
+        && this.error.errors[elemID] 
+        && this.error.errors[elemID].length > 0
+      ) ? true : false)
+    }
+  },
+  computed: {
+    ...mapGetters("app/society", ["error", "isLoading"])
+  },
+  mounted(){
+    closeNavbar(),
+    toggleAvatarDropDown()
+  }
 }
 </script>

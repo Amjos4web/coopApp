@@ -1,82 +1,121 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Meeting
-        </h3>
-        <ol class="breadcrumb">
-          <li><a href="#">Home</a></li>
-          <li><a href="#" class="active">Meeting</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p class="page-notification-message" style="font-size: 17px"><i class="fa fa-info-circle"></i> List of all meetings to be held today <b>15th of June 2020</b> </p>
-                <!-- <p class="export-btn"><button class="btn btn-info btn-sm"><i class="fa fa-download"></i>&nbsp;Import CSV</button></p> -->
-              </div>
+        <div v-if="societyIsLoading || mCisLoading || societyIsLoading">
+          <div class="text-center">
+            <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
+          </div>
+        </div>
+        <div v-if="mCerror">
+          <div class="error-div text-center">
+            <span>
+              {{ mCerror.message }}
+            </span>
+          </div>
+        </div>
+         <div v-if="societyError">
+          <div class="error-div text-center">
+            <span>
+              {{ societyError.message }}
+            </span>
+          </div>
+        </div>
+        <div v-if="smError">
+          <div class="error-div text-center">
+            <span>
+              {{ smError.message }}
+            </span>
+          </div>
+        </div>
+        <div class="container" v-else>
+         <Notification :notificationMessage="notificationMessage" v-if="meetingCalendars.length > 0"/>
+          <div class="col s12" v-if="meetingCalendars.length == 0 && societyIsLoading && mCisLoading && societyIsLoading">
+            <div class="text-center error-div">
+              <span>
+                You have no meeting for today
+              </span>
             </div>
           </div>
-          <div class="col s12">
-            <div class="row">
-              <div class="col s12 m8 offset-m2">
-                <div class="card blue-grey darken-1">
-                  <div class="card-content black-text text-center">
-                    <span class="card-title">Odokoto Ife-Oluwa C.I.C.S</span>
-                    <p>I am a very simple card. I am good at containing small bits of information.
-                    I am convenient because I require little markup to use effectively.</p>
-                  </div>
-                  <div class="card-action text-center">
-                    <button type="submit" class="btn btn-info modal-trigger" data-target="#startMeetingConfirmationModal" data-toggle="modal">
-                      Start Meeting
-                    </button>
-                    
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="col s12" v-else>
+            <MeetingList :meetingCalendars="meetingCalendars"/>
           </div>
         </div>
       </div>
     </div> 
-
-      <div class="modal fade" id="startMeetingConfirmationModal" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Start Meeting Confirmation</h4>
-          </div>
-          <div class="modal-body padtrbl">
-            <h4>Start Meeting?</h4>
-            <p>The correct time to start meeting is 11:00am and the current time is 10:45am. Are you sure of starting this meeting?</p>
-            <div class="text-center">
-              <a>
-                <router-link to="/meeting/start" class="btn btn-info"><i class="fa fa-time"></i> Start Meeting</router-link>
-              </a>
-              <button type="button" class="btn btn-warning ml-10" data-dismiss="modal" id="cancel">Cancel</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    
   </div>
-</div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import Notification from '@/components/includes/PageNotification'
+import MeetingList from '@/components/meeting/MeetingList'
+import { closeNavbar, toggleAvatarDropDown, closeModal, openModal } from "../../assets/js/helpers/utility"
+import { mapActions , mapGetters, mapMutations } from 'vuex'
+import {turnArrayToObject} from '../../utility'
 
 export default {
   name: 'meetingIndex',
-
+  components: {
+    HeaderNav,
+    PageHeader,
+    Notification,
+    MeetingList,
+  },
   data(){
     return {
-      meetingID: 1
+      meetingID: 1,
+      pageTitle: 'Meeting',
+      previousPage: 'Dashboard',
+      notificationMessage: 'List of all meetings to be held today',
+      meetingCalendars: [],
     }
   },
+
+  methods: {
+    ...mapActions("app/meeting_calendar", ["listSocietyMemberWhichHasMeetingToday"]),
+    ...mapActions("app/society", ["fetchManySociety"]),
+    ...mapMutations("app/society_member", ['setError']),
+  },
+
+  computed: {
+    ...mapGetters("app/meeting_calendar", {mCerror:"error", mCisLoading:"isLoading"}),
+    ...mapGetters("app/society", {societyError:"error", societyIsLoading:"isLoading"}),
+    ...mapGetters("app/society_member", {smError:"error", smIsLoading:"isLoading"}),
+  },
+
+  created(){
+    // get all meeting the current day
+    this.listSocietyMemberWhichHasMeetingToday()
+    .then(data => {
+      console.log(data);
+      if (data){
+        this.fetchManySociety(data.meetingCalendars.map(mcs=>mcs.society_id))
+        .then(result=>{
+          // console.log(result)
+          const store = turnArrayToObject(result.societies)
+          // console.log(store)
+          this.$data.meetingCalendars = data.meetingCalendars.map(mcs=>{
+            mcs.society_name = store[mcs.society_id] ? store[mcs.society_id].name : "Unknown"
+            return mcs;
+          })
+        })
+        .catch(e=>{
+          //console.log({e:this.setError})
+          this.setError(e)
+        })
+      }
+    })
+  },
+
+  mounted(){
+    toggleAvatarDropDown(),
+    closeNavbar()
+  }
   
 }
 </script>

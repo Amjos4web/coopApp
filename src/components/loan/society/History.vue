@@ -1,29 +1,12 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Society Loan History
-        </h3>
-        <ol class="breadcrumb">
-          <li>
-            <a>
-							<router-link to="/">
-								Dashboard
-							</router-link>
-						</a>
-          </li>
-          <li><a href="#" class="active">Society Loan History</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <!-- <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i></p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
-              </div> -->
               <form action="" method="get" id="filter">
                 <div class="filter-result">
                   <div class="row">
@@ -37,13 +20,18 @@
                     </div>
                     <div class="col-md-4">
                       <div class="form-group">
-                        <label>Enter Member's Name</label>
-                        <input type="text" name="" id="name">
+                        <label>Status</label>
+                        <select name="status" id="status" class="form-control">
+                          <option value="">Choose an Option</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Rejected">Rejected</option>
+                          <option value="Pending">Pending</option>
+                        </select>
                       </div>
                     </div>
                     <div class="col-md-4">
                       <div class="form-group">
-                        <label>Requested Date</label>
+                        <label>Requested Date From</label>
                         <input type="date" name="date" id="date">
                       </div>
                     </div>
@@ -59,6 +47,7 @@
         <div class="text-center filter">
           <h4>Loan history for all societies</h4>
         </div>
+        
         <div class="container">
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
@@ -69,19 +58,11 @@
                   <th>Amount paid back</th>
                   <th>Amount still owing</th>
                   <th>Interest rate</th>
+                  <th>View history</th>
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>6/20/2020</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>&#x20A6;30,000</td>
-                  <td>&#x20A6;20,000</td>
-                  <td>1,500 Monthly</td>
-                  <td><label class="in-progress">In Progress</label></td>
-                </tr>
-              </tbody>
+                <LoanHistoryList :loanHistory="loanHistory"/>
             </table>
           </div>
           <div class="loan-record-summary text-center">
@@ -104,13 +85,58 @@
             </table>
           </div>
         </div> 
+        <Modal/>
       </div>
-    </div> 
-  </div>
+    </div>
+  </div> 
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import LoanHistoryList from '@/components/loan/society/LoanHistoryList'
+import Modal from '@/components/myLoan/Modal'
+
 export default {
   name: 'SocietyHistory',
+  components: {
+    HeaderNav,
+    PageHeader,
+    LoanHistoryList,
+    Modal
+  },
+  data() {
+    return{
+      pageTitle: 'Society Loan History',
+      previousPage: 'Dashboard',
+      notificationMessage: '',
+      loanHistory: [
+        {
+          id: 1,
+          date: '30/10/2020', 
+          amountRequested: 30000,
+          amountPaidBack: 25000,
+          amountOwing: 5000,
+          interestRate: 1000
+        },
+        {
+          id: 2,
+          date: '30/10/2020', 
+          amountRequested: 30000,
+          amountPaidBack: 75000,
+          amountOwing: 45000,
+          interestRate: 1000
+        },
+      ]
+    } 
+  },
+  computed: {
+    "columns": function columns(){
+      if (this.loanHistory.length == 0){
+        return [];
+      }
+      return Object.keys(this.loanHistory[0])
+    }
+  }
 }
 </script>

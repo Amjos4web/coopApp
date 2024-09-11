@@ -1,133 +1,219 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Manage Users
-        </h3>
-        <ol class="breadcrumb">
-          <li><a href="#">Home</a></li>
-          <li><a href="#" class="active">Manage Users</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> Add new users to the system</p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="fa fa-plus"></i>&nbsp;Add New User</button></p>
+         <form @submit.prevent="getUserFromServer()">
+          <div class="container">
+            <div class="filter-result">
+              <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                  <div class="input-field col s12">
+                    <input type="text" v-model="query.filter.name">
+                    <label for="user name">Enter User Name</label>
+                    <span class="error-message" id="username-error"></span>
+                  </div>
+                </div>
               </div>
             </div>
+            <div class="text-center mt-20">
+              <input type="submit" value="Filter" class="btn-general">
+            </div>
           </div>
+        </form>
+        <div class="container">
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit"/>
+           <div v-if="successMsg">
+            <div class="text-center success-div">
+              <span>
+                {{ successMsg }}
+              </span>
+            </div>
+          </div>
+          <div v-if="error">
+            <div class="error-div text-center">
+              <span>
+                {{ error.message }}
+              </span>
+            </div>
+          </div>
+  
           <div class="table-responsive">
+            <!-- <button type="button" class="btn btn-default pull-right btn-sm" @click="reloadData()">Reload</button> -->
             <table class="table table-bordered table-hover">
               <thead>
                 <tr class="theading">
                   <th>S/N</th>
                   <th>Name</th>
                   <th>Phone No</th>
-                  <th>Role</th>
-                  <th>Edit</th>
+                  <th>Set Permission</th>
+                  <th>Reset Password</th>
                   <th>Deactivate</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>1</td>
-                  <td>Ada Dorcas</td>
-                  <td>08123234345</td>
-                  <td>Society Chairman</td>
-                  <td>
-                    <a class="btn btn-info btn-sm" href="#">Edit Profile</a>
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm">Deactivate Account</button>
-                  </td>
-                </tr>
-              </tbody>
+              <UsersList :users="users" :error="error" 
+              :isLoading="isLoading" 
+              :currentPage="pagination.currentPage" 
+              :limit="pagination.limit"
+              :deactivateUserEventHandler="deactivateUserEventHandler"
+              :resetUserPasswordEventHandler="resetUserPasswordEventHandler"/>
             </table>
           </div>
         </div> 
+        <Pagination :pagination="pagination"/>
       </div>
     </div>
-
-    <div class="modal fade" id="addUserModal" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <form action="" method="post" id="addUser">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Add User</h4>
-            </div>
-            <div class="modal-body padtrbl">
-              <div class="table-responsive">
-                <table class="table table-bordered table-hover make-payment" :style="{width:'60%', margin:'auto'}">
-                  <!-- <form action="" method="post" id="pay"> -->
-                    <thead>
-                      <tr>
-                        <th width="40%">Name</th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="name" id="name">
-                            <label for="user name">Enter name</label>
-                            <span class="error-message" id="name-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Phone Number</th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="phoneNo" id="phoneNo">
-                            <label for="user phone">Enter Phone Number</label>
-                            <span class="error-message" id="phoneNo-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Email Address</th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="emailAddress" id="emailAddress">
-                            <label for="email address">Enter Email Adress</label>
-                            <span class="error-message" id="emailAddresss-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Role</th>
-                        <td width="60%">
-                          <div class="row">
-                            <div class="form-group col-md-10 col-md-offset-1">
-                              <label>Choose Role</label>
-                              <select name="userRole" id="userRole" class="form-control">
-                                <option value="" selected>Choose your option</option>
-                              </select>
-                              <span class="error-message" id="userRole-error"></span>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    </thead>
-                  <!-- </form> -->
-                </table>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <input type="submit" name="addUser" class="btn btn-info" value="Save">
-              <button type="button" id="continue" class="btn btn-warning ml-10" data-dismiss="modal">close</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+    <UserPermissionModal/>
   </div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import UserPermissionModal from '@/components/users/UserPermissionModal'
+import UsersList from '@/components/users/UsersList'
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import Pagination from '@/components/includes/Pagination'
+import LimitDataFetch from '@/components/includes/LimitDataFetch'
+import { closeNavbar, toggleAvatarDropDown, closeModal, openModal } from "../../assets/js/helpers/utility"
+import { mapActions , mapGetters, mapMutations } from 'vuex'
+import {turnArrayToObject} from "../../utility"
+
 export default {
-  name: 'manageUsers',
+  name: 'Users',
+  components: {
+    HeaderNav,
+    PageHeader,
+    UserPermissionModal,
+    UsersList,
+    Pagination,
+    LimitDataFetch
+  },
+  data(){
+    return {
+      query: {
+        filter:{
+          name: '',
+        },
+        limit:10,
+        page:1
+      },
+      pageTitle: 'Users',
+      previousPage: 'Dashboard',
+      notificationMessage: null,
+      users: [],
+      pagination: {},
+      successMsg: ''
+    }
+  },
+  methods: {
+    ...mapActions("app/user", [
+      "getUsers", 
+      "resetMemberPassword", 
+      "activateDeactivateMemberAccount"
+      ]
+    ),
+    ...mapActions("app/member", ['fetchManyMember', 'getMembers']),
+
+    displayUserHelper(data){
+      const _userList = data.users
+
+      const userIDs = _userList.map(u=>u.member_id)
+
+      this.fetchManyMember(userIDs)
+      .then(result => {
+        const memberObj = turnArrayToObject(result.members)
+
+        this.$data.users = _userList.map(u=>{
+          const m = memberObj[u.member_id]
+
+          if (m){
+              u.name = m.name
+              u.phone = m.phone
+          } else {
+            u.name = "Unknown"
+            u.phone = "Unknown"
+          }
+          return u;
+        })// end map
+        this.$data.pagination = data.pagination
+      }) // end then
+      .catch(e=>{
+        this.setError(e)
+      })
+    },
+
+    getUserFromServer(){
+      this.getUsers({query:this.$data.query})
+      .then(data => {
+        if (data){
+          this.displayUserHelper(data)
+        }
+      });
+    },
+
+    getLimit(event){
+      this.$data.query.limit = event.target.value;
+      this.getUserFromServer()
+    },//end method getLimit,
+
+    deactivateUserEventHandler(id){
+      this.activateDeactivateMemberAccount(id)
+      .then(result => {
+        if (result){
+
+          this.$data.successMsg = 'Operation successful'
+
+          this.$data.users = this.$data.users.map(u=>{
+
+            if(u.id.toString() === result.id.toString()){
+              result.name = u.name
+              result.phone = u.phone
+              return result
+            }
+            return u
+          })
+        }
+      })
+    },
+
+    resetUserPasswordEventHandler(id){
+      this.resetMemberPassword(id)
+      .then(result => {
+        if (result){
+          this.$data.successMsg = `Password reset successful. New password is: ${result.new_default_psd}`
+
+          this.$data.users = this.$data.users.map(u=>{
+
+            if(u.id.toString() === result.id.toString()){
+              result.name = u.name
+              result.phone = u.phone
+              return result
+            }
+            return u
+          })
+        }
+      })
+    }
+  },
+
+  computed: {
+    ...mapGetters("app/user", ["error", "isLoading"])
+  },
+  
+  created(){
+    this.getUsers()
+    .then(data => {
+      if (data){
+        this.displayUserHelper(data)
+      }
+    });
+
+
+  },
+  mounted(){
+    toggleAvatarDropDown(),
+    closeNavbar()
+  }
 }
 </script>

@@ -1,57 +1,50 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Societies
-        </h3>
-        <ol class="breadcrumb">
-           <li>
-            <a>
-							<router-link to="/">
-								Dashboard
-							</router-link>
-						</a>
-          </li>
-          <li><a href="#" class="active">Societies</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> All list of societies are being showed here</p>
+                <p><i class="fa fa-info-circle"></i> {{ notificationMessage }}</p>
                 <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
               </div>
             </div>
           </div>
-          <form action="" method="get">
+          <form @submit.prevent="searchSociety()">
             <div class="filter-result">
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 col-md-offset-3">
                   <div class="form-group">
-                    <label>Select a member</label>
-                    <select name="societyName" id="societyName" class="form-control">
-                      <option value="">Select a Society</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Select a member</label>
-                    <input type="text" name="societyNameInput" id="societyNameInput" class="form-control">
+                    <label>Enter society name</label>
+                    <input type="text" 
+                    class="form-control"
+                    v-model="society_name"
+                    >
                   </div>
                 </div>
               </div>
             </div>
+            <div class="text-center">
+              <input type="submit" value="Filter Result" class="btn-general">
+            </div>
           </form>
-          <div class="text-center">
-            <input type="submit" value="Filter Result" class="btn-general">
-          </div>
         </div>
         
         <div class="container">
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit"/>
+          <div class="text-center mb-20">
+            <h3 class="search-result-title">{{ searchResultData }}</h3>
+          </div>
+          <div v-if="successMsg">
+            <div class="text-center success-div">
+              <span>
+                {{ successMsg }}
+              </span>
+            </div>
+          </div>
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
               <thead>
@@ -59,100 +52,214 @@
                   <th>S/N</th>
                   <th>Society Name</th>
                   <th>No of Members</th>
-                  <th>Date Established</th>
                   <th>View</th>
                   <th>Edit</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>1</td>
-                  <td>Odokoto Ife-Oluwa C.I.C.S</td>
-                  <td>55 Members</td>
-                  <td>5th, Janaury 2018</td>
-                  <td>
-                    <button class="btn btn-info btn-sm viewSociety" data-target="#viewSociety" data-toggle="modal">View</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-warning btn-sm editSociety" data-target="#editSociety" data-toggle="modal">Edit</button>
-                  </td>
-                </tr>
-              </tbody>
+              <SocietiesList :societies="societies" :error="error" :isLoading="isLoading" :getOneSocietyEventHandlerForView="getOneSocietyEventHandlerForView" :getOneSocietyEventHandlerForEdit="getOneSocietyEventHandlerForEdit"
+              :currentPage="pagination.currentPage" :limit="pagination.limit"/>
             </table>
           </div>
         </div>
+        <Pagination :pagination="pagination" :changePage="changePage"/>
       </div>
     </div> 
-
-    <div class="modal fade" id="viewSociety" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Odokoto Ifeoluwa C.I.C.S Details</h4>
-          </div>
-          <div class="modal-body padtrbl">
-            <div class="container" :style="{width: '100%;'}">
-            <div class="table-responsive">
-              <table class="table table-striped table-hover table-bordered">
-                <tbody>
-                  <tr>
-                    <th width="50%">Name</th>
-                    <td id="name"></td>
-                  </tr>
-                  <tr>
-                    <th width="50%">Number of Members</th>
-                    <td id="noOfMembers"></td>
-                  </tr>
-                  <tr>
-                    <th width="50%">Date Established</th>
-                    <td id="dateEstablished"></td>
-                  </tr>
-                  <tr>
-                    <th width="50%">Day of Meeting</th>
-                    <td id="dom"></td>
-                  </tr>
-                  <tr>
-                    <th>Total Saving</th>
-                    <td id="savings"></td>
-                  </tr>
-                  <tr>
-                    <th>Total Shares</th>
-                    <td id="shares"></td>
-                  </tr>
-                  <tr>
-                    <th>Total Buiding Fund</th>
-                    <td id="buildingFund"></td>
-                  </tr>
-                  <tr>
-                    <th>Total Loan Issued</th>
-                    <td id="loanIssued"></td>
-                  </tr>
-                  <tr>
-                    <th>Total Loan Repaid</th>
-                    <td id="loanRepaid"></td>
-                  </tr>
-                  <tr>
-                    <th width="50%">Total Asset</th>
-                    <td id="asset"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ViewSocietyProfileModal ref="viewModal" :society="society"/>
+    <EditSocietyModal ref="editModal" :society="society" :updateSocietyOnParent="updateSocietyOnParent"/>
   </div>
-</div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import SocietiesList from '@/components/societies/SocietiesList'
+import ViewSocietyProfileModal from '@/components/societies/ViewSocietyProfileModal'
+import EditSocietyModal from '@/components/societies/EditSocietyModal'
+import Pagination from '@/components/includes/Pagination'
+import LimitDataFetch from '@/components/includes/LimitDataFetch'
+import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
+import { mapActions , mapGetters, mapMutations } from 'vuex'
+
 export default {
   name: 'societies',
+  components: {
+    HeaderNav,
+    PageHeader,
+    SocietiesList,
+    ViewSocietyProfileModal,
+    EditSocietyModal,
+    Pagination,
+    LimitDataFetch
+  },
+  data(){
+    return{
+      pageTitle: 'Societies',
+      previousPage: 'Dashboard',
+      notificationMessage: 'All list of societies are being showed here',
+      societies: [],
+      pagination: {},
+      society: '',
+      successMsg: '',
+      searchResultData: '',
+      society_name: ''
+    } 
+  },
+  methods: {
+    ...mapActions("app/society", ["getSocieties", "getOneSociety"]),
+    ...mapActions("app/society_member", ["countMemberInSociety"]),
+    showViewModal(){
+      let element = this.$refs.viewModal.$el
+      openModal(element);
+    },
+
+    hideViewModal(){
+      let element = this.$refs.viewModal.$el
+      closeModal(element)
+    },
+
+    showEditModal(){
+      let element = this.$refs.editModal.$el
+      openModal(element);
+    },
+
+    hideEditModal(){
+      let element = this.$refs.editModal.$el
+      closeModal(element)
+    },
+
+    updateSocietyOnParent(society){
+      this.$data.societies = this.$data.societies.map(
+        s=>((s.id.toString() === society.id.toString()) ? society : s)
+      )
+      this.$data.successMsg = 'Society updated successfully'
+      // hide modal
+      this.hideEditModal();
+    },
+    
+    getOneSocietyEventHandlerForView(id){
+      this.getOneSociety(id)
+      .then(society => {
+        console.log(society)
+        if (society){
+          this.$data.society = society
+          // raise modal here
+          this.showViewModal()
+        }
+      })
+    },
+
+    getOneSocietyEventHandlerForEdit(id){
+      this.getOneSociety(id)
+      .then(society => {
+        console.log(society)
+        if (society){
+          this.$data.society = society
+          // raise modal here
+          this.showEditModal()
+        }
+      })
+    },
+
+    changePage(page){
+      this.getSocieties({query:{page, limit:10}})
+      .then(data => {
+        if(data){
+          this.$data.societies = data.societies
+          const societyIDs = data.societies.map(s=>s.id)
+          //console.log(societyIDs)
+          this.countMemberInSociety({paramIDs:societyIDs})
+          .then(data1=>{
+            if(data1){
+              console.log(data1)
+              this.$data.societies = data.societies.map(s=>{
+                s.totalMember = data1.countMemberInSociety[s.id]
+                return s;
+              })
+              this.$data.pagination = data.pagination;
+            }
+          })
+        }
+      })
+    },
+
+    getLimit(event){
+      let val = event.target.value;
+      this.getSocieties({query:{limit:val}})
+      .then(data => {
+        if(data){
+          this.$data.societies = data.societies
+          const societyIDs = data.societies.map(s=>s.id)
+          //console.log(societyIDs)
+          this.countMemberInSociety({paramIDs:societyIDs})
+          .then(data1=>{
+            if(data1){
+              console.log(data1)
+              this.$data.societies = data.societies.map(s=>{
+                s.totalMember = data1.countMemberInSociety[s.id]
+                return s;
+              })
+              this.$data.pagination = data.pagination;
+              this.$data.searchResultData = '';
+            }
+          })
+        }
+      })
+    },
+
+    searchSociety(){
+      this.getSocieties({query:{limit:this.$data.pagination.limit, filter:{name:this.$data.society_name}}})
+      .then(data=> {
+        if (data){
+          this.$data.societies = data.societies
+          const societyIDs = data.societies.map(s=>s.id)
+          //console.log(societyIDs)
+          this.countMemberInSociety({paramIDs:societyIDs})
+          .then(data1=>{
+            if(data1){
+              console.log(data1)
+              this.$data.societies = data.societies.map(s=>{
+                s.totalMember = data1.countMemberInSociety[s.id]
+                return s;
+              })
+              this.$data.pagination = data.pagination;
+              this.$data.searchResultData = `${data.pagination.totalRecord} results found for ${this.$data.society_name}`
+            }
+          })
+        }
+      })
+    }
+  },
+  computed: {
+    ...mapGetters("app/society", ["error", "isLoading"]),
+    ...mapGetters("app/society_member", ["error", "isLoading"])
+  },
+  created(){
+    this.getSocieties({query:{limit:10}})
+    .then(data => {
+      console.log(data)
+      //this.$data.societies = data.societies
+      if(data){
+        this.$data.societies = data.societies
+        const societyIDs = data.societies.map(s=>s.id)
+        //console.log(societyIDs)
+        this.countMemberInSociety({paramIDs:societyIDs})
+        .then(data1=>{
+          if(data1){
+            console.log(data1)
+            this.$data.societies = data.societies.map(s=>{
+              s.totalMember = data1.countMemberInSociety[s.id]
+              return s;
+            })
+            this.$data.pagination = data.pagination;
+          }
+        })
+      }
+    })
+  },
+  mounted(){
+    toggleAvatarDropDown(),
+    closeNavbar()
+  },
+ 
 }
 </script>

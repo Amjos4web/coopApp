@@ -1,22 +1,22 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Payment Types
-        </h3>
-        <ol class="breadcrumb">
-          <li><a href="#">Home</a></li>
-          <li><a href="#" class="active">Payment Types</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
+        <div v-if="successMsg">
+          <div class="text-center success-div">
+            <span>
+              {{ successMsg }}
+            </span>
+          </div>
+        </div>
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> Add new payment type</p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#addPaymentTypesModal"><i class="fa fa-plus"></i>&nbsp;Add New Payment Type</button></p>
+                <p><i class="fa fa-info-circle"></i> {{ notificationMessage }}</p>
+                <p class="export-btn"><button class="btn btn-warning btn-sm" @click="showModal"><i class="fa fa-plus"></i>&nbsp;Add New Payment Type</button></p>
               </div>
             </div>
           </div>
@@ -26,69 +26,102 @@
                 <tr class="theading">
                   <th>S/N</th>
                   <th>Payment Name</th>
+                  <th>Type</th>
                   <th>Edit</th>
-                  <th>Remove</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>1</td>
-                  <td>Shares</td>
-                  <td>
-                    <a href="#" class="btn btn-info">Edit</a>
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm">Remove</button>
-                  </td>
-                </tr>
-              </tbody>
+              <PaymentTypeList :payTypes="payTypes" :isLoading="isLoading" :error="error" :getOnePayTypeEventHandler="getOnePayTypeEventHandler"/>
             </table>
           </div>
         </div> 
       </div>
     </div>  
-
-
-    <div class="modal fade" id="addPaymentTypesModal" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <form action="" method="post" id="addPaymentType">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Add New Payment Type</h4>
-            </div>
-            <div class="modal-body padtrbl">
-              <div class="table-responsive">
-                <table class="table table-bordered table-hover" :style="{width:'60%', margin:'auto'}">
-                  <thead>
-                    <tr>
-                      <th width="40%">Payment Name</th>
-                      <td width="60%">
-                        <div class="input-field">
-                          <input type="text" name="name" id="name">
-                          <label for="user name">Enter name</label>
-                          <span class="error-message" id="name-error"></span>
-                        </div>
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <input type="submit" name="addPaymentType" class="btn btn-info" value="Save">
-              <button type="button" id="continue" class="btn btn-warning ml-10" data-dismiss="modal">close</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+    <AddPaymentTypeModal :updatePayTypesOnParent="updatePayTypesOnParent" :paymentType="paymentType" ref="modal"/>
   </div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import PaymentTypeList from '@/components/settings/PaymentTypeList'
+import AddPaymentTypeModal from '@/components/settings/AddPaymentTypeModal'
+import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
+import { mapActions , mapGetters, mapMutations } from 'vuex'
+
+const initPayTypes = { name:'', type:'' }
+
 export default {
   name: 'paymentTypes',
+  components: {
+    HeaderNav,
+    PageHeader,
+    PaymentTypeList,
+    AddPaymentTypeModal,
+  },
+  data(){
+     return{
+      pageTitle: 'Payment Types',
+      previousPage: 'Dashboard',
+      notificationMessage: 'Add new payment type',
+      successMsg: '',
+      payTypes: [],
+      paymentType: initPayTypes 
+    } 
+  },
+  methods: {
+    ...mapActions("app/payment_type", ["getPaymentTypes", "getOnePaymentType"]),
+    showModal(){
+      let element = this.$refs.modal.$el
+      openModal(element);
+    },
+    hideModal(){
+      let element = this.$refs.modal.$el
+      closeModal(element)
+    },
+    updatePayTypesOnParent(paymentType, isUpdate){
+      if(isUpdate){
+        this.$data.payTypes = this.$data.payTypes.map(
+          p=>((p.id.toString() === paymentType.id.toString()) ? paymentType : p)
+        )
+        this.$data.successMsg = 'Payment type updated successfully'
+      }else{
+        this.$data.payTypes = [paymentType, ...this.$data.payTypes]
+        this.$data.successMsg = 'Payment type created successfully'
+      }
+      //initialize role
+      this.$data.paymentType = initPayTypes
+      // hide modal
+      this.hideModal()
+    },
+    getOnePayTypeEventHandler(id){
+      //console.log(id);
+      this.getOnePaymentType(id)
+      .then(paymentType=>{
+        console.log(paymentType)
+        if(paymentType){
+          this.$data.paymentType = paymentType;
+          //raise modal here
+          this.showModal();
+        }//end if
+      })//end then
+    }
+  },
+  computed: {
+    ...mapGetters("app/payment_type", ["isLoading", "error"]),
+  },
+  created(){
+    this.getPaymentTypes()
+    .then(data => {
+      // check if data is not null
+      if(data){
+        // save to trigger rerendering
+        this.$data.payTypes = data.paymentTypes
+      }
+    })
+  },
+  mounted(){
+    closeNavbar()
+    toggleAvatarDropDown()
+  }
 }
 </script>

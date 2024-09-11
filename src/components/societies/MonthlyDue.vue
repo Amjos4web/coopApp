@@ -1,16 +1,49 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Payment for <b>15th of June 2020</b>
-        </h3>
-        <ol class="breadcrumb">
-          <li><a href="#">Home</a></li>
-          <li><a href="#" class="active">Make Payment</a></li>
-        </ol>
-      </div>
+     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
+        <div v-if="societyIsLoading || meetingDateIsLoading || calendarYearIsLoading || societyPaymentIsLoading">
+          <div class="text-center" :style="{width: '100%'}">
+            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+          </div>
+        </div>
+         <div v-if="societyPaymentError">
+          <div class="error-div text-center">
+            <span>
+              {{societyPaymentError.message}}
+            </span>
+          </div>
+        </div>
+         <div v-if="societyError">
+          <div class="error-div text-center">
+            <span>
+              {{societyError.message}}
+            </span>
+          </div>
+        </div>
+         <div v-if="calendarYearError">
+          <div class="error-div text-center">
+            <span>
+              {{calendarYearError.message}}
+            </span>
+          </div>
+        </div>
+         <div v-if="meetingDateError">
+          <div class="error-div text-center">
+            <span>
+              {{meetingDateError.message}}
+            </span>
+          </div>
+        </div>
+        <div v-if="successMsg">
+          <div class="text-center success-div">
+            <span>
+              {{ successMsg }}
+            </span>
+          </div>
+        </div>
         <div class="container">
           <!-- <div class="row">
             <div class="col-md-12">
@@ -19,248 +52,179 @@
               </div>
             </div>
           </div> -->
+          <form @submit.prevent="fetchSocietyMonthlyPaymentEventHandler()">
           <div class="filter-result">
             <div class="row">
-              <form action="" method="get">
-                <div class="row text-center">
-                  <div class="form-group col s8 m8 offset-m2">
-                    <label for="member name">Enter Member's Name</label>
-                    <select name="society" id="society" class="form-control">
-                      <option value="">Select a Society</option>
-                    </select>
-                    <span class="error-message" id="societyName-error"></span>
-                  </div>
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Select society</label>
+                  <select class="form-control" @change="getMeetingDates($event, 's')">
+                    <option value="">Select Society</option>
+                    <option v-for="s in societies" :key="s.id" :value="s.id">{{ s.name }}</option>
+                  </select>
                 </div>
-              </form>
+              </div>
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Year</label>
+                  <select class="form-control" @change="getMeetingDates($event, 'y')">
+                    <option value="">Select Year</option>
+                    <option v-for="y in meetingYear" :value="y" :key="y">{{ y }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Meeting Date</label>
+                  <select class="form-control" @change="onMeetingCalendarChangeEventHandler($event)">
+                    <option value="">Select Meeting Date</option>
+                    <option v-for="m in meetingDates" :key="m.id" :value="m.id">{{ m.meeting_date }}</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
           <div class="text-center">
             <input type="submit" value="Proceed" class="btn-general">
           </div>
-        </div>
-        
-        <div class="container">
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr class="theading">
-                  <th>S/N</th>
-                  <th>Society Name</th>
-                  <th>Make Payment</th>
-                  <th>View Payment Records</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>1</td>
-                  <td>Odokoto Ifeoluwa C.I.C.S</td>
-                  <td>
-                    <button class="btn btn-danger btn-sm makePayment" data-target="#makePayment" data-toggle="modal">Make Payment</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-info btn-sm viewPayments" data-target="#paymentRecords" data-toggle="modal">View Payment Records</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          </form>
         </div>
       </div>
-
-    <div class="modal fade" id="paymentRecords" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Odokoto Ifeoluwa C.I.C.S Payment Records</h4>
-          </div>
-          <div class="modal-body">
-            <p>List of all previous and current payment records made by <b>Odokoto Ifeoluwa C.I.C.S</b></p>
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover" id="payment-details">
-                <thead>
-                  <tr>
-                    <th rowspan="2" width="8%" class="_style">Date</th>
-                    <th rowspan="2" width="12%" class="_style">Particulars</th>
-                    <th width="80%" class="_style">
-                      
-                    </th>
-                  </tr>
-                </thead>
-                
-                <tbody id="tbody">
-                  <tr>
-                    <td>6/18/2020</td>
-                    <td>To Balance</td>
-                    <td>
-                      <table class="table" id="payment-types" style="height:inherit">
-                        <tbody>
-                          <tr>
-                            <th class="_style" colspan="3">Shares</th>
-                            <th class="_style" colspan="3">Savings</th>
-                            <th class="_style" colspan="3">Loans</th>
-                            <th class="_style" colspan="3">Interest</th>
-                            <th class="_style" colspan="3">Fixed Deposit</th>
-                            <th class="_style" colspan="3">Building Fund</th>
-                            <th class="_style" colspan="3">Signature</th>
-                            
-                          </tr>
-                          <tr>
-                            <td>Cr.</td>
-                            <td>Dr.</td>
-                            <td>Bal.</td>
-                            <td>Cr.</td>
-                            <td>Dr.</td>
-                            <td>Bal.</td>
-                            <td>Cr.</td>
-                            <td>Dr.</td>
-                            <td>Bal.</td>
-                            <td>Cr.</td>
-                            <td>Dr.</td>
-                            <td>Bal.</td>
-                            <td>Cr.</td>
-                            <td>Dr.</td>
-                            <td>Bal.</td>
-                            <td>Cr.</td>
-                            <td>Dr.</td>
-                            <td>Bal.</td>
-                            <td rowspan="2">Secretary</td>
-                          </tr>
-                          <tr>
-                            <td>10000</td>
-                            <td>50000</td>
-                            <td>100000</td>
-                            <td>10000</td>
-                            <td>50000</td>
-                            <td>100000</td>
-                            <td>10000</td>
-                            <td>50000</td>
-                            <td>100000</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>10000</td>
-                            <td>50000</td>
-                            <td>100000</td>
-                            <td>10000</td>
-                            <td>50000</td>
-                            <td>100000</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-right cancel ml-10" data-dismiss="modal" id="cancel">Ok</button>
-          </div>
-          </div>
-        </div>
-      </div>
+    <PaymentRecord/>
+    <MakePaymentModal :societyPaymentDueList="societyPaymentDueList"
+    :updateParent="updateParent" 
+    :meetingDateForModal="meetingDateForModal"
+    :meetingCalendarID="meetingCalendarID"
+    :societyID="societyID"
+    ref="makePayment"/>
     </div>
-
-
-      <div class="modal fade" id="makePayment" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Monthly Due For Odokoto Ifeoluwa C.I.C.S</h4>
-          </div>
-          <div class="modal-body padtrbl">
-            <div class="container" :style="{width: '100%;'}">
-            <p>List of all monthly payments to be made by <b>Odokoto Ifeoluwa C.I.C.S</b> for today <b>15th of June 2020</b></p>
-              <div class="table-responsive">
-                <table class="table table-bordered table-hover make-payment" :style="{width:'60%', margin:'auto'}">
-                  <!-- <form action="" method="post" id="pay"> -->
-                    <thead>
-                      <tr>
-                        <th width="40%">Savings<br><label>Min. Amount expected to pay is N2,500</label></th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="savingsAmount" id="savingsAmount">
-                            <label for="savings amount">Enter Savings Amount &#x20A6;</label>
-                            <span class="error-message" id="savingsAmount-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Shares<br><label>Min. Amount expected to pay is N10,500</label></th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="sharesAmount" id="sharesAmount">
-                            <label for="shares amount">Enter Shares Amount &#x20A6;</label>
-                            <span class="error-message" id="sharesAmount-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Building Fund<br><label>Min. Amount expected to pay is N100</label></th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="buildingFundAmount" id="buildingFundAmount">
-                            <label for="building fund amount">Enter Building Fund Amount &#x20A6;</label>
-                            <span class="error-message" id="buildingFundAmount-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Loan Interest<br><label>Amount expected to pay is N100</label></th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="interestAmount" id="interestAmount">
-                            <label for="interest amount">Enter Loan Interest Amount &#x20A6;</label>
-                            <span class="error-message" id="interestAmount-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Loan Repaid<br><label>Min. Amount expected to pay is N2000</label></th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="loanRepaidAmount" id="loanRepaidAmount">
-                            <label for="loan repaid amount">Enter Loan Repaid Amount &#x20A6;</label>
-                            <span class="error-message" id="loanRepaidAmount-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th width="40%">Particulars</th>
-                        <td width="60%">
-                          <div class="input-field">
-                            <input type="text" name="particulars" id="particulars">
-                            <label for="particulars">Enter Particulars </label>
-                            <span class="error-message" id="particulars-error"></span>
-                          </div>
-                        </td>
-                      </tr>
-                    </thead>
-                    
-                  <!-- </form> -->
-                </table>
-                <div class="text-center">
-                  <input type="submit" name="makePayment" class="btn-general" value="Save">
-                </div>
-              </div>
-          </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
+  </div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import MakePaymentModal from '@/components/societies/MakePaymentModal'
+import PaymentRecord from '@/components/societies/PaymentRecord'
+import { toggleAvatarDropDown, closeNavbar, openModal, closeModal } from '../../assets/js/helpers/utility';
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+
+const formData = {
+  society_id :"", 
+  year : "", 
+  meeting_calendar_id:""
+};
+
 export default {
   name: 'MonthlyDue',
+  components: {
+    HeaderNav,
+    PageHeader,
+    MakePaymentModal,
+    PaymentRecord
+  },
+  data(){
+    return{
+      pageTitle: 'Society Montly Payment',
+      previousPage: 'Dashboard',
+      notificationMessage: null,
+      societies: [],
+      meetingYear:[],
+      meetingDates: [],
+      societyPaymentDueList:[],
+      successMsg: '',
+      meetingDateForModal: '',
+      meetingCalendarID: '',
+      societyID: ''
+    } 
+  },
+  methods: {
+    ...mapActions("app/society", ["getSocieties"]),
+    ...mapActions("app/society_payment", ["saveSocietyPayments", "fetchSocietyMonthlyPayment"]),
+    ...mapActions("app/meeting_calendar", ["getMeetingCalendarYear", "getMeetingCalendarForSocietyWithinAyear"]),
+    ...mapMutations("app/society_payment", ["setError"]),
+
+    openMakePaymentModal(){
+      let element = this.$refs.makePayment.$el
+      openModal(element)
+    },
+
+    closeMakePaymentModal(){
+      let element = this.$refs.makePayment.$el
+      closeModal(element)
+    },
+
+    fetchSocietyMonthlyPaymentEventHandler(){
+      if (formData.meeting_calendar_id != ""){
+        this.fetchSocietyMonthlyPayment({society_id:formData.society_id, meeting_calendar_id:formData.meeting_calendar_id})
+        .then(data => {
+          if (data){
+            this.$data.societyPaymentDueList = data.societyPaymentDueList
+            this.$data.societyID = formData.society_id
+            this.$data.meetingCalendarID = formData.meeting_calendar_id
+            this.openMakePaymentModal()
+          }
+        })
+      }
+    },
+
+    getMeetingDates(event, from){
+      if(from === "s"){
+        formData.society_id = event.target.value
+      }
+
+      else if(from === "y"){
+        formData.year = event.target.value
+      }
+
+      if (formData.year != "" && formData.society_id != ""){
+        this.getMeetingCalendarForSocietyWithinAyear(formData)
+        .then(data => {
+          console.log(data)
+          if (data){
+            this.$data.meetingDates = data.meetingCalendars
+            this.$data.meetingDateForModal = data.meetingCalendars.meeting_date
+          }
+        })
+      }
+    },
+
+    onMeetingCalendarChangeEventHandler(event){
+      formData.meeting_calendar_id = event.target.value
+    },
+
+    updateParent(hasPaid){
+      if(hasPaid){
+        this.closeMakePaymentModal()
+        this.$data.successMsg = 'Payment made Successfully'
+      }
+    }
+  },
+  mounted(){
+    toggleAvatarDropDown(),
+    closeNavbar()
+  },
+  computed: {
+    ...mapGetters("app/society_payment", {societyPaymentIsLoading:"isLoading", societyPaymentError:"error"}),
+    ...mapGetters("app/society_payment", {meetingDateIsLoading:"isLoading", meetingDateError:"error"}),
+    ...mapGetters("app/meeting_calendar", {calendarYearIsLoading:"isLoading", calendarYearError:"error"}),
+    ...mapGetters("app/society", {societyIsLoading:"isLoading", societyError:"error"})
+  },
+  created(){
+    this.getSocieties()
+    .then(data => {
+      if (data){
+        this.$data.societies = data.societies
+      }
+    })
+
+    this.getMeetingCalendarYear()
+    .then(data2 => {
+      console.log(data2)
+      if (data2){
+        this.$data.meetingYear = data2.meetingCalendarYears
+      }
+    })
+  }
 }
 </script>

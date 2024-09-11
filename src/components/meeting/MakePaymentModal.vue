@@ -1,0 +1,146 @@
+<template>
+   <div class="modal fade" id="makePayment" role="dialog" style="border-radius: 5px;">
+    <div class="modal-dialog modal-lg">
+      <!-- Modal content no 1-->
+      <div v-if="memberPaymentIsLoading || memberIsLoading">
+        <div class="text-center">
+          <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
+        </div>
+      </div>
+      <div class="modal-content" v-else>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Monthly Due For {{name ? name : 'Unknown'}}</h4>
+        </div>
+        <div class="modal-body padtrbl">
+          <form @submit.prevent="makePaymentEventHandler()">
+            <div class="container" :style="{width: '100%;'}">
+              <p>List of all monthly payments to be made by <b>{{name ? name : 'Unknown'}}</b> for today</p>
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover make-payment" :style="{width:'60%', margin:'auto'}">
+                    <thead>
+                      <tr v-for="memberMonthlyPayment in memberPaymentDueList" :key="memberMonthlyPayment.id">
+                        <th width="40%">{{ memberMonthlyPayment.name }}<br><label>Min. Amount expected to pay is &#8358;{{memberMonthlyPayment.min_amount }}</label></th>
+                        <td width="60%">
+                          <div class="input-field">
+                            <input type="text" 
+                            v-model="form[`${memberMonthlyPayment.id}`]"
+                            >
+                            <label :for="memberMonthlyPayment.name">Enter {{ memberMonthlyPayment.name }} Amount &#x20A6;</label>
+                            <span class="error-message"></span>
+                          </div>
+                        </td>
+                      </tr>
+                    </thead>
+                 </table>
+                <div class="text-center">
+                  <input type="submit" name="makePayment" class="btn-general" value="Save">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex'
+const ID = String | Number
+export default {
+  name: 'make-payment-modal',
+  
+  props: {
+    memberDueMonthlyPayment:Object,
+    memberID: ID,
+    updateParent: Function
+  },
+
+  data(){
+    return{
+      form: {
+        // society_id: this.$route.params.society_id,
+        // member_id: this.$props.memberID,
+      },
+      memberPaymentDueList: [],
+      name:'',
+    }
+  },
+
+  watch:{
+    memberDueMonthlyPayment(newMemberDueMonthlyPayment, oldMemberDueMonthlyPayment){
+      console.log(newMemberDueMonthlyPayment)
+      if(
+        (newMemberDueMonthlyPayment.member_id !== oldMemberDueMonthlyPayment.member_id) 
+        || 
+        (newMemberDueMonthlyPayment.society_id !== oldMemberDueMonthlyPayment.society_id) 
+      ){
+        this.fetchMemberMonthlyPayment({
+          society_id:newMemberDueMonthlyPayment.society_id,
+          member_id:newMemberDueMonthlyPayment.member_id
+        })
+        .then(data=>{
+          //console.log(data)
+          if(data){
+
+            this.$data.form = data.memberPaymentDueList.reduce((prevVal, item)=>{
+              prevVal[item.id] = item.prevAmountPaid
+              return prevVal
+            }, {})
+
+            console.log(this.$data.form);
+
+            this.$data.memberPaymentDueList = data.memberPaymentDueList
+          }
+         
+        })
+      }
+    },
+    memberID(newMemberID, oldMemberID){
+      //console.log(newMemberID, oldMemberID)
+      if(newMemberID != oldMemberID){
+        this.getOneMember(newMemberID)
+        .then(data=>{
+          this.$data.name = data.name
+        })
+      }
+    }
+  },
+
+  methods:{
+    ...mapActions("app/member_payment", ["fetchMemberMonthlyPayment", "saveMemberPayment"]),
+    ...mapActions("app/member", ['getOneMember']),
+
+    makePaymentEventHandler(){
+      const formData = {
+        society_id: this.$route.params.society_id,
+        member_id: this.$props.memberID,
+        payments:this.$data.memberPaymentDueList.map(mpdl=>{
+          return {
+            "payment_type_id": mpdl.id,
+            "amount_paid": this.$data.form[mpdl.id]
+          }// end object
+        })// end map
+      }// end formData object
+
+      this.saveMemberPayment(formData)
+      .then(result => {
+        if (result){
+          this.$props.updateParent(true);
+        }
+      })
+      console.log(formData);
+    }
+  },
+
+  computed:{
+    ...mapGetters("app/member_payment", {memberPaymentIsLoading:"isLoading", memberPaymentError:"error:"}),
+    ...mapGetters("app/member", {memberIsLoading:"isLoading", memberError:"error"})
+  },
+
+}
+</script>

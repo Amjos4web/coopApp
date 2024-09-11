@@ -1,53 +1,64 @@
-import Login from '@/components/login'
-import notFound from '@/components/notFound'
-import home from '@/components/home'
-import addSociety from '@/components/societies/addSociety'
-import societies from '@/components/societies/view'
-import AssignMembers from '@/components/societies/AssignMembers'
-import AssignDelegates from '@/components/societies/AssignDelegates'
-import LoanRequest from '@/components/societies/LoanRequest'
-import MonthlyDue from '@/components/societies/MonthlyDue'
-import registerMembers from '@/components/members/registerMembers'
-import viewMembers from '@/components/members/view'
-import records from '@/components/payments/records'
-import meetingIndex from '@/components/meeting/index'
-import request from '@/components/myLoan/request'
-import history from '@/components/myLoan/history'
-import MemberHistory from '@/components/loan/member/History'
-import MemberStatus from '@/components/loan/member/Status'
-import SocietyHistory from '@/components/loan/society/History'
-import SocietyStatus from '@/components/loan/society/Status'
-import membersDue from '@/components/payments/membersDue'
-import revenueRecord from '@/components/revenue/index'
-import profile from '@/components/profile/index'
-import societyDue from '@/components/payments/societyDue'
-import myPayments from '@/components/myPayments/myPayments'
-import roles from '@/components/settings/roles'
-import interestRate from '@/components/settings/interestRate'
-import loanPaymentDuration from '@/components/settings/loanPaymentDuration'
-import unionExcutives from '@/components/settings/unionExcutives'
-import Calendar from '@/components/settings/Calendar'
-// import manageUsers from '@/components/users/index'
-import paymentTypes from '@/components/settings/paymentTypes'
-import meeting from '@/components/meeting/meeting'
-import UnionStaff from '@/components/settings/Staff'
-import Dashboard from '@/components/Dashboard'
-
+// import components
+const Login = import("@/components/Login")
+const NotFound = import("@/components/notFound")
+const AddSociety = import("@/components/societies/addSociety")
+const AssignMembers = import("@/components/societies/AssignMembers")
+const AssignDelegates = import("@/components/societies/AssignDelegates")
+const LoanRequest = import("@/components/societies/LoanRequest")
+const MonthlyDue = import("@/components/societies/MonthlyDue")
+const SetMinimumAmount = import("@/components/societies/SetMinimumAmount")
+const Members = import("@/components/members/index")
+const Societies = import("@/components/societies/view")
+const Records = import("@/components/payments/records")
+const MeetingIndex = import("@/components/meeting/index")
+const Request = import("@/components/myLoan/Request")
+const _History = import("@/components/myLoan/History")
+const MemberHistory = import("@/components/loan/member/History")
+const MemberStatus = import("@/components/loan/member/Status")
+const MemberLoanGuarantors = import("@/components/loan/member/Guarantors")
+const MyLoanGuarantors = import("@/components/myLoan/Guarantors")
+const MemberLoanDetails = import("@/components/loan/member/Details")
+const SocietyHistory = import("@/components/loan/society/History")
+const SocietyStatus = import("@/components/loan/society/Status")
+const MembersDue = import("@/components/payments/membersDue")
+const RevenueRecord = import("@/components/revenue/index")
+const Profile = import("@/components/profile/index")
+const ChangePassword = import("@/components/profile/ChangePassword")
+const SocietyDue = import("@/components/payments/societyDue")
+const MyPayments = import("@/components/myPayments/myPayments")
+const Roles = import("@/components/settings/roles")
+const Calendar = import("@/components/Calendar")
+const PaymentTypes = import("@/components/settings/paymentTypes") 
+const Config = import("@/components/settings/Config")
+const Meeting = import("@/components/meeting/meeting")
+const Dashboard = import("@/components/Dashboard")
+const GuarantorRequest = import("@/components/GuarantorRequest")
+const RequestLoanForMember = import("@/components/RequestLoanForMember")
+const Users = import("@/components/users/index")
+const MeetingCalendar = import("@/components/meetingCalendar")
 
 export default [
 	{
 		path: '/login',
-		name: 'login',
-		component: Login,
+		name: 'Login',
+		component: () => Login,
 		meta: {
 			requiresAuth: false
 		}
 	},
 
 	{
-		path: '/',
-		name: 'home',
-		component: home,
+		path: '/Logout',
+		name: 'Logout',
+		meta: {
+			requiresAuth: true
+		},
+	},
+
+	{
+		path: '/guarantorRequest',
+		name: 'GuarantorRequest',
+		component: () => GuarantorRequest,
 		props: true,
 		meta: {
 			requiresAuth: true
@@ -55,231 +66,357 @@ export default [
 	},
 
 	{
-		path: '/dashboard',
+		path: '/meetingCalendar',
+		name: 'meetingCalendar',
+		component: () => MeetingCalendar,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/',
 		name: 'dashboard',
-		component: Dashboard,
+		component: () => Dashboard,
+		meta: {
+			requiresAuth: true
+		},
 		props: true
+	},
+
+	{
+		path: '/requestLoanForMembers',
+		name: 'RequestLoanForMember',
+		component: () => RequestLoanForMember,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/societies/create',
 		name: 'addSociety',
-		component: addSociety,
-		props: true
+		component: () => AddSociety,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/societies/view',
 		name: 'viewSocieties',
-		component: societies,
-		props: true
+		component: () => Societies,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 	
 	{
 		path: '/societies/AssignMembers',
 		name: 'AssignMembers',
-		component: AssignMembers,
-		props: true
+		component: () => AssignMembers,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 	
 	{
 		path: '/societies/AssignDelegates',
 		name: 'AssignDelegates',
-		component: AssignDelegates,
-		props: true
+		component: () => AssignDelegates,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/societies/monthlyDue',
 		name: 'MonthlyDue',
-		component: MonthlyDue,
-		props: true
+		component: () => MonthlyDue,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/societies/loanRequest',
 		name: 'LoanRequest',
-		component: LoanRequest,
-		props: true
+		component: () => LoanRequest,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
-		path: '/members/register',
-		name: 'registerMembers',
-		component: registerMembers,
-		props: true
+		path: '/societies/setMinimumAmount',
+		name: 'SetMinimumAmount',
+		component: () => SetMinimumAmount,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
-		path: '/members/view',
-		name: 'viewMembers',
-		component: viewMembers,
-		props: true
+		path: '/members',
+		name: 'Members',
+		component: () => Members,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/payments/records',
 		name: 'records',
-		component: records,
-		props: true
+		component: () => Records,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/loan/member/History',
 		name: 'memberHistory',
-		component: MemberHistory,
-		props: true
+		component: () => MemberHistory,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
-		path: '/loan/member/Status',
+		path: '/loan/member/status',
 		name: 'memberStatus',
-		component: MemberStatus,
-		props: true
+		component: () => MemberStatus,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/loan/member/guarantors/:loan_request_id',
+		name: 'memberLoanGuarantors',
+		component: () => MemberLoanGuarantors,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/myLoan/guarantors/:loan_request_id',
+		name: 'myLoanGuarantors',
+		component: () => MyLoanGuarantors,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/loan/member/details/:loan_request_id',
+		name: 'MemberLoanDetails',
+		component: () => MemberLoanDetails,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/loan/society/Status',
 		name: 'societyStatus',
-		component: SocietyStatus,
-		props: true
+		component: () => SocietyStatus,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/loan/society/History',
 		name: 'societyHistory',
-		component: SocietyHistory,
-		props: true
+		component: () => SocietyHistory,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/myLoan/request',
 		name: 'request',
-		component: request,
-		props: true
+		component: () => Request,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 	
 	{
 		path: '/myLoan/history',
-		name: 'history',
-		component: history,
-		props: true
+		name: 'History',
+		component: () => _History,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/payments/membersDue',
 		name: 'membersDue',
-		component: membersDue,
-		props: true
+		component: () => MembersDue,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/payments/societyDue',
 		name: 'societyDue',
-		component: societyDue,
-		props: true
+		component: () => SocietyDue,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/myPayments/myPayments',
 		name: 'myPayments',
-		component: myPayments,
-		props: true
+		component: () => MyPayments,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
-		path: '/meeting/start',
+		path: '/meeting/start/:society_id',
 		name: 'meeting',
-		component: meeting,
-		props: true
+		component: () => Meeting,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/meeting',
 		name: 'meetingIndex',
-		component: meetingIndex,
+		component: () => MeetingIndex,
 		props: true,
 		children: [
 			{
 				path: '/m',
-				component: meeting,
+				component: () => Meeting,
 			}
-		]
+		],
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/settings/roles',
 		name: 'roles',
-		component: roles,
-		props: true
+		component: () => Roles,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
-		path: '/settings/interestRate',
-		name: 'interestRate',
-		component: interestRate,
-		props: true
-	},
-
-	{
-		path: '/settings/loanPaymentDuration',
-		name: 'loanPaymentDuration',
-		component: loanPaymentDuration,
-		props: true
-	},
-
-	{
-		path: '/settings/unionExcutives',
-		name: 'unionExcutives',
-		component: unionExcutives,
-		props: true
+		path: '/settings/config',
+		name: 'Config',
+		component: () => Config,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/settings/paymentTypes',
 		name: 'paymentTypes',
-		component: paymentTypes,
-		props: true
-	},
-
-	{
-		path: '/settings/Staff',
-		name: 'UnionStaff',
-		component: UnionStaff,
+		component: () => PaymentTypes,
 		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
-		path: '/settings/calendar',
+		path: '/calendar',
 		name: 'Calendar',
-		component: Calendar,
+		component: () => Calendar,
 		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
-	// {
-	// 	path: '/users/',
-	// 	name: 'users',
-	// 	component: manageUsers,
-	// 	props: true
-	// },
+	{
+		path: '/users',
+		name: 'Users',
+		component: () => Users,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
 
 	{
 		path: '/revenue',
 		name: 'revenue',
-		component: revenueRecord,
+		component: () => RevenueRecord,
 		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 	
 	{
 		path: '/profile/',
 		name: 'profile',
-		component: profile,
+		component: () => Profile,
 		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/changePassword/',
+		name: 'ChangePassword',
+		component: () => ChangePassword,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
 	},
 
 	{
 		path: '/*',
 		name: 'notFound',
-		component: notFound
+		component: () => NotFound,
+		meta: {
+			requiresAuth: true
+		}
 	},
 ]

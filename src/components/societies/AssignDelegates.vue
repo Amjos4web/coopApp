@@ -1,24 +1,10 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Assign Delegates
-        </h3>
-        <ol class="breadcrumb">
-          <li><a href="#">Home</a></li>
-          <li><a href="#" class="active"> Assign Delegates</a></li>
-        </ol>
-      </div>
+     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
      <div class="page-inner">
         <div class="container">
-          <!-- <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info text-center">
-                <p style="font-size: 18px"><i class="fa fa-info-home"></i> This is where to assign roles to each of the societies</p>
-              </div>
-            </div>
-          </div> -->
           <div class="filter-result">
             <div class="row">
               <form action="" method="get">
@@ -82,74 +68,28 @@
       </div>
     </div> 
 
-    <div class="modal fade" id="permissionsModal" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Manage Permissions for Amos Taiwo Joseph as the Union President</h4>
-          </div>
-          <div class="modal-body padtrbl">
-            <!-- <div class="row">
-              <div class="input-field col s12">
-                <input type="text" name="userName" id="memberName">
-                <label for="Society Name">Search </label>
-                <span class="error-message" id="societyName-error"></span>
-              </div>
-            </div> -->
-            <div class = "row">
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID">
-                  <label for="memberID"></label>
-                </p>
-              </div>
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID2">
-                  <label for="memberID2"></label>
-                </p>
-              </div>
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID3">
-                  <label for="memberID3"></label>
-                </p>
-              </div>
-              <div class="col s8">
-                <h5>Amos Joseph</h5>
-              </div>
-              <div class="col s4" style="margin-top: 5px; text-align: right;">
-                <p>
-                  <input type="checkbox" name="memberID" id="memberID4">
-                  <label for="memberID4"></label>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" id="continue" class="btn btn-info" data-dismiss="modal">continue</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PermissionModal/>
   </div>
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import PermissionModal from '@/components/societies/PermissionModal'
 
 export default {
   name: 'AssignDelegates',
-  
+  components: {
+    HeaderNav,
+    PageHeader,
+    PermissionModal
+  },
+  data(){
+    return{
+      pageTitle: 'Assign Delegates',
+      previousPage: 'Dashboard',
+      notificationMessage: null,
+    } 
+  }
 }
 </script>

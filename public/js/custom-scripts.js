@@ -23,9 +23,8 @@
 
     }
     // Initializing ///
-
+    
     $(document).ready(function () {
-		$(".dropdown-button").dropdown();
 		$("#sideNav").click(function(){
 			if($(this).hasClass('closed')){
 				$('.navbar-side').animate({left: '0px'});
@@ -42,7 +41,4 @@
 		
         mainApp.initFunction(); 
     });
-
-	$(".dropdown-button").dropdown();
-	
 }(jQuery));

@@ -1,28 +1,15 @@
 <template>
   <div>
+    <HeaderNav/>
     <div id="page-wrapper">
-      <div class="header">
-        <h3 class="page-header">
-          Union Revenue
-        </h3>
-        <ol class="breadcrumb">
-           <li>
-            <a>
-							<router-link to="/">
-								Dashboard
-							</router-link>
-						</a>
-          </li>
-          <li><a href="#" class="active">Union Revenue</a></li>
-        </ol>
-      </div>
+      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
       <div class="page-inner">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="alert alert-info flex-container">
                 <p><i class="fa fa-info-circle"></i>
-                  This is where the union total revenue is being calculated and shown based on society
+                  {{ notificationMessage }}
                 </p>
                 <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
               </div>
@@ -75,17 +62,7 @@
                   <th>Interest</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>Odokoto Ife-Oluwa C.I.C.S</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>&#x20A6;50,000</td>
-                  <td>&#x20A6;50,000</td>
-                </tr>
-              </tbody>
+              <RevenueList/>
             </table>
           </div>
           <div class="revenue-summary text-center">
@@ -116,7 +93,28 @@
 </template>
 
 <script>
+import HeaderNav from '@/components/includes/headerNav';
+import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import RevenueList from '@/components/revenue/RevenueList'
+import { closeNavbar, toggleAvatarDropDown } from "../../assets/js/helpers/utility";
+
 export default {
   name: 'revenueRecord',
+  components: {
+    HeaderNav,
+    PageHeader,
+    RevenueList
+  },
+  data(){
+    return {
+      pageTitle: 'Revenue',
+      previousPage: 'Dashboard',
+      notificationMessage: 'This is where the union total revenue is being calculated and shown based on society',
+    }
+  },
+  mounted(){
+    toggleAvatarDropDown(),
+    closeNavbar()
+  }
 }
 </script>

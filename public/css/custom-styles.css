@@ -1,7 +1,34 @@
 body {
-    font-family: 'Open Sans', sans-serif;
-    background: #1F2837;
+	margin: 0;
+	padding: 0;
+	font-family: 'Open Sans', sans-serif;
+	background: #1F2837;
 }
+
+/* #overlay{	
+	position: fixed;
+	top: 0;
+	z-index: 100;
+	width: 100%;
+	height:100%;
+	display: none;
+	background: rgba(0,0,0,0.6);
+}
+.cv-spinner {
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;  
+}
+.spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px #ddd solid;
+	border-top: 4px #2e93e6 solid;
+	border-radius: 50%;
+	animation: sp-anime 0.8s infinite linear;
+} */
+
 
 #wrapper, .container {
     width: 100%;
@@ -17,6 +44,13 @@ table .theading {
 table .tcontent {
     background-color: #f1f1f1;
 }
+.custom-link a {
+    text-decoration: none;
+    color: #fff;
+}
+.custom-link a:hover {
+    color: #f1f1f1;
+}
 
 .filter-result, .box {
     background-color: #fff;
@@ -27,6 +61,10 @@ table .tcontent {
     0.3em 0.3em 1em rgba(0,0,0,0.3);
     height: auto;
     padding: 10px 10px;
+}
+.search-result-title {
+    font-size: 18px;
+    color: #009688;
 }
 .box {
     width:65%;
@@ -45,6 +83,7 @@ table .tcontent {
 
 .input-group {
     margin-bottom: 20px;
+    width: 100%;
 }
 .input-field label {
     font-size: 12px;
@@ -133,6 +172,13 @@ label {
 }
 .completed, .granted {
     background-color: rgb(59, 138, 59);
+    font-size: 14px;
+    color: #fff;
+    padding: 7px 10px;
+    border-radius: 5px;
+}
+.rejected {
+    background-color: rgb(231, 22, 22);
     font-size: 14px;
     color: #fff;
     padding: 7px 10px;
@@ -227,7 +273,7 @@ label {
 .navbar-side {
     z-index: 0; 
 }
-.panel{
+.custom-panel{
 border-radius:0px;
 }
 .navbar-side .nav > li > a > i{color: rgba(255, 255, 255, 0.62);padding: 8px;width: 20px;text-align: center;font-size: 14px;}
@@ -291,46 +337,46 @@ border-radius:0px;
    DASHBOARD STYLES    
 ------------------------------------------------*/
 .page-header {padding-bottom: 0;margin: 0;border-bottom: 1px solid transparent;text-align: left;background-color: transparent;padding: 32px 22px 10px 28px;color: #323232;}
-.panel-left{  
+.custom-panel-left{  
 width: 100px;
 height: 100px;background: #0866C6;/* border: 2px solid #4590DA; */
 /* border-radius: 100%; */
 overflow: hidden;
 
 margin: 12px;}
-.panel-left .fa-5x {
+.custom-panel-left .fa-5x {
     font-size: 3em;color: rgb(240, 155, 34);
     padding: 29px 0;
     margin-bottom:30px;
 }
-.panel-right{  
+.custom-panel-right{  
     height: 124px;
     background: transparent;
     margin-bottom: 0;color: #AFAFAF;
 
     float: left;text-align: left;padding-left: 20px;font-size: 16px;text-shadow: none;font-weight: normal;text-align: center;}
-    .panel-right h3{  
+    .custom-panel-right h3{  
     font-size: 40px;
     padding: 18px 10px 13px 0;color: #5D5D5D;
 }
-.panel-right strong{
+.custom-panel-right strong{
 	font-weight:normal;
 	color: #737373;
 }
-.panel-back {
+.custom-panel-back {
     background-color:#fff;
 
 }
-.panel-default {
+.custom-panel-default {
   border-color: #ECECEC;
 }
-.panel-default > .panel-heading {color: #555;
+.custom-panel-default > .custom-panel-heading {color: #555;
     border-color: #FFF;
     font-weight:bold;background: #FFFFFF;
     font-size: 16px;
     text-shadow: none;
 }
-.panel-heading {
+.custom-panel-heading {
   /* padding: 15px 15px 0px; */
   border-bottom: 1px solid transparent;
   border-top-left-radius: 3px;
@@ -376,7 +422,7 @@ margin: 12px;}
     border-radius: 50px;
 
 }
-.panel-primary{
+.custom-panel-primary{
     display:inline-block;
     margin-bottom: 30px;
     width:100%;
@@ -445,14 +491,14 @@ margin: 12px;}
     font-size: 16px;
     line-height: 30px;
 }
-     /*CHAT PANEL*/
+     /*CHAT custom-panel*/
 /*Charts*/
 
 .main-chart {
 	background: #fff;
 }
 
-.easypiechart-panel {
+.easypiechart-custom-panel {
 	text-align: center;
 	padding: 1px 0;
 	margin-bottom: 20px;
@@ -488,7 +534,7 @@ margin: 12px;}
 #easypiechart-red .percent { color: #ef4040;}
 
 	 
-.chat-panel .panel-body {
+.chat-custom-panel .custom-panel-body {
     height: 450px;
     overflow-y: scroll;
 }
@@ -765,51 +811,140 @@ line-height: 1.428571429;
  
  @media(min-width:768px) {
      #page-wrapper{
-               margin: 0 0 0 260px;
-               padding: 0;
-               min-height: 1200px;
+        margin: 0 0 0 260px;
+        padding: 0;
+        min-height: 1200px;
     }
 	
 	
     .navbar-side {
         width: 260px;
         z-index: 1;
+        height: 500px;
+        overflow-y: auto;
     }
 
    .navbar {
- border-radius: 0px; 
-}
+    border-radius: 0px; 
+  }
    
 }
  @media(max-width:768px) {
 	#sideNav{
-	display:none;
-} 
- #page-wrapper {
-position: relative;
-top: 59px;
- }
- }
+    display:none;
+  } 
+  #page-wrapper {
+    position: relative;
+    top: 59px;
+  }
+}
  @media(max-width:480px) {
- #page-wrapper {
-position: relative;
-top: 93px;
- }
-.page-header small {
-display: block;
-padding-top: 14px;
-font-size: 19px;
+  #page-wrapper {
+    position: relative;
+    top: 93px;
+  }
+  .page-header small {
+    display: block;
+    padding-top: 14px;
+    font-size: 19px;
+  }
+  #sideNav{
+    display:none;
+  }
+  .custom-panel-left {
+    width: 85px;
+    height: 85px; 
+    border-radius: 100%;
+    overflow: hidden;
+    margin: 14px;
+  }
 }
-#sideNav{
-	display:none;
+
+@media (max-width: 922px){
+  .navbar {
+    text-align: center;
+  }
 }
-.panel-left {
-  width: 85px;
-  height: 85px; 
-  border-radius: 100%;
-  overflow: hidden;
-  margin: 14px;
+@media(max-width:520px) {
+  ul#dropdown1 {
+    left: 0px !important;
+  }
+ ul#dropdown2 {
+    left: -69px !important;
+  }
+  .top-navbar .nav > li > a{
+    padding:17px 12px;
+  }
 }
+ @media(max-width:320px) {
+  ul#dropdown1 {
+    left: 0px !important;
+  }
+ ul#dropdown2 {
+      left: -69px !important;
+  }
+  .top-navbar .nav > li > a{
+      padding:17px 9px;
+  }
+}
+
+@media (max-width: 922px){
+  .page-wrapper {
+    margin-top: 130px;
+  }
+  .navbar-side {
+    top: 130px;
+  }
+  }
+
+  @media (max-width: 767px){
+  .page-header {
+    margin-top: 100px;
+  }
+}
+/* Add media queries for smaller screens */
+@media screen and (max-width:720px) {
+	.weekdays li, .days li {width: 13.1%;}
+}
+
+@media screen and (max-width: 420px) {
+    .weekdays li, .days li {width: 12.5%;}
+    .days li .active {padding: 2px;}
+}
+
+@media screen and (max-width: 290px) {
+	.weekdays li, .days li {width: 12.2%;}
+}
+@media (max-width: 400px){
+    .guarantors{
+        display: flex;
+        flex-direction: row;
+        justify-content: center !important;
+    }
+    .guarantors > div{
+        width: 48%;
+    }
+    .guarantor-lists .guarantors {
+        display: block;
+    }
+    
+}
+@media (max-width: 930px){
+    .guarantors {
+        width: 100%;
+        border: 3px solid;
+    }
+
+}
+@media (max-width: 285px){
+    .guarantors > div {
+        width: 100%;
+    }
+}
+@media (max-width: 630px){
+    .guarantor-lists .guarantors {
+      width: 250px;
+    }
 }
 .dropdown-content{
     min-width: 165px !important;
@@ -817,8 +952,8 @@ font-size: 19px;
     top: 60px !important;
 }
 .w250{
-	    min-width: 255px !important;
-	    left: -184px !important;
+    min-width: 255px !important;
+    left: -184px !important;
 }
 .top-navbar .nav > li > a b{
 	margin:0 5px;
@@ -969,6 +1104,9 @@ padding: 0 15px 0px 15px;
 .ml-20{margin-left: 20px;}
 .mt-20 {margin-top: 20px;}
 .mb-20 {margin-bottom: 20px;}
+.text-upper {
+  text-transform: uppercase;
+}
 .avatar {
     width: 160px;
     height: 160px;
@@ -984,6 +1122,10 @@ padding: 0 15px 0px 15px;
 .logo img {
     width: 20%;
 }
+.loading-img {
+    width: 150px;
+    height: 18px;
+}
 .border {
     border: 1px solid;
 }
@@ -995,6 +1137,23 @@ padding: 0 15px 0px 15px;
     color: #fff;
     /* padding: 20px; */
     height: 40px;
+}
+.error {
+  color: #ff0000;
+}
+.error-div {
+    width: 60%;
+    margin: 10px auto;
+    background-color: #ff0000;
+    color: #ffffff;
+    padding: 10px;
+}
+.success-div {
+    width: 60%;
+    margin: 10px auto;
+    background-color: #3db97a;
+    color: #ffffff;
+    padding: 10px;
 }
 #profile-table tr td {
     padding: 25px;
@@ -1038,28 +1197,7 @@ padding: 0 15px 0px 15px;
 		box-shadow: none;
 	}
  }
-  @media(max-width:520px) {
-	  ul#dropdown1 {
-			left: 0px !important;
-		}
-	 ul#dropdown2 {
-			left: -69px !important;
-		}
-		.top-navbar .nav > li > a{
-			padding:17px 12px;
-		}
- }
-   @media(max-width:320px) {
-	  ul#dropdown1 {
-			left: 0px !important;
-		}
-	 ul#dropdown2 {
-			left: -69px !important;
-		}
-		.top-navbar .nav > li > a{
-			padding:17px 9px;
-		}
- }
+  
 
  #payment-types tr th,  #payment-types tr td {
     background-color: #145888;
@@ -1071,4 +1209,220 @@ padding: 0 15px 0px 15px;
 
  #payment-details tr td {
     font-size: 0.9em;
+}
+.guarrantor-image-upload{
+    width: 300px;
+    height: 300px;
+    background-color: #000;
+    margin: 20px auto;
+}
+.calendar {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+}
+
+.month {
+    padding: 20px 25px;
+    width: 100%;
+    background: #1abc9c;
+    text-align: center;
+  }
+  
+.month ul {
+	margin: 0;
+	padding: 0;
+}
+
+.month ul li {
+	color: white;
+	font-size: 20px;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+}
+
+.weekdays {
+	margin: 0;
+	padding: 10px 0;
+	background-color: #ddd;
+}
+
+.weekdays li {
+	display: inline-block;
+	width: 13.6%;
+	color: #666;
+	text-align: center;
+}
+
+.days {
+	padding: 10px 0;
+	background: #eee;
+	margin: 0;
+}
+
+.days li {
+	list-style-type: none;
+	display: inline-block;
+	width: 13.6%;
+	text-align: center;
+	cursor: pointer;
+	margin-bottom: 5px;
+	font-size:12px;
+	color: #777;
+}
+.days li:hover {
+    color: #333;
+}
+
+.days li .active {
+	padding: 5px;
+	background: #1abc9c;
+	color: white !important
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: opacity .5s;
+}
+.fade-enter, .fade-leave {
+	opacity: 0;
+}
+#custom-table{
+    border-collapse: collapse;
+    width: 100%;
+    margin:  10px auto;
+}
+#custom-table td, #custom-table th{
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #f1f1f1;
+}
+.cursor-default {
+    cursor: default;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+#snap-shot {
+    border: 1px solid;
+}
+.dropdown-right {
+    right: 0!important
+}
+
+/** Custom DropDown 
+Style The Dropdown Button */
+.dropbtn {
+    background-color: #009688;
+    color: #fff;
+    padding: 7px 10px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100px;
+}
+
+/* The container <div> - needed to position
+the dropdown content */
+.dropdown-2
+{
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown content hidden by default */
+.dropdown-content-2 {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content-2 a {
+    color: #000;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links
+on hover */
+.dropdown-content-2 a:hover
+{background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown-2:hover .dropdown-content-2 {
+    display: block;
+}
+
+/* Change background color of the dropdown button
+when the dropdown content is shown */
+.dropdown-2:hover .dropbtn {
+    background-color: #3e8e41;
+}
+
+.d-flex{
+    flex-wrap: wrap;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-evenly;
+    height: auto;
+}
+.guarantors {
+    padding: 0 0 20px 0;
+    margin: 20px auto;
+}
+.guarantor-lists {
+    margin: 30px auto;
+    padding: 10px 20px;
+    background: #fff;
+    box-sizing: content-box;
+    box-shadow: 3px 3px 3px #cecece;
+    color: #5f5f5f;
+}
+
+.guarantor-lists > div {
+    width: 30%;
+    border: 2px solid #f9f9f9;
+    box-shadow: 4px 3px 3px #aaa;
+    text-align: center;
+    display: block;
+}
+.guarantors img {
+    width: 100%;
+    height: auto;
+}
+.guarantors .p-title {
+    font-weight: bold;
+    font-family: -webkit-pictograph;
+    text-align: center;
+    font-size: 16px;
+}
+.guarantors small{
+    background: rgb(49 82 64 / 70%);
+    padding: 5px 15px;
+    color: #fff;
+}
+.guarantor-info {
+    width: 100%;
+    margin: 20px auto;
+    background: #f9f9f9;
+    padding: 10px;
+}
+
+/* Custom heading */
+.custom-heading {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    font-family: cursive;
+    width: 50%;
+    margin: 10px auto;
+    font-size: 22px;
 }
