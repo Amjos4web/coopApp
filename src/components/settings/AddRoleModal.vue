@@ -4,8 +4,8 @@
       <form @submit.prevent="saveRole()">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">Add New Role</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <div v-if="isLoading">
             <div class="text-center">
@@ -19,20 +19,22 @@
               </span>
             </div>
           </div>
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover" :style="{width:'60%', margin:'auto'}">
+              <table class="styled-table" :style="{width:'60%', margin:'auto'}">
                 <thead>
                   <tr>
                     <th width="40%">Role</th>
                     <td width="60%">
-                      <div class="input-field">
+                      <div class="form-group">
+                        <label for="user name">Enter role</label>
                         <input 
                         type="text" 
                         v-model="form.name"
+                        class="form-control"
                         autofocus
                         >
-                        <label for="user name">Enter role</label>
+                        
                         <span class="error" v-if="elementHasError('name')">
                           {{ error.errors.name[0] }}
                         </span>
@@ -58,7 +60,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <input type="submit" name="addRole" class="btn btn-info" value="Save">
+            <input type="submit" name="addRole" class="btn btn-primary" value="Save">
             <button type="button" id="continue" class="btn btn-warning ml-10" data-dismiss="modal">close</button>
           </div>
         </div>
@@ -68,7 +70,7 @@
 </template>
 
 <script>
-import { mapActions , mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import Validator from 'validatorjs'
 
 export default {
@@ -93,7 +95,6 @@ export default {
 
     saveRole(){
       this.setError(null);
-      console.log(this.$data.form)
       let validation  = new Validator(this.$data.form, {
         name: 'required',
         type: 'required',

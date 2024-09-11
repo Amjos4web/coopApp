@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'notification',
+  name: 'notification-component',
   props: ['notificationMessage']
 }
 </script>

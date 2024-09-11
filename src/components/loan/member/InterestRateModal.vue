@@ -4,26 +4,26 @@
       <!-- Modal content no 1-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Change interest rate for {{ memberName }}</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <form @submit.prevent="updateInterestRateEventHandler()">
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div class="container">
+              <div class="row text-center" v-if="getLoanIsLoading">
+                <div class="col-md-6 m-auto">
+                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+                </div>
+              </div>
+              <div v-if="getLoanError">
+                <div class="error-div">
+                  <span>
+                    {{ getLoanError.message }}
+                  </span>
+                </div>
+              </div>
               <div class="row">
-                <div v-if="getLoanIsLoading">
-                    <div class="text-center">
-                      <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-                    </div>
-                  </div>
-                  <div v-if="getLoanError">
-                    <div class="error-div">
-                      <span>
-                        {{ getLoanError.message }}
-                      </span>
-                    </div>
-                  </div>
-                <div class="col-md-6 col-md-offset-3">
+                <div class="col-md-6 m-auto">
                   <div class="form-group">
                     <label for="new interest rate">Interest Rate</label>
                     <input type="text" class="form-control" v-model="interestRate">
@@ -36,7 +36,7 @@
             </div>
             <div class="text-center modal-footer">
               <input type="submit" value="Save" class="btn btn-primary ml-20">
-              <button type="button" id="continue" class="btn btn-warning ml-20" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-warning ml-20" data-dismiss="modal">Cancel</button>
             </div>
           </div>
          </form>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import Validator from 'validatorjs'
 
 const ID = String | Number
@@ -70,7 +70,6 @@ export default {
 
   watch:{
     interest_rate(newInterestRate){
-      console.log(newInterestRate);
       this.$data.interestRate = newInterestRate
     }
   },
@@ -91,7 +90,6 @@ export default {
         error.errors = validation.errors.errors
         this.setError(error)
       } else {
-        console.log("I wwas here")
         this.updateLoanInterestRate({
           interest_rate:this.$data.interestRate, 
           loan_request_id:this.$props.loan_request_id

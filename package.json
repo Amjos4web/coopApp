@@ -9,30 +9,36 @@
   },
   "dependencies": {
     "apollo-boost": "^0.4.9",
-    "axios": "^0.19.2",
+    "axios": "^1.4.0",
     "bootstrap": "^4.5.0",
     "core-js": "^3.6.5",
     "graphql": "^15.3.0",
+    "html2canvas": "^1.4.1",
     "jquery": "^3.5.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.3",
     "materialize-css": "^1.0.0-rc.2",
+    "moment": "^2.29.2",
     "normalizr": "^3.6.1",
     "nprogress": "^0.2.0",
-    "v-toaster": "^1.0.3",
     "validatorjs": "^3.20.0",
     "vue": "^2.6.11",
     "vue-apollo": "^3.0.3",
     "vue-axios": "^2.1.5",
     "vue-cookie": "^1.1.4",
+    "vue-paystack": "^2.0.4",
     "vue-router": "^3.3.2",
+    "vue-toasted": "^1.1.28",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.4.0",
-    "@vue/cli-plugin-eslint": "^4.4.0",
-    "@vue/cli-service": "^4.4.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.2.2",
+    "@babel/eslint-parser": "^7.25.1",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.28.0",
+    "vue-eslint-parser": "^9.4.3",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -45,7 +51,7 @@
       "eslint:recommended"
     ],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "@babel/eslint-parser"
     },
     "rules": {
       "no-console": "off",

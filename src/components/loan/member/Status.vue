@@ -1,19 +1,8 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> All registered members that requested for loan are being showed here</p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
-              </div>
-            </div>
-          </div>
-          
             <div class="filter-result">
               <div class="row">
                 <div class="col-md-4">
@@ -28,7 +17,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>Enter Member's Name</label>
-                    <input type="text" v-model="query.filter.name">
+                    <input type="text" v-model="query.filter.name" class="form-control">
                   </div>
                 </div>
                  <div class="col-md-4">
@@ -47,24 +36,24 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Requested date from</label>
-                    <input type="date" v-model="query.filter.from">
+                    <input type="date" v-model="query.filter.from" class="form-control">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Requested date to</label>
-                    <input type="date" v-model="query.filter.to">
+                    <input type="date" v-model="query.filter.to" class="form-control">
                   </div>
                 </div>
               </div>
             </div>
-            <div class="text-center">
-              <button type="button" class="btn-general" @click="getLoansEventHandler()">Filter Result</button>
+            <div class="text-center mt-10">
+              <button type="button" class="btn btn-info" @click="getLoansEventHandler()">Filter Result</button>
             </div>
         </div>
         
         <div class="container">
-          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit"/>
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit" :reloadIndexData="reloadIndexData"/>
           <div v-if="successMsg">
             <div class="success-div text-center">
               <span>
@@ -73,17 +62,16 @@
             </div>
           </div>
           <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped">
+            <table class="styled-table">
               <thead>
-                <tr class="theading">
-                  <th>S/N</th>
+                <tr>
+                  <th>Status</th>
                   <th>Name</th>
                   <th>Society</th>
-                  <th>Tot. Assets</th>
-                  <th>Tot. Amt. Requested</th>
+                  <th>Assets</th>
+                  <th>Amount</th>
                   <th>View Details</th>
                   <th>Guarantors</th>
-                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -98,40 +86,42 @@
             </table>
           </div>
         </div> 
-        <Pagination :pagination="pagination"/>
+        <Pagination :pagination="pagination" :changePage="changePage"/>
       </div>
-    </div> 
+      <FooterBar />
 
-    <InterestRateModal ref="interestRateModal" :memberName="memberName" 
-    :loan_request_id="loan_request_id" 
-    :interest_rate="interest_rate"
-    :updateParentComponentForInterestRateChange="updateParentComponentForInterestRateChange"
-    :getLoanIsLoading="getLoanIsLoading"
-    :getLoanError="getLoanError"/>
+      <InterestRateModal ref="interestRateModal" :memberName="memberName" 
+      :loan_request_id="loan_request_id" 
+      :interest_rate="interest_rate"
+      :updateParentComponentForInterestRateChange="updateParentComponentForInterestRateChange"
+      :getLoanIsLoading="getLoanIsLoading"
+      :getLoanError="getLoanError"/>
 
-    <EditLoanAmountModal ref="editLoanAmountModal" :memberName="memberName"
-    :loan_request_id="loan_request_id" 
-    :getLoanIsLoading="getLoanIsLoading"
-    :getLoanError="getLoanError"
-    />
+      <EditLoanAmountModal ref="editLoanAmountModal" :memberName="memberName"
+      :loan_request_id="loan_request_id" 
+      :getLoanIsLoading="getLoanIsLoading"
+      :getLoanError="getLoanError"
+      />
 
-    <LoanPaymentHistory ref="loanPaymentHistoryModal" :memberName="memberName"
-    :loan_request_id="loan_request_id" 
-    :getLoanIsLoading="getLoanIsLoading"
-    :getLoanError="getLoanError"
-    />
+      <LoanPaymentHistory ref="loanPaymentHistoryModal" :memberName="memberName"
+      :loan_request_id="loan_request_id" 
+      :getLoanIsLoading="getLoanIsLoading"
+      :getLoanError="getLoanError"
+      />
 
-    <AddNewLoanAmountModal ref="addNewLoanAmountModal" :memberName="memberName"
-    :loan_request_id="loan_request_id" 
-    :getLoanIsLoading="getLoanIsLoading"
-    :getLoanError="getLoanError"
-    />
-</div>
+      <AddNewLoanAmountModal ref="addNewLoanAmountModal" :memberName="memberName"
+      :loan_request_id="loan_request_id" 
+      :getLoanIsLoading="getLoanIsLoading"
+      :getLoanError="getLoanError"
+      />
+
+    </div>
+    
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import LoanRequestList from '@/components/loan/member/LoanRequestList'
 import Pagination from '@/components/includes/Pagination'
 import LimitDataFetch from '@/components/includes/LimitDataFetch'
@@ -139,16 +129,15 @@ import InterestRateModal from '@/components/loan/member/InterestRateModal'
 import EditLoanAmountModal from '@/components/loan/member/EditLoanAmountModal'
 import AddNewLoanAmountModal from '@/components/loan/member/AddNewLoanAmountModal'
 import LoanPaymentHistory from '@/components/loan/member/LoanPaymentHistory'
-import { closeNavbar, toggleAvatarDropDown, closeModal, openModal } from "../../../assets/js/helpers/utility";
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { closeModal, openModal } from "../../../assets/js/helpers/utility";
+import { mapActions, mapGetters } from 'vuex';
 import { turnArrayToObject } from '../../../utility';
-import $ from 'jquery'
 
 export default {
   name: 'MembersStatus',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     LoanRequestList,
     Pagination,
     LimitDataFetch,
@@ -167,7 +156,7 @@ export default {
           to: '',
           from:'',
         },
-        limit:10,
+        limit:200,
         page:1
       },
       pageTitle: 'Members Loan Status',
@@ -230,10 +219,9 @@ export default {
       closeModal(element)
     },
 
-    getLoansEventHandler(){
-      this.loanIndex({query:this.$data.query})
+    getLoansEventHandler(reload=false){
+      this.loanIndex({query:this.$data.query, reload})
       .then(data => {
-        console.log(data)
         if (data){
           // get all memberIDs
           const memberIDs = []//data.loanRequests.map(loan=>loan.member_id)
@@ -242,6 +230,10 @@ export default {
           const mappedSocietyIDWithMemberID = []
 
           let loan = null
+          if (data.loanRequests.length < 1){
+            this.$data.loanRequests = [];
+            return;
+          }
 
           for(let i = 0; i < data.loanRequests.length; i++){
             loan = data.loanRequests[i];
@@ -256,12 +248,9 @@ export default {
             this.fetchManyMemberTotalAssets(mappedSocietyIDWithMemberID),
           ])
           .then(results=>{
-            console.log(results)
             const memberObj = turnArrayToObject(results[0].members)
             const societyObj = turnArrayToObject(results[1].societies)
             const totalAssetObj = turnArrayToObject(results[2].totalAssets)
-
-            // console.log({memberObj, societyObj, totalAssetObj});
 
             this.$data.loanRequests = data.loanRequests.map(loan=>{
               
@@ -276,11 +265,14 @@ export default {
               return loan;
             })//end map
             this.$data.pagination = data.pagination
-            //console.log(this.$data.loanRequests);
           })
           .catch(e=>this.$data.fetchManyError=e)
         }
       })
+    },
+
+    changePage(page, limit){
+      this.getLoansEventHandler({query:{page, limit:200}})
     },
     
     getLimit(event){
@@ -291,31 +283,34 @@ export default {
 
     updateParentComponentForInterestRateChange(updated){
       if (updated){
-        this.$data.successMsg = 'Interest rate updated successfully'
+        this.$toasted.show(`Interest rate updated successfully`, { 
+          type: "success", 
+          icon: 'check-circle'
+        })
         this.closeLoanInterestRateModal()
       }
     },
 
+    reloadIndexData(){
+      this.getLoansEventHandler(true, this.$data.query)
+    }
+
   },
 
-   created() {
-    this.getSocieties()
-    .then(data => {
-      if (data){
-        this.$data.societies = data.societies
-      }
-    })
+  created() {
+  this.getSocieties({query:{limit:500}})
+  .then(data => {
+    if (data){
+      this.$data.societies = data.societies
+    }
+  })
 
+  this.getLoansEventHandler({query:{limit:200}})
   },
 
   computed: {
     ...mapGetters("app/loan", {getLoanIsLoading:'isLoading', getLoanError: 'error'}),
     ...mapGetters("app/society", {getSocietiesIsLoading:'isLoading', getSocietiesError:'error'})
-  },
-
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
   }
 }
 </script>

@@ -28,7 +28,7 @@
      </tr>
   </tbody>
    <tbody v-else>
-    <tr v-for="(role, index) in roles" :key="role.id" class="tcontent">
+    <tr v-for="(role, index) in roles" :key="role.id">
       <td>{{ (index + 1) }}</td>
       <td>{{ role.name }}</td>
       <td>{{ role.type }}</td>

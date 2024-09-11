@@ -80,7 +80,6 @@ export default{
         
             return axios.get(url)
             .then(resp=>{
-                //console.log(resp);
                 const {success, data:{members}, pagination} = resp.data
                 if(success){
                     cache.currentPage = {
@@ -88,7 +87,6 @@ export default{
                         pagination,
                         url
                     };
-                    //console.log(cache);
                     return {members, pagination};
                 }
                 commitError(commit, null);
@@ -113,7 +111,7 @@ export default{
 
             return axios.get(MEMBER_URL.get_one + id)
             .then(resp=>{
-                const {data:member} = resp.data;
+                const {member} = resp.data.data;
                 //No need to add the id to store
                 //Most likely the the data will not have to fetch by axios, client cannot 
                 //edit data they have fetch and stored anyway.
@@ -130,8 +128,8 @@ export default{
             return axios.post(MEMBER_URL.add_new_member, formData)
             .then(resp=>{
                 //get member from response
-                const {data:{member}} = resp.data;
-                //debug
+                const {data:{member, auth_detail}} = resp.data;
+                
                 debug("member", member);
                 //cache member on client
                 //add ID to the front of the current page for user to see the newly added
@@ -142,7 +140,7 @@ export default{
                 //am putting it at the front to show client that the newly added member has been saved
                 cache.currentPage.ids.unshift(id);
                 //return members to client
-                return member;
+                return {member, auth_detail};
             })
             .catch(e=>commitError(commit, e))
             .then((data)=>stopLoadingAndResolve(commit, data))
@@ -170,33 +168,7 @@ export default{
             .then((data)=>stopLoadingAndResolve(commit, data))
         },
 
-        async queueAndFetchMember({ commit }, {id, errorNamespace}){
-            //get member from store
-            let member = memberStore.getMemberByID(id);
-            //if member in store return early
-            if(member) return member;
-
-            //notify UI that we are loading from server
-            commit(setIsLoading, true);
-            
-            try{
-                //fetch 
-                member = await fetchManySingleton(MEMBER_URL.fetch_many_member, {rejectAll:false}, id);
-                //add member to store
-                memberStore.addMember(member);
-            }
-            catch(e){
-                //notify child
-                commit(errorNamespace, e, {root:true});
-            }
-            //commit(memberConstant.setMemberID, );
-            commit(setIsLoading, false);
-            //return member object back to caller
-            return member;
-        },//end function
-
         fetchManyMember({commit }, paramIDs=[]){
-            // console.log()
             const members = [];
             const memberToFetch = [];
 
@@ -213,8 +185,7 @@ export default{
                 return {members};
             }
 
-            console.log({memberToFetch, members})
-            
+           
             return axios.post(
                 MEMBER_URL.fetch_many_member, 
                 {paramIDs:memberToFetch}
@@ -228,7 +199,7 @@ export default{
                 memberStore.addMemberList(data)
                 //stop loading
                 commit(setIsLoading, false);
-
+                
                 return {members:members.concat(data)}
             })
             .catch(e=>{

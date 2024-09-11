@@ -1,22 +1,20 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="alert alert-info flex-container">
                 <p><i class="fa fa-info-circle"></i> {{ notificationMessage }}</p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
+                <!-- <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p> -->
               </div>
             </div>
           </div>
           <form @submit.prevent="searchSociety()">
             <div class="filter-result">
               <div class="row">
-                <div class="col-md-6 col-md-offset-3">
+                <div class="col-md-6 m-auto">
                   <div class="form-group">
                     <label>Enter society name</label>
                     <input type="text" 
@@ -27,8 +25,8 @@
                 </div>
               </div>
             </div>
-            <div class="text-center">
-              <input type="submit" value="Filter Result" class="btn-general">
+            <div class="text-center mt-10">
+              <input type="submit" value="Filter Result" class="btn btn-info">
             </div>
           </form>
         </div>
@@ -38,17 +36,11 @@
           <div class="text-center mb-20">
             <h3 class="search-result-title">{{ searchResultData }}</h3>
           </div>
-          <div v-if="successMsg">
-            <div class="text-center success-div">
-              <span>
-                {{ successMsg }}
-              </span>
-            </div>
-          </div>
+          
           <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table class="styled-table">
               <thead>
-                <tr class="theading">
+                <tr>
                   <th>S/N</th>
                   <th>Society Name</th>
                   <th>No of Members</th>
@@ -63,7 +55,7 @@
         </div>
         <Pagination :pagination="pagination" :changePage="changePage"/>
       </div>
-    </div> 
+    <FooterBar/>
     <ViewSocietyProfileModal ref="viewModal" :society="society"/>
     <EditSocietyModal ref="editModal" :society="society" :updateSocietyOnParent="updateSocietyOnParent"/>
   </div>
@@ -71,20 +63,20 @@
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import SocietiesList from '@/components/societies/SocietiesList'
 import ViewSocietyProfileModal from '@/components/societies/ViewSocietyProfileModal'
 import EditSocietyModal from '@/components/societies/EditSocietyModal'
 import Pagination from '@/components/includes/Pagination'
 import LimitDataFetch from '@/components/includes/LimitDataFetch'
-import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
-import { mapActions , mapGetters, mapMutations } from 'vuex'
+import { openModal, closeModal } from "../../assets/js/helpers/utility";
+import { mapActions , mapGetters } from 'vuex'
 
 export default {
-  name: 'societies',
+  name: 'view-societies',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     SocietiesList,
     ViewSocietyProfileModal,
     EditSocietyModal,
@@ -131,7 +123,11 @@ export default {
       this.$data.societies = this.$data.societies.map(
         s=>((s.id.toString() === society.id.toString()) ? society : s)
       )
-      this.$data.successMsg = 'Society updated successfully'
+      this.$data.successMsg = this.$toasted.show(`Society updated successfully`, { 
+        type: "success", 
+        icon: 'check-circle'
+      })
+      
       // hide modal
       this.hideEditModal();
     },
@@ -139,7 +135,6 @@ export default {
     getOneSocietyEventHandlerForView(id){
       this.getOneSociety(id)
       .then(society => {
-        console.log(society)
         if (society){
           this.$data.society = society
           // raise modal here
@@ -151,7 +146,6 @@ export default {
     getOneSocietyEventHandlerForEdit(id){
       this.getOneSociety(id)
       .then(society => {
-        console.log(society)
         if (society){
           this.$data.society = society
           // raise modal here
@@ -166,11 +160,9 @@ export default {
         if(data){
           this.$data.societies = data.societies
           const societyIDs = data.societies.map(s=>s.id)
-          //console.log(societyIDs)
           this.countMemberInSociety({paramIDs:societyIDs})
           .then(data1=>{
             if(data1){
-              console.log(data1)
               this.$data.societies = data.societies.map(s=>{
                 s.totalMember = data1.countMemberInSociety[s.id]
                 return s;
@@ -189,11 +181,9 @@ export default {
         if(data){
           this.$data.societies = data.societies
           const societyIDs = data.societies.map(s=>s.id)
-          //console.log(societyIDs)
           this.countMemberInSociety({paramIDs:societyIDs})
           .then(data1=>{
             if(data1){
-              console.log(data1)
               this.$data.societies = data.societies.map(s=>{
                 s.totalMember = data1.countMemberInSociety[s.id]
                 return s;
@@ -212,11 +202,9 @@ export default {
         if (data){
           this.$data.societies = data.societies
           const societyIDs = data.societies.map(s=>s.id)
-          //console.log(societyIDs)
           this.countMemberInSociety({paramIDs:societyIDs})
           .then(data1=>{
             if(data1){
-              console.log(data1)
               this.$data.societies = data.societies.map(s=>{
                 s.totalMember = data1.countMemberInSociety[s.id]
                 return s;
@@ -236,16 +224,12 @@ export default {
   created(){
     this.getSocieties({query:{limit:10}})
     .then(data => {
-      console.log(data)
-      //this.$data.societies = data.societies
       if(data){
         this.$data.societies = data.societies
         const societyIDs = data.societies.map(s=>s.id)
-        //console.log(societyIDs)
         this.countMemberInSociety({paramIDs:societyIDs})
         .then(data1=>{
           if(data1){
-            console.log(data1)
             this.$data.societies = data.societies.map(s=>{
               s.totalMember = data1.countMemberInSociety[s.id]
               return s;
@@ -255,11 +239,6 @@ export default {
         })
       }
     })
-  },
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
-  },
- 
+  }
 }
 </script>

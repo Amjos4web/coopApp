@@ -1,9 +1,9 @@
 <template>
-  <div class="panel panel-default mt-20" v-show="meetingDates.year !== 0">
-    <div class="panel-heading">
-      <i class="fa fa-calendar"></i> Setting meeting calendar <b>{{ society_name }}</b> for the year <b>{{ meetingDates.year }}</b>
-    </div>
-    <div class="panel-body">
+  <div class="card mt-20" v-show="meetingDates.year !== 0">
+    <div class="card-body">
+      <h5 class="card-title">
+        <i class="fa fa-calendar"></i> Setting meeting calendar <b>{{ society_name }}</b> for the year <b>{{ meetingDates.year }}</b>
+      </h5>
       <div class="row">
         <CalendarChild 
           v-for="(month, index) in yearCalendar" 
@@ -19,7 +19,7 @@
         />
       </div> 
       <div class="text-center">
-        <input type="submit" value="Save" name="save" class="btn btn-success" @click="submitFormHandler()">
+        <input type="submit" value="Save" name="save" class="btn btn-primary" @click="submitFormHandler()">
       </div>
     </div>
   </div>
@@ -87,7 +87,6 @@
 
         let prevMonthDay = 31
 
-        //console.log(previousMonthLastDayOfWeek)
 
         for(let m = 0; m < months.length; m++){
           const daysInMonth = m === 1 && isLeapYear(this.$props.meetingDates.year) ? 29 : months[m]
@@ -104,7 +103,6 @@
           }//end for loop
 
           previousMonthLastDayOfWeek = ((previousMonthLastDayOfWeek + daysInMonth) % 7)
-          //console.log({previousMonthLastDayOfWeek})
           counter = 1;
           for(let d = dayOfWeekArray.length; d < 42; d++){
             dayOfWeekArray.push({day:counter, disabled:true})
@@ -131,7 +129,6 @@
         //const val = event.target.value
         if(event.target.value)
         this.$props.getSelectedMeetingCalendar(`${event.target.value}:00`, monthIndex, false)
-        //console.log({monthIndex, val:event.target.value})
       }
     },//end methods object
   }

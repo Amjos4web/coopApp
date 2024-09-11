@@ -67,8 +67,6 @@ export default{
         
             return axios.get(url)
             .then(resp=>{
-
-                //console.log(resp);
                 const {data:{societies}, pagination} = resp.data
                 
                 cache.currentPage = {
@@ -76,7 +74,6 @@ export default{
                     pagination,
                     url
                 };
-                //console.log(cache);
                 return {societies, pagination};
             })
             .catch(e=>commitError(commit, e))
@@ -175,8 +172,6 @@ export default{
             if(societyToFetch.length < 1){
                 return {societies};
             }
-
-            console.log({societyToFetch, societies})
             
             return axios.post(
                 SOCIETY_URL.fetch_many, 

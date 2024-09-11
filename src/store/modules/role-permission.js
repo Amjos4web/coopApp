@@ -48,25 +48,27 @@ export default{
     },
 
     actions:{
-        getPermissionRole({ commit }, { id, reload }){
-            if(!id) return handleNoIDError(commit, "Role permission ID is required");
-
+        getPermissionsRole({ commit }, { member_id, reload }){
+            if(!member_id) return handleNoIDError(commit, "Member ID is required");
+           
             if(!reload){
-                const rolePermissionCache = rolePermissionStore.getRolePermissionByID(id)
+                const rolePermissionCache = rolePermissionStore.getRolePermissionByID(member_id)
                 if(rolePermissionCache){
-                    return resolveWithDataFromStore({rolePermission:rolePermissionCache});
+                    return resolveWithDataFromStore(commit, {rolePermission:rolePermissionCache});
                 }
             }//end if(!reload)
             //notify client of loading status
             commit(setIsLoading, true)
-
-            return axios.get(ROLE_PERMISSION_URL.index + id)
+            
+            return axios.get(ROLE_PERMISSION_URL.index + member_id)
             .then(response=>{
                 debug("role permission", response);
+
                 const {rolePermission} = response.data.data;
 
-                rolePermissionStore.addRolePermission(rolePermission);
-
+                if(rolePermission){
+                    rolePermissionStore.addRolePermission(rolePermission);
+                }
                 return {rolePermission};
             })
             .catch(e=>commitError(commit, e))
@@ -74,6 +76,9 @@ export default{
         },//end method getPermissionRole
 
         saveSocietyDelegateRolePermission({ commit }, formData){
+            //notify UI we are currently loading
+            commit(setIsLoading, true);
+
             return axios.post(ROLE_PERMISSION_URL.save_society_delegate, formData)
             .then(response=>{
                 debug("role permission", response);
@@ -88,6 +93,8 @@ export default{
         },
 
         saveStaffOrUnionExecutiveRolePermission({ commit }, formData){
+            //notify UI we are currently loading
+            commit(setIsLoading, true);
             return axios.post(ROLE_PERMISSION_URL.save_staff_or_union_exec, formData)
             .then(response=>{
                 debug("role permission", response);
@@ -106,6 +113,9 @@ export default{
                 return resolveWithDataFromStore(commit, {routesPaths:initCache.routesPaths});
             }
 
+            //notify UI we are currently loading
+            commit(setIsLoading, true);
+
             return axios.get(ROLE_PERMISSION_URL.role_perm_routes_paths)
             .then(response=>{
                 debug("role permission", response);
@@ -115,6 +125,8 @@ export default{
 
                 return { routesPaths };
             })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data))
         }
     }//end actions
 }

@@ -21,7 +21,6 @@ export default {
         const {entities, result} = normalize(guarantor, guarantorSchema);
         //add to store
         store = setStore(store, entities.guarantors);
-        //console.log(store, result);
         //return id to be kept by clients that'll use the API
         //this value will be use to fetch the data later
         return result;
@@ -47,7 +46,6 @@ export default {
      * @returns {LoanGuarantor | null} - return the guarantor if found else null
      */
     getGuarantorByID(id){
-        //console.log(store, id);
         return store[id] ? store[id] : null;
     },
 

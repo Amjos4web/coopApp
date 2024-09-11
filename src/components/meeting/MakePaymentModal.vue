@@ -1,6 +1,13 @@
 <template>
    <div class="modal fade" id="makePayment" role="dialog" style="border-radius: 5px;">
     <div class="modal-dialog modal-lg">
+      <div v-if="memberPaymentError">
+          <div class="error-div text-center">
+            <span>
+              {{memberPaymentError.message}}
+            </span>
+          </div>
+        </div>
       <!-- Modal content no 1-->
       <div v-if="memberPaymentIsLoading || memberIsLoading">
         <div class="text-center">
@@ -9,40 +16,42 @@
       </div>
       <div class="modal-content" v-else>
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Monthly Due For {{name ? name : 'Unknown'}}</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body padtrbl">
+        <div class="modal-body">
           <form @submit.prevent="makePaymentEventHandler()">
             <div class="container" :style="{width: '100%;'}">
-              <p>List of all monthly payments to be made by <b>{{name ? name : 'Unknown'}}</b> for today</p>
+              <div class="text-center">
+                <p>List of all monthly payments to be made by <b>{{name ? name : 'Unknown'}}</b> for today</p>
+              </div>
+              
               <div class="table-responsive">
-                <table class="table table-bordered table-hover make-payment" :style="{width:'60%', margin:'auto'}">
+                <table class="styled-table make-payment" :style="{width:'80%', margin:'auto'}">
                     <thead>
                       <tr v-for="memberMonthlyPayment in memberPaymentDueList" :key="memberMonthlyPayment.id">
                         <th width="40%">{{ memberMonthlyPayment.name }}<br><label>Min. Amount expected to pay is &#8358;{{memberMonthlyPayment.min_amount }}</label></th>
                         <td width="60%">
-                          <div class="input-field">
-                            <input type="text" 
-                            v-model="form[`${memberMonthlyPayment.id}`]"
-                            >
+                          <div class="form-group">
                             <label :for="memberMonthlyPayment.name">Enter {{ memberMonthlyPayment.name }} Amount &#x20A6;</label>
+                            <input 
+                              type="text" 
+                              v-model="form[`${memberMonthlyPayment.id}`]"
+                              class="form-control"
+                            >
                             <span class="error-message"></span>
                           </div>
                         </td>
                       </tr>
                     </thead>
                  </table>
-                <div class="text-center">
-                  <input type="submit" name="makePayment" class="btn-general" value="Save">
+                <div class="text-center mt-10">
+                  <input type="submit" name="makePayment" class="btn btn-primary" value="Save">
                 </div>
               </div>
             </div>
           </form>
         </div>
-        <!-- <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
-        </div> -->
       </div>
     </div>
   </div>
@@ -73,7 +82,6 @@ export default {
 
   watch:{
     memberDueMonthlyPayment(newMemberDueMonthlyPayment, oldMemberDueMonthlyPayment){
-      console.log(newMemberDueMonthlyPayment)
       if(
         (newMemberDueMonthlyPayment.member_id !== oldMemberDueMonthlyPayment.member_id) 
         || 
@@ -84,16 +92,12 @@ export default {
           member_id:newMemberDueMonthlyPayment.member_id
         })
         .then(data=>{
-          //console.log(data)
           if(data){
 
             this.$data.form = data.memberPaymentDueList.reduce((prevVal, item)=>{
               prevVal[item.id] = item.prevAmountPaid
               return prevVal
             }, {})
-
-            console.log(this.$data.form);
-
             this.$data.memberPaymentDueList = data.memberPaymentDueList
           }
          
@@ -101,7 +105,6 @@ export default {
       }
     },
     memberID(newMemberID, oldMemberID){
-      //console.log(newMemberID, oldMemberID)
       if(newMemberID != oldMemberID){
         this.getOneMember(newMemberID)
         .then(data=>{
@@ -133,7 +136,6 @@ export default {
           this.$props.updateParent(true);
         }
       })
-      console.log(formData);
     }
   },
 

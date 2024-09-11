@@ -1,7 +1,7 @@
 <template>
-  <tbody v-if="isLoading">
+  <tbody v-if="userIsLoading">
     <tr>
-      <td colspan="6">
+      <td colspan="7">
         <div class="text-center" :style="{width: '100%'}">
         <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>
         <small>Fetching data...</small>
@@ -9,36 +9,46 @@
       </td>
     </tr>
   </tbody>
-
-  <tbody v-else-if="error">
-    <tr>
-       <td colspan="6">
-         <div class="text-center" :style="{width: '100%'}">
-          <small>Unable to fetch data</small>
-        </div>
-       </td>
-     </tr>
-  </tbody>
   <tbody v-else>
-    <tr class="tcontent" v-for="(user, index) in users" :key="user.id">
+    <tr v-for="(user, index) in users" :key="user.id">
       <td>{{ (((currentPage - 1) * limit) + ((index) + 1)) }}</td>
+      <td>{{ user.userid }}</td>
       <td>{{ user.name }}</td>
-      <td>{{  user.phone }}</td>
+      <td>{{ user.phone }}</td>
       <td>
-        <button class="btn btn-warning btn-sm" data-target="#userPermissionModal" data-toggle="modal">
-          Set Permission
-        </button>
+        <a class="btn btn-primary custom-link btn-sm">
+          <router-link :to="'/users/rolePermission/' + user.member_id">
+            Set Permission
+          </router-link>
+        </a>
       </td>
       <td>
-        <button class="btn btn-primary btn-sm" @click="resetUserPasswordEventHandler(user.id)">
-          Reset Password
-        </button>
+        <a class="btn btn-warning custom-link btn-sm">
+          <router-link :to="'/users/AssignDelegates/' + user.member_id">
+            Assign as Delegate
+          </router-link>
+        </a>
       </td>
-      <td v-if="user.active == 1">
-        <button class="btn btn-danger btn-sm" @click="deactivateUserEventHandler(user.id)">Deactivate Account</button>
-      </td>
-      <td v-else>
-        <button class="btn btn-success btn-sm" @click="deactivateUserEventHandler(user.id)">Activate Account</button>
+      <td>
+        <div class="dropdown">
+          <button class="btn btn-info dropdown-toggle" type="button" id="dropDownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a href="#" class="dropdown-item" @click="resetUserPasswordEventHandler(user.id)">
+              Reset Password
+            </a>
+            <a href="#"  v-if="user.active == true" @click="deactivateUserEventHandler(user.id)" class="dropdown-item">
+              Deactivate
+            </a>
+            <a href="#"  v-if="user.active == false" @click="deactivateUserEventHandler(user.id)" class="dropdown-item">
+              Activate
+            </a>
+            <a href="#"  class="dropdown-item" data-target="#uploadProfileImage" data-toggle="modal" @click="switchOnCamera(user.member_id, user.name)">
+              Upload Profile Image
+            </a>
+          </div>
+        </div>
       </td>
     </tr>
   </tbody>
@@ -46,16 +56,18 @@
 
 <script>
 
+
 export default {
   name: 'users-list',
   props: {
     users: Array,
-    isLoading: Boolean,
-    error: Error,
+    userIsLoading: Boolean,
+    usersError: Error,
     currentPage: Number,
     limit: Number,
     resetUserPasswordEventHandler: Function,
-    deactivateUserEventHandler: Function
-  },
+    deactivateUserEventHandler: Function,
+    switchOnCamera: Function
+  }, 
 }
 </script>

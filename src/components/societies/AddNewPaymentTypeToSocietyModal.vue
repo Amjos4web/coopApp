@@ -4,21 +4,21 @@
       <!-- Modal content no 1-->
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">{{ modalTitle }}</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <form @submit.prevent="savePaymentType()">
-            <div class="modal-body padtrbl">
+            <div class="modal-body">
               <div class="container">
-                <div class="row">
-                  <div v-if="error"> 
-                    <div class="text-center error-div">
-                      <span>
-                        {{ error }}
-                      </span>
-                    </div>
+                <div class="row" v-if="error"> 
+                  <div class="text-center error-div">
+                    <span>
+                      {{ error }}
+                    </span>
                   </div>
-                  <div class="col-md-8 col-md-offset-2">
+                </div>
+                <div class="row">
+                  <div class="col-md-8 m-auto">
                     <div v-if="isLoading">
                       <div class="text-center">
                         <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
@@ -48,7 +48,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <input type="submit" value="Save" class="btn btn-info">
+              <input type="submit" value="Save" class="btn btn-primary">
               <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
             </div>
           </div>
@@ -124,10 +124,5 @@ export default {
   computed: {
     ...mapGetters("app/society_payment_minimum_amount", ["isLoading", "error"])
   },
-
-  updated(){
-    if(this.error)
-    console.log(this.error.errors);
-  }
 }
 </script>

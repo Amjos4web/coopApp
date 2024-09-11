@@ -1,43 +1,46 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="memberIsLoading || societyIsLoading || loanRequestIsLoading">
           <div class="text-center" :style="{width: '100%'}">
             <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
           </div>
         </div>
         <div v-if="loanRequestError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{loanRequestError.message}}
             </span>
           </div>
         </div>
         <div v-else-if="societyError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{societyError.message}}
             </span>
           </div>
         </div>
-        
+        <div v-if="successMsg">
+          <div class="text-center success-div">
+            <span>
+              {{ successMsg }}
+            </span>
+          </div>
+        </div>
         <div class="container" v-if="loanRequest.member">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <i class="fa fa-user"></i> {{ loanRequest.member.name }} Profile
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fa fa-user"></i> {{ loanRequest.member.name }} Profile
+              </h5>
               <div class="row">
                 <div class="col-md-4 text-center">
                   <img src="@/assets/passports/avata.png" class="avatar">
                 </div>
                 <div class="col-md-8">
                   <div class="table-responsive">
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="styled-table">
                       <tbody>
                         <tr>
                           <th width="50%">Name</th>
@@ -73,22 +76,15 @@
             </div>
             <!-- /.panel-body -->
           </div>
-          <div v-if="successMsg">
-            <div class="text-center success-div">
-              <span>
-                {{ successMsg }}
-              </span>
-            </div>
-          </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-users"></i> Guarrantors
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
+          
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fa fa-users"></i> Guarrantors
+                </h5>
                 <div class="row">
                   <div class="table-responsive">
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="styled-table">
                       <thead>
                         <tr>
                           <th>Name</th>
@@ -117,9 +113,21 @@
               </div>
               <!-- /.panel-body -->
             </div>
+            <div class="text-center mt-10">
+              <a class="btn btn-success custom-link ml-10">
+                <router-link :to="'/loan/member/details/' + loan_request_id">
+                  Approve
+                </router-link>
+              </a>
+              <a class="btn btn-warning custom-link ml-10">
+                <router-link to="/loan/member/Status">
+                  View All Loan Requests
+                </router-link>
+              </a>
+            </div>
         </div>
       </div> 
-    </div>
+    <FooterBar/>
     
     <div class="modal fade" id="approveGuarrantor" role="dialog" style="border-radius: 5px;" ref="modal">
       <div class="modal-dialog modal-lg">
@@ -130,7 +138,7 @@
           </div>
         </div>
         <div v-if="memberError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{ memberError.message }}
             </span>
@@ -139,13 +147,13 @@
        
         <div class="modal-content" v-show="loanRequest.member && guarantor_name">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
             <h4 class="modal-title" v-if="loanRequest.member && guarantor_name">
               Approve {{guarantor_name}} as Guarrantor for {{loanRequest.member.name}}
             </h4>
+            <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
           </div>
           
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div v-if="loanRequestError">
               <div class="error-div">
                 <span>
@@ -175,7 +183,7 @@
           </div>
         </div>
         <div v-if="memberError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{ memberError.message }}
             </span>
@@ -184,15 +192,15 @@
        
         <div class="modal-content" v-show="loanRequest.member && guarantor_name">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
             <h4 class="modal-title" v-if="loanRequest.member && guarantor_name">
               Reject {{guarantor_name}} as Guarrantor for {{loanRequest.member.name}}
             </h4>
+            <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
           </div>
           
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div v-if="loanRequestError">
-              <div class="error-div">
+              <div class="error-div text-center">
                 <span>
                   {{loanRequestError.message}}
                 </span>
@@ -211,7 +219,7 @@
           
         </div>
       </div>
-    </div> 
+    </div>
   </div>
 </template>
 
@@ -219,8 +227,8 @@
 
 import HeaderNav from '@/components/includes/headerNav';
 import PhotoCapture from "@/components/includes/PhotoCapture";
-import { toggleAvatarDropDown, closeNavbar, openModal, closeModal } from '../../../assets/js/helpers/utility';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import { openModal, closeModal } from '../../../assets/js/helpers/utility';
+import FooterBar from '@/components/includes/Footer'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import $ from 'jquery'
 import Validator from 'validatorjs'
@@ -242,7 +250,7 @@ export default {
   name: 'MemberLoanGuarantors',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     PhotoCapture
   },
 
@@ -259,7 +267,8 @@ export default {
       onOnOffCamera:false,
       guarantor_name:"",
       guarantor_img: "",
-      successMsg: ""
+      successMsg: "",
+      loan_request_id:""
     }
   },
   methods: {
@@ -270,7 +279,6 @@ export default {
     ...mapMutations('app/loan', {setLoanRequestError:"setError"}),
 
     setRejectGuarantorMemberID(member_id){
-      //console.log(member_id)
       rejectGuarrantorForm.member_id = member_id
     },
 
@@ -287,7 +295,6 @@ export default {
     adminRespondToGuarantorRequestHelper(form){
       this.adminRespondToGuarantorRequest(form)
       .then(data => {
-        console.log(data)
         if(data){
           this.getOneMember(data.member_id)
           .then(member => {
@@ -295,7 +302,10 @@ export default {
             if (member){
               name = member.name
             }
-            this.successMsg = `${ name } has been ${ form.response } successfully`
+            this.$toasted.show(`${ name } has been ${ form.response } successfully`, { 
+              type: "success", 
+              icon: 'check-circle'
+            })
             this.hideModal()
 
             this.$data.loanRequest.guarantors = this.$data.loanRequest.guarantors.map(
@@ -337,7 +347,6 @@ export default {
     },
 
     acceptGuarantorRequest(){
-      console.log(form)
       this.setLoanRequestError(null)
       let validation = new Validator(form, {
         response: 'required',
@@ -457,13 +466,9 @@ export default {
     })// end then method
   },
   mounted(){
-    toggleAvatarDropDown()
-    closeNavbar(),
+    this.$data.loan_request_id = this.$route.params.loan_request_id
     form.loan_request_id = this.$route.params.loan_request_id
     rejectGuarrantorForm.loan_request_id = this.$route.params.loan_request_id
   },
-  updated(){
-    console.log(this.loanRequestError)
-  }
 }
 </script>

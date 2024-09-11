@@ -1,6 +1,6 @@
 <template>
-  <label class="app-name error" v-if="error">
-    Unable to get union name
+  <label class="app-name" v-if="settingError">
+    Loading...
   </label>
   <label class="app-name" v-else>
     {{ unionName }}
@@ -10,7 +10,7 @@
 <script>
 export default {
   name: 'union-name',
-  props: ["unionName", "error"]
+  props: ["unionName", "settingError"]
 
 }
 </script>

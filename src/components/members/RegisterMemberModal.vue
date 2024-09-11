@@ -2,11 +2,11 @@
    <div class="modal fade" id="addMemberModal" role="dialog" style="border-radius: 5px;">
     <div class="modal-dialog modal-lg">
       <!-- Modal content no 1-->
-      <form @submit.prevent="saveMember()" class="col s12" v-if="!member.id">
+      <form @submit.prevent="saveMember()" class="col-12" v-if="!member.id">
         <div class="modal-content">
           <div class="modal-header">
+            <h4 class="modal-title"><i class="fa fa-plus"></i> {{ modalTitle }}</h4>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">{{ modalTitle }}</h4>
           </div>
            <div v-if="error"> 
             <div class="text-center error-div">
@@ -20,136 +20,134 @@
               <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
             </div>
           </div>
-          <div class="modal-body padtrbl">
-            <div class="box">
-              <div class="row">
-                <div class="form-group">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="text" 
-                      class="form-control" 
-                      v-model="form.name"
-                      autofocus
-                      >
-                      <label for="fullname">Full Name</label>
-                      <span class="error" v-if="elementHasError('name')">
-                        {{ error.errors.name[0] }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="email"
-                      class=""
-                      v-model="form.email"
-                      >
-                      <label for="email">Email Address</label>
-                      <span class="error" v-if="elementHasError('email')">
-                        {{ error.errors.email[0] }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="text"
-                      class=""
-                      v-model="form.phone"
-                      >
-                      <label for="phone">Phone Number</label>
-                      <span class="error" v-if="elementHasError('phone')">
-                        {{ error.errors.phone[0] }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <textarea 
-                      id="address" 
-                      class="materialize-textarea"
-                      v-model="form.address"
-                      >
-                      </textarea>
-                      <label for="address">Address</label>
-                      <span class="error" v-if="elementHasError('address')">
-                        {{ error.errors.address[0] }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="form-group col s12">
-                      <label>Gender</label>
-                      <select v-model="form.gender" class="form-control">
-                        <option value="">Choose your option</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                      </select>
-                      <span class="error" v-if="elementHasError('gender')">
-                        {{ error.errors.gender[0] }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="form-group col s12">
-                      <label>Can Make Payment</label>
-                      <select v-model="form.can_pay" class="form-control">
-                        <option value="">Choose your option</option>
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
-                      </select>
-                      <span class="error" v-if="elementHasError('can_pay')">
-                        {{ error.errors.can_pay[0] }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="form-group col s8">
-                      <label>Active</label>
-                    </div>
-                    <div class="col s4" style="margin-top: 5px; text-align: right;">
-                      <p>
-                        <input type="checkbox"
-                        v-model="form.active" 
-                        id="memberID4"
-                        >
-                        <label for="memberID4"></label>
-                      </p>
-                    </div>
-                    <span class="error" v-if="elementHasError('active')">
-                      {{ error.errors.active[0] }}
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="form-group col-12">
+                    <label for="fullname">Full Name</label>
+                    <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="form.name"
+                    autofocus
+                    >
+                    <span class="error" v-if="elementHasError('name')">
+                      {{ error.errors.name[0] }}
                     </span>
                   </div>
+                </div>
 
-                  <!-- <div class="row">
-                    <div class="form-group col s12">
-                      <label for="address">Upload Profile Image</label>
-                      <input type="file" name="profileIamge" id="profileImage">
-                      <span class="error-message" id="address-error"></span>
-                    </div>
-                  </div> -->
-                </div> 
+                <div class="row">
+                  <div class="form-group col-12">
+                    <label for="email">Email Address</label>
+                    <input 
+                    type="email"
+                    class="form-control"
+                    v-model="form.email"
+                    >
+                    <span class="error" v-if="elementHasError('email')">
+                      {{ error.errors.email[0] }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="form-group col-12">
+                    <label for="phone">Phone Number</label>
+                    <input 
+                    type="text"
+                    class="form-control"
+                    v-model="form.phone"
+                    >
+                    <span class="error" v-if="elementHasError('phone')">
+                      {{ error.errors.phone[0] }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group col-12">
+                    <label for="address">Address</label>
+                    <textarea 
+                    id="address" 
+                    class="form-control"
+                    v-model="form.address"
+                    >
+                    </textarea>
+                    <span class="error" v-if="elementHasError('address')">
+                      {{ error.errors.address[0] }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="form-group col-12">
+                    <label>Gender</label>
+                    <select v-model="form.gender" class="form-control">
+                      <option value="">Choose your option</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                    <span class="error" v-if="elementHasError('gender')">
+                      {{ error.errors.gender[0] }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="form-group col s12">
+                    <label>Can Make Payment</label>
+                    <select v-model="form.can_pay" class="form-control">
+                      <option value="">Choose your option</option>
+                      <option value="0">No</option>
+                      <option value="1">Yes</option>
+                    </select>
+                    <span class="error" v-if="elementHasError('can_pay')">
+                      {{ error.errors.can_pay[0] }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="form-group col-8">
+                    <label>Active</label>
+                  </div>
+                  <div class="col-4" style="margin-top: 5px; text-align: right;">
+                    <label for="memberID4"></label>
+                    <!-- <p>
+                      <input type="checkbox"
+                      v-model="form.active" 
+                      id="memberID4"
+                      class="form-control"
+                      >
+                      
+                    </p> -->
+                    <p>
+                      <label class="switch"><input type="checkbox" v-model="form.active">
+                        <span class="slider round"></span>
+                      </label>
+                    </p>
+                  </div>
+                  <span class="error" v-if="elementHasError('active')">
+                    {{ error.errors.active[0] }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+          
           <div class="modal-footer text-center">
-            <input type="submit" name="save" class="btn btn-info" value="Save" id="yes">
-            <button type="button" id="continue" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            <input type="submit" name="save" class="btn btn-primary" value="Save" id="yes">
+            <button type="button" id="continue" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </div>
       </form>
-      <form @submit.prevent="updateMemberData()" class="col s12" v-else>
+      <form @submit.prevent="updateMemberData()" class="col-12" v-if="member.id">
         <div class="modal-content">
           <div class="modal-header">
+            <h4 class="modal-title"> {{ modalTitle }}</h4>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">{{ modalTitle }}</h4>
           </div>
            <div v-if="error"> 
             <div class="text-center error-div">
@@ -163,102 +161,97 @@
               <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
             </div>
           </div>
-          <div class="modal-body padtrbl">
-            <div class="box">
-              <div class="row">
-                <div class="form-group">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="text" 
-                      class="form-control" 
-                      v-model="updateFormData.name"
-                      autofocus
-                      >
-                      <label for="fullname">Full Name</label>
-                      <span class="error" v-if="elementHasError('name')">
-                        {{ error.errors.name[0] }}
-                      </span>
-                    </div>
-                  </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="form-group col-12">
+                <label for="fullname">Full Name</label>
+                <input 
+                type="text" 
+                class="form-control" 
+                v-model="updateFormData.name"
+                autofocus
+                >
+                <span class="error" v-if="elementHasError('name')">
+                  {{ error.errors.name[0] }}
+                </span>
+              </div>
+            </div>
 
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="email"
-                      class=""
-                      v-model="updateFormData.email"
-                      >
-                      <label for="email">Email Address</label>
-                      <span class="error" v-if="elementHasError('email')">
-                        {{ error.errors.email[0] }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="text"
-                      class=""
-                      v-model="updateFormData.phone"
-                      >
-                      <label for="phone">Phone Number</label>
-                      <span class="error" v-if="elementHasError('phone')">
-                        {{ error.errors.phone[0] }}
-                      </span>
-                    </div>
-                  </div>
+            <div class="row">
+              <div class="form-group col-12">
+                <label for="email">Email Address</label>
+                <input 
+                type="email"
+                class="form-control"
+                v-model="updateFormData.email"
+                >
+                
+                <span class="error" v-if="elementHasError('email')">
+                  {{ error.errors.email[0] }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="form-group col-12">
+                <label for="phone">Phone Number</label>
+                <input 
+                type="text"
+                class="form-control"
+                v-model="updateFormData.phone"
+                >
+                <span class="error" v-if="elementHasError('phone')">
+                  {{ error.errors.phone[0] }}
+                </span>
+              </div>
+            </div>
 
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <textarea 
-                      id="address" 
-                      class="materialize-textarea"
-                      v-model="updateFormData.address"
-                      >
-                      </textarea>
-                      <label for="address">Address</label>
-                      <span class="error" v-if="elementHasError('address')">
-                        {{ error.errors.address[0] }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="form-group col s12">
-                      <label>Gender</label>
-                      <select v-model="updateFormData.gender" class="form-control">
-                        <option value="">Choose your option</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                      </select>
-                      <span class="error" v-if="elementHasError('gender')">
-                        {{ error.errors.gender[0] }}
-                      </span>
-                    </div>
-                  </div>
+            <div class="row">
+              <div class="form-group col-12">
+                <label for="address">Address</label>
+                <textarea 
+                id="address" 
+                class="form-control"
+                v-model="updateFormData.address"
+                >
+                </textarea>
+                <span class="error" v-if="elementHasError('address')">
+                  {{ error.errors.address[0] }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="form-group col-12">
+                <label>Gender</label>
+                <select v-model="updateFormData.gender" class="form-control">
+                  <option value="">Choose your option</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+                <span class="error" v-if="elementHasError('gender')">
+                  {{ error.errors.gender[0] }}
+                </span>
+              </div>
+            </div>
 
-                  <div class="row">
-                    <div class="form-group col s12">
-                      <label>Can Make Payment</label>
-                      <select v-model="updateFormData.can_pay" class="form-control">
-                        <option value="">Choose your option</option>
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
-                      </select>
-                      <span class="error" v-if="elementHasError('can_pay')">
-                        {{ error.errors.can_pay[0] }}
-                      </span>
-                    </div>
-                  </div>
-                </div> 
+            <div class="row">
+              <div class="form-group col-12">
+                <label>Can Make Payment</label>
+                <select v-model="updateFormData.can_pay" class="form-control">
+                  <option value="">Choose your option</option>
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+                <span class="error" v-if="elementHasError('can_pay')">
+                  {{ error.errors.can_pay[0] }}
+                </span>
               </div>
             </div>
           </div>
           <div class="modal-footer text-center">
-            <input type="submit" name="save" class="btn btn-info" value="Save" id="yes">
-            <button type="button" id="continue" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            <input type="submit" name="save" class="btn btn-primary" value="Update" id="yes">
+            <button type="button" id="continue" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </div>
       </form>
@@ -305,9 +298,8 @@ export default {
 
       let validation = new Validator(this.$data.form, {
         name: 'required|max:100',
-        phone: 'required|numeric',
         gender: 'required',
-        can_pay: 'required',
+        can_pay: 'required|numeric',
         address: 'required|min:10',
         active: 'required'
       })
@@ -318,8 +310,8 @@ export default {
         this.setError(error)
       } else {
         this.addNewMember(this.$data.form)
-        .then(member => {
-          this.$props.updateMemberOnParent(member, false, true)
+        .then(data => {
+          this.$props.updateMemberOnParent(data, false, true)
         })//end then method
       }// end else 
       // clear form
@@ -331,9 +323,8 @@ export default {
 
       let validation = new Validator(this.$data.updateFormData, {
         name: 'required|max:100',
-        phone: 'required|numeric',
         gender: 'required',
-        can_pay: 'required',
+        can_pay: 'required|numeric',
         address: 'required|min:10',
       })
 
@@ -346,14 +337,15 @@ export default {
         //this is update since parent sent ID
         if(id){
           this.updateMember({id, formData : this.$data.updateFormData})
-          .then(member => {
+          .then(data => {
             // check if member is not null
-            if (member){
-              this.$props.updateMemberOnParent(member, true, false)
-              this.$data.updateFormData = member
+            if (data){
+              console.log(data)
+              this.$props.updateMemberOnParent(data, true, false)
             }//end if
           })// end then method
         }// end if
+        this.$data.updateFormData = {}
       } // end else
     },
 

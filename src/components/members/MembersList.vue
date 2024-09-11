@@ -28,15 +28,15 @@
   </tr>
 </tbody>
   <tbody v-else>
-    <tr v-for="(member, index) in members" class="tcontent" :key="member.id">
+    <tr v-for="(member, index) in members" :key="member.id">
       <td>{{ (((currentPage - 1) * limit) + ((index) + 1)) }}</td>
       <td>{{ member.name }}</td>
-      <td>{{ member.phone }}</td>
+      <td>{{ member.phone ? member.phone : 'Not available' }}</td>
       <td>
-        <button class="btn btn-warning btn-sm" @click="getOneMemberEventHandlerForView(member.id)">View Profile</button>
+        <button class="btn btn-primary" @click="getOneMemberEventHandlerForView(member.id)">View Profile</button>
       </td>
       <td>
-        <button class="btn btn-info btn-sm" @click="getOneMemberEventHandlerForEdit(member.id)">Edit</button>
+        <button class="btn btn-info" @click="getOneMemberEventHandlerForEdit(member.id)">Edit</button>
       </td>
     </tr>
   </tbody>

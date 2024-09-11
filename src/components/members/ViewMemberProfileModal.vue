@@ -10,8 +10,8 @@
 
       <div class="modal-content" v-else-if="societyMemberError || memberPaymentError || fetchManySocietyError">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Error Occured</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body padtrbl">
           <div class="container" :style="{width: '100%;'}">
@@ -28,18 +28,18 @@
 
       <div class="modal-content" v-else>
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">{{ member.name }} Profile Details</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body padtrbl">
+        <div class="modal-body">
           <div class="container" :style="{width: '100%;'}">
             <div class="row">
-              <div class="col-md-12 text-center">
-                <img src="@/assets/passports/avata.png" class="avatar">
+              <div class="col-md-12 text-center mb-20">
+                <img :src="member.passport" class="avatar">
               </div>
             </div>
             <div class="table-responsive">
-              <table class="table table-striped table-hover table-bordered">
+              <table class="styled-table">
                 <tbody>
                   <tr>
                     <th width="50%">Name</th>
@@ -47,29 +47,37 @@
                   </tr>
                   <tr>
                     <th width="50%">Email Address</th>
-                    <td id="email">{{ member.email }}</td>
+                    <td>{{ member.email }}</td>
+                  </tr>
+                  <tr>
+                    <th width="50%">Gender</th>
+                    <td>{{ member.gender }}</td>
                   </tr>
                   <tr>
                     <th width="50%">Phone Number</th>
-                    <td id="phone">{{ member.phone }}</td>
+                    <td>{{ member.phone }}</td>
                   </tr>
                   <tr>
                     <th width="50%">Residential Address</th>
-                    <td id="address">{{ member.address }}</td>
+                    <td>{{ member.address }}</td>
                   </tr>
                   <tr>
                     <th width="50%">Can Make Payment</th>
-                    <td id="makePayment">{{ member.can_pay ? 'Yes' : 'No' }}</td>
+                    <td>{{ member.can_pay ? 'Yes' : 'No' }}</td>
+                  </tr>
+                  <tr>
+                    <th>Date of Admission</th>
+                    <td>{{ new Date(member.created_at) }}</td>
                   </tr>
                   <tr>
                     <th>Society</th>
-                    <td id="society">{{ societyName }}</td>
+                    <td>{{ societyName }}</td>
                   </tr>
                  
                 </tbody>
               </table>
             </div>
-            <div class="text-center col-md-6 col-md-offset-2 mb-20">
+            <div class="text-center col-md-6 m-auto mb-20">
               <select class="form-control" @change="getTotalAsset($event)">
                 <option value=""></option>
                 <option v-for="s in societies" :value="s.id" :key="s.id">{{ s.name }}</option>
@@ -83,13 +91,13 @@
                 </div>
               </div>
               <div v-else>
-                <h4>Total Asset: &#8358;{{totalAsset}}</h4>
+                <h4>Total Asset: &#8358;{{Number(totalAsset).toLocaleString()}}</h4>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
-            </div>
           </div>
+        </div>
+        <div class="modal-footer text-center">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="cancel">Ok</button>
         </div>
       </div>
     </div>
@@ -98,6 +106,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'view-member-profile-modal',
   props: ["member"],
@@ -115,7 +124,6 @@ export default {
       if (val != ""){
         this.fetchMemberTotalAsset({ society_id : val, member_id : this.$props.member.id})
         .then(data => {
-          console.log(data)
           if(data){
             this.$data.totalAsset = data.totalAsset
           }

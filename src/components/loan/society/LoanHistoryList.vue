@@ -13,7 +13,6 @@
     </tr> 
   </tbody>  
 </template>
-
 <script>
 
 export default {

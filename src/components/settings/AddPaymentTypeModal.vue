@@ -4,8 +4,8 @@
       <form @submit.prevent="savePaymentType()">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">Payment Type</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <div v-if="isLoading">
             <div class="text-center">
@@ -19,20 +19,22 @@
               </span>
             </div>
           </div>
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover" :style="{width:'60%', margin:'auto'}">
+              <table class="styled-table" :style="{width:'60%', margin:'auto'}">
                 <thead>
                   <tr>
                     <th width="40%">Payment Name</th>
                     <td width="60%">
-                      <div class="input-field">
+                      <div class="form-group">
+                        <label for="user name">Enter payment name</label>
                         <input 
                         type="text" 
                         v-model="form.name"
+                        class="form-control"
                         autofocus
                         >
-                        <label for="user name">Enter payment name</label>
+                        
                         <span class="error" v-if="elementHasError('name')">
                           {{ error.errors.name[0] }}
                         </span>
@@ -47,6 +49,8 @@
                           <option value="">Select Payment Type</option>
                           <option value="loan interest">Loan Interest</option>
                           <option value="loan repaid">Loan Repaid</option>
+                          <option value="asset">Asset</option>
+                          <option value="minute">Minute</option>
                           <option value="other">Others</option>
                         </select>
                         <span class="error"  v-if="elementHasError('type')">
@@ -60,8 +64,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <input type="submit" class="btn btn-info" value="Save">
-            <button type="button" id="continue" class="btn btn-warning ml-10" data-dismiss="modal">close</button>
+            <button type="button" id="continue" class="btn btn-warning" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary ml-10" value="Save">
           </div>
         </div>
       </form>
@@ -91,7 +95,6 @@ export default {
 
     savePaymentType(){
       this.setError(null);
-      console.log(this.$data.form)
       let validation  = new Validator(this.$data.form, {
         name: 'required',
         type: 'required',

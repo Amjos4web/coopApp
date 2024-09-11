@@ -45,9 +45,7 @@ export default{
 
         commit(setIsLoading, true);
 
-        console.log(SOCIETY_PAYMENTS_URL.index + society_id + "/" + meeting_calendar_id)
-
-        return axios.get(SOCIETY_PAYMENTS_URL.index + society_id + "/" + meeting_calendar_id)
+        return axios.get(SOCIETY_PAYMENTS_URL.get_society_payment + society_id + "/" + meeting_calendar_id)
         .then(response=>{
             debug("society payment monthly due", response)
             // const {memberPaymentDueList} = response.data.data;

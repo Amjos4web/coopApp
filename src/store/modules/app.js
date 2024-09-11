@@ -7,11 +7,15 @@ import role from "./role"
 import setting from "./setting"
 import society from "./society"
 import member_payment from "./member-payments"
+import member_online_payment from "./member-online-payments"
 import role_permission from "./role-permission"
 import society_member from "./society-member"
 import society_payment from "./society-payments"
 import society_payment_minimum_amount from "./society-payment-min-amount"
+import society_loan from "./society-loan"
 import user from "./user"
+import revenue from "./revenue"
+import dashboard from "./dashboard"
 
 import {setError, setIsLoading} from "../constants";
 import { getErrorFromResponse } from "../../utility";
@@ -63,7 +67,6 @@ export default {
     },
     mutations:{
         [setError]:(state, error)=>{
-            console.log(error);
             state.error = error;
         },
         [setIsLoading]:(state, isLoading)=>(state.isLoading = isLoading),
@@ -84,10 +87,14 @@ export default {
         setting,
         society,
         member_payment,
+        member_online_payment,
         role_permission,
         society_member,
         society_payment,
+        society_loan,
         society_payment_minimum_amount,
-        user
+        user,
+        revenue,
+        dashboard
     },//end inner modules
 }//end app

@@ -1,13 +1,15 @@
 <template>
-   <ul class="nav navbar-top-links navbar-right">
-      <li><a class="dropdown-button waves-effect waves-dark" data-activates="dropdown2"><i class="fa fa-bell fa-fw"></i> <i class="material-icons right">arrow_drop_down</i></a></li>
-     
-      <li>
-        <a class="dropdown-button waves-effect waves-dark" data-activates="dropdown1" id="avatarDropDownContent"><i class="fa fa-user fa-fw"></i> <b>{{ loginUserName }}</b> <i class="material-icons right">arrow_drop_down</i>
-        </a>
-        <AvatarDropDownContent/>
-      </li>
-    </ul>
+  <div>
+    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+      <img :src="member.passport" class="rounded mr-3 avatar-2" :alt="member.name">
+      <div class="caption">
+        <h6 class="mb-0 line-height">{{ loginUserName }}</h6>
+        <p class="mb-0">{{ roleType }}</p>
+      </div>
+    </a>
+
+    <AvatarDropDownContent/>
+  </div>
 </template>
 
 <script>
@@ -17,6 +19,6 @@ export default {
   components: {
     AvatarDropDownContent
   },
-  props: ['loginUserName', 'isLoading']
+  props: ['loginUserName', 'isLoading', 'member', 'roleType']
 }
 </script>

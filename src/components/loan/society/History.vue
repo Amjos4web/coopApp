@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
@@ -32,13 +30,13 @@
                     <div class="col-md-4">
                       <div class="form-group">
                         <label>Requested Date From</label>
-                        <input type="date" name="date" id="date">
+                        <input type="date" name="date" id="date" class="form-control">
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="text-center">
-                  <input type="submit" value="Filter Result" class="btn-general">
+                  <input type="submit" value="Filter Result" class="btn btn-info">
                 </div>
               </form>
             </div>
@@ -87,13 +85,13 @@
         </div> 
         <Modal/>
       </div>
+      <FooterBar/>
     </div>
-  </div> 
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import LoanHistoryList from '@/components/loan/society/LoanHistoryList'
 import Modal from '@/components/myLoan/Modal'
 
@@ -101,7 +99,7 @@ export default {
   name: 'SocietyHistory',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     LoanHistoryList,
     Modal
   },

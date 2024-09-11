@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="successMsg">
           <div class="text-center success-div">
             <span>
@@ -20,18 +18,15 @@
               </div>
             </div>
             <div class="row" v-else>
-              <div class="form-group">
-                <div class="row">
-                  <div class="form-group col s12">
-                    <label for="Society Name">Society Name</label>
-                    <select class="form-control" @change="getsocietyMinimumAmount($event)">
-                      <option value="">Choose a society</option>
-                      <option v-for="society in societies" :key="society.id" :value="society.id">{{ society.name }}</option>
-                    </select>
-                    <span class="error"></span>
-                  </div>
-                </div>
+              <div class="form-group col-8 m-auto text-center">
+                <label for="Society Name">Society Name</label>
+                <select class="form-control" @change="getsocietyMinimumAmount($event)">
+                  <option value="">Choose a society</option>
+                  <option v-for="society in societies" :key="society.id" :value="society.id">{{ society.name }}</option>
+                </select>
+                <span class="error"></span>
               </div>
+                
               <GetSocietyMinimumAmount :societyPaymentMinAmounts="societyPaymentMinAmounts" 
               :openAddNewPaymentTypeModal="openAddNewPaymentTypeModal"
               :disableBtn="disableBtn"
@@ -40,7 +35,7 @@
           </div>
         </div>
       </div>
-    </div>
+    <FooterBar/>
     <AddNewPaymentTypeToSocietyModal ref="modal" 
     :paymentTypes="paymentTypes" 
     :currentSocietyPaymentMinAmt="currentSocietyPaymentMinAmt"
@@ -52,10 +47,10 @@
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import GetSocietyMinimumAmount from '@/components/societies/GetSocietyMinimumAmount'
 import AddNewPaymentTypeToSocietyModal from '@/components/societies/AddNewPaymentTypeToSocietyModal'
-import { closeNavbar, toggleAvatarDropDown, closeModal, openModal } from "../../assets/js/helpers/utility"
+import { closeModal, openModal } from "../../assets/js/helpers/utility"
 import { mapActions , mapGetters, mapMutations } from 'vuex'
 import {turnArrayToObject} from "../../utility"
 
@@ -65,7 +60,7 @@ export default {
   name: 'SetMinimumAmount',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     GetSocietyMinimumAmount,
     AddNewPaymentTypeToSocietyModal
   },
@@ -110,15 +105,12 @@ export default {
     getsocietyMinimumAmount(event){
       const society_id = event.target.value
       if(!society_id || society_id == "") return
-
       this.getOneSociety(society_id)
       .then(society => {
         if (society){
           this.getSocietyPaymentsMinAmount({society_id})
           .then(data => {
-            //console.log(data);
             if (data){
-            
               this.$data.societyPaymentMinAmounts = this.addPaymentNameToSocietyPaymentMinAmounts(
                 data.societyPaymentMinAmounts
               )
@@ -133,7 +125,6 @@ export default {
 
     addPaymentNameToSocietyPaymentMinAmounts(societyPaymentMinAmounts){
       const paymentTypesObj = turnArrayToObject(this.$data.paymentTypes)
-      //console.log(paymentTypesObj)
       return societyPaymentMinAmounts.map(spm=>{
         spm.payment_name = paymentTypesObj[spm.payment_type_id] ? paymentTypesObj[spm.payment_type_id].name : "Unknown";
         return spm 
@@ -160,7 +151,10 @@ export default {
             )
             // hide modal
             this.hideModal();
-            this.$data.successMsg = 'Minimum payment amount updated successfully'
+            this.$toasted.show('Minimum payment amount updated successfully', { 
+              type: "success", 
+              icon: 'check-circle'
+            })
           }// end if
         }) // end then
       } else {
@@ -173,7 +167,10 @@ export default {
             )
             // hide modal
             this.hideModal();
-            this.$data.successMsg = 'Minimum payment amount set successfully'
+            this.$toasted.show(`Minimum payment amount set successfully`, { 
+              type: "success", 
+              icon: 'check-circle'
+            })
           } // end if   
         })// end then
       }
@@ -194,19 +191,19 @@ export default {
     },
 
     editSocietyMinimumPaymentTypeEventHandler(id){
-      this.getOneSociety(id)
-      .then(society => {
-        if (society){ 
-          this.getOneSocietyPaymentMinAmount(id)
-          .then(societyPayMinAmt=>{
-            console.log(societyPayMinAmt)
-            if(societyPayMinAmt){
-              this.$data.currentSocietyPaymentMinAmt = societyPayMinAmt
-              this.showModal()
-            }
-          })
-        }
-      });
+      // this.getOneSociety(id)
+      // .then(society => {
+      //   if (society){ 
+          
+      //   }
+      // });
+      this.getOneSocietyPaymentMinAmount(id)
+        .then(societyPayMinAmt=>{
+          if(societyPayMinAmt){
+            this.$data.currentSocietyPaymentMinAmt = societyPayMinAmt
+            this.showModal()
+          }
+        })
     }
   },
   
@@ -216,7 +213,7 @@ export default {
   },
   created(){
     // get all societies
-    this.getSocieties()
+    this.getSocieties({query:{limit:500}})
     .then(data => {
       if(data){
         this.$data.societies = data.societies
@@ -226,17 +223,11 @@ export default {
     // get all payment types
     this.getPaymentTypes()
     .then(data => {
-      // check if data is not null
-      console.log(data)
       if(data){
         // save to trigger rerendering
         this.$data.paymentTypes = data.paymentTypes    
       }
     })
-  },
-  mounted(){
-    closeNavbar()
-    toggleAvatarDropDown()
   }
 }
 </script>

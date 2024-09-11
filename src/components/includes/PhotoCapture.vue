@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="row" v-show="camera.streaming">
-      <div class="col-md-6 text-center">
+      <div class="col-md-6 col-lg-6 col-sm-12 text-center">
         <div>
-        <label> Select Camera</label> 
-        <select class="form-control">
-          <option v-for="c in cameraList" :key="c.deviceId" :value="c.deviceId">{{c.label}}</option>
-        </select>
+          <label> Select Camera</label> 
+          <select class="form-control" @change="switchCamera($event)">
+            <option v-for="c in cameraList" :key="c.deviceId" :value="c.deviceId">{{c.label}}</option>
+          </select>
         </div>
         <video id="video" class="mt-20">
           stream not available...
@@ -19,12 +19,12 @@
         
         <canvas id="canvas" style="display:none"></canvas>
       </div>
-      <div class="col-md-3 col-md-offset-2">
-        <div class="text-center">
-        <label>Snapshot</label> 
-        <div class="form-control" style="visibility:hidden">
-          &nbsp;
-        </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 text-center">
+        <div>
+          <label>Snapshot</label> 
+          <div class="form-control" style="visibility:hidden">
+            &nbsp;
+          </div>
         </div>
         <div id="snap-shot" class="mt-20">
           <img v-if="camera.snapshotURL" :src="camera.snapshotURL" alt="snapshot">
@@ -70,8 +70,6 @@
     watch:{
       onOrOff(newOnOrOf){
 
-        console.log({newOnOrOf})
-
         if(newOnOrOf){
           this.switchOnCamera(undefined, true)
         }
@@ -82,6 +80,18 @@
     },
 
     methods:{
+
+      switchCamera(event){
+        //stream.
+        const deviceId = event.target.value
+
+        if(deviceId){
+          this.switchOffCamera()
+
+          this.switchOnCamera({video:{deviceId}}, false)
+        }
+        
+      },
 
       stopStreaming(){
         if(stream){
@@ -118,6 +128,8 @@
 
         navigator.mediaDevices.getUserMedia(constraint)
         .then(s=>{
+          //s.addTrack()
+          s.getVideoTracks()[0].t;
           stream = s;
           //link to the video source 
           if(enumerateCamera){
@@ -134,12 +146,11 @@
               }//end for loop
 
               this.$data.cameraList = cameraList
-
-              video.srcObject = s;
-              video.play()
             })
             .catch(e=>this.$data.error = e);
           }//end if
+          video.srcObject = s;
+          video.play()
         })
         .catch(e=>this.$data.error = e)
         /**

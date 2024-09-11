@@ -12,7 +12,6 @@ export default {
         const {entities, result} = normalize(meetingCalendar, meetingCalendarSchema);
         //add to store
         store = setStore(store, entities.meeting_calendars);
-        //console.log(store, result);
         //return id to be kept by clients that'll use the API
         //this value will be use to fetch the data later
         return result;
@@ -28,7 +27,6 @@ export default {
     },//end method
 
     getMeetingCalendarByID(id){
-        //console.log(store, id);
         return store[id] ? store[id] : null;
     },
 

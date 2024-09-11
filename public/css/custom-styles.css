@@ -1,7 +1,9 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic);
+
 body {
 	margin: 0;
 	padding: 0;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Lato', sans-serif;
 	background: #1F2837;
 }
 
@@ -105,16 +107,16 @@ label {
     flex-direction: row;
     justify-content: space-between;
 }
-.flex-container > p {
+/* .flex-container > p {
     width: 50%;
     margin: auto;
-}
-.flex-container .export-btn {
+} */
+/* .flex-container .export-btn {
     text-align: right;
-}
-.flex-container .page-notification-message {
+} */
+/* .flex-container .page-notification-message {
     text-align: center;
-}
+} */
 .btn, a {
     /* padding: 0 10px; */
     text-transform: capitalize;
@@ -624,6 +626,7 @@ font-size: 13px;
 line-height: 21px;
 padding-top: 4px;
 }
+
 .active-menu, .active-menu i {
     background-color: #233342 !important;
     color: #fff !important;
@@ -946,6 +949,19 @@ line-height: 1.428571429;
       width: 250px;
     }
 }
+@media (max-width: 330px){
+    .filter-result {
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+@media (max-width: 400px){
+    .error-div {
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
 .dropdown-content{
     min-width: 165px !important;
     left: -38px !important;
@@ -1103,9 +1119,16 @@ padding: 0 15px 0px 15px;
 .ml-10{margin-left: 10px;}
 .ml-20{margin-left: 20px;}
 .mt-20 {margin-top: 20px;}
+.mt-50 {margin-top: 50px;}
 .mb-20 {margin-bottom: 20px;}
 .text-upper {
   text-transform: uppercase;
+}
+.bg-lightblue {
+    background-color: #00f5ff;
+}
+.bg-orange {
+    background-color: #ffb53e;
 }
 .avatar {
     width: 160px;
@@ -1139,14 +1162,26 @@ padding: 0 15px 0px 15px;
     height: 40px;
 }
 .error {
-  color: #ff0000;
+  color: #a94442;
 }
 .error-div {
     width: 60%;
     margin: 10px auto;
-    background-color: #ff0000;
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+.warning-div {
+    width: 60%;
+    margin: 10px auto;
+    background-color: #ffb53e;
     color: #ffffff;
     padding: 10px;
+    text-align: center;
+    border-radius: 5px;
 }
 .success-div {
     width: 60%;
@@ -1154,6 +1189,8 @@ padding: 0 15px 0px 15px;
     background-color: #3db97a;
     color: #ffffff;
     padding: 10px;
+    text-align: center;
+    border-radius: 5px;
 }
 #profile-table tr td {
     padding: 25px;
@@ -1418,11 +1455,90 @@ when the dropdown content is shown */
 
 /* Custom heading */
 .custom-heading {
-    background-color: #333;
+    background-color: #009688;
     color: #fff;
     padding: 10px;
-    font-family: cursive;
     width: 50%;
     margin: 10px auto;
     font-size: 22px;
+    border-radius: 5px;
 }
+.mr-30 {
+    margin-right: 30px;
+}
+
+.styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 14px;
+    min-width: 400px;
+    /* box-shadow: 0 0 0px rgb(0 0 0 / 15%); */
+    background: #fff;
+    border-radius: 7px;
+    border: 0.8px solid #e7dfdf;
+}
+.styled-table thead tr {
+    color: #000;
+    text-align: left;
+}
+.styled-table th,
+.styled-table td {
+    padding: 18px 15px;
+}
+.styled-table tbody tr, .styled-table thead tr {
+    border-bottom: 0.8px solid #e7dfdf;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 0.8px solid #e7dfdf
+}
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+.bubble {
+    display: block; 
+    position: absolute;
+  }
+.bubble .bubble-success, .success-icon {
+    margin: -10px 0;
+    display: block;
+    text-align: center;
+    opacity: 1;
+    background-color: #5cb85c; 
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.bubble .bubble-failed {
+    margin: -10px 0;
+    display: block;
+    text-align: center;
+    opacity: 1;
+    background-color: #828282; 
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.bubble .pending-icon {
+    margin: -10px 0;
+    display: block;
+    text-align: center;
+    opacity: 1;
+    background-color: rgb(248, 185, 66); 
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.bubble .rejected-icon {
+    margin: -10px 0;
+    display: block;
+    text-align: center;
+    opacity: 1;
+    background-color: rgb(231, 22, 22);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+  
+  

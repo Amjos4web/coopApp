@@ -4,8 +4,8 @@
       <!-- Modal content no 1-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Edit {{ society.name }}'s Data</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body padtrbl">
           <div v-if="error"> 
@@ -23,42 +23,56 @@
          <div class="container">
           <form @submit.prevent="saveSociety()" class="col s12">
             <div class="box">
-              <div class="row">
-                <div class="form-group">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                        type="text" 
-                        v-model="form.name"
-                        autofocus
-                      >
-                      <label for="Society Name">Soceity Name</label>
-                      <span class="error" v-if="elementHasError('name')">
-                        {{ error.errors.name[0] }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <textarea 
-                      id="textarea1" 
-                      class="materialize-textarea" 
-                      v-model="form.notes"
-                      >
-                      </textarea>
-                      <label for="notes">Notes</label>
-                      <span class="error" v-if="elementHasError('notes')">
-                        {{ error.errors.notes[0] }}
-                      </span>
-                    </div>
-                  </div>
-                  
+              <div v-if="isLoading">
+                <div class="text-center">
+                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
                 </div>
               </div>
-            </div>
-            <div class="text-center">
-              <input type="submit" value="Save" class="btn-general">
+
+              <div class="row">
+                <div class="form-group col-12">
+                  <label for="Society Name">Soceity Name</label>
+                  <input 
+                    type="text" 
+                    v-model="form.name"
+                    class="form-control"
+                    autofocus
+                  >
+                  
+                  <span class="error" v-if="elementHasError('name')">
+                    {{ error.errors.name[0] }}
+                  </span>
+                </div>
+              
+                <div class="form-group col-12">
+                  <label for="notes">Notes</label>
+                  <textarea 
+                  id="textarea1" 
+                  class="form-control" 
+                  v-model="form.notes"
+                  >
+                  </textarea>
+                  
+                  <span class="error" v-if="elementHasError('notes')">
+                    {{ error.errors.notes[0] }}
+                  </span>
+                </div>
+
+                <div class="form-group col-12">
+                  <label for="active">Make active</label>
+                  <select v-model="form.active" class="form-control">
+                    <option value="">Select an Option</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                  <span class="error" v-if="elementHasError('active')">
+                    {{ error.errors.active[0] }}
+                  </span>
+                </div>
+              </div>
+              <div class="text-center mt-20">
+                <input type="submit" value="Save" class="btn btn-primary">
+              </div>
             </div>
           </form>
         </div>
@@ -79,7 +93,8 @@ export default {
     return { 
       form:{
         name:this.$props.society.name,
-        notes:this.$props.society.notes
+        notes:this.$props.society.notes,
+        active:this.$props.society.active
       },//end form 
     }//end object
   },
@@ -88,10 +103,10 @@ export default {
     ...mapMutations("app/society", ["setError"]),
     saveSociety(){
       this.setError(null);
-
       let validation = new Validator(this.$data.form, {
         name: 'required|max:200',
-        notes: 'required|max:200'
+        notes: 'required|max:200',
+        active: 'required|max:1'
       }) 
 
       if (validation.fails()){
@@ -126,7 +141,7 @@ export default {
   },
   watch: {
     society(newSociety, oldSociety){
-      this.$data.form = {name:newSociety.name, notes:newSociety.notes}
+      this.$data.form = {name:newSociety.name, notes:newSociety.notes, active:newSociety.active}
     }
   }
 }

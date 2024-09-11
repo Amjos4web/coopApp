@@ -1,27 +1,40 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-			<div id="page-inner">
-        <div v-if="memberIsLoading || societyIsLoading || smIsLoading || selfIsLoading">
-          <div class="text-center mb-20" :style="{width: '100%'}">
-            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-          </div>
-        </div>
+			<div id="content-page" class="content-page">
         <div v-if="smError">
           <div class="error-div text-center">
             <span>{{ smError.message }}</span>
           </div>
         </div>
+        <div v-if="memberError">
+          <div class="error-div text-center">
+            <span>{{ memberError.message }}</span>
+          </div>
+        </div>
+        <div v-if="selfError">
+          <div class="error-div text-center">
+            <span>{{ selfError.message }}</span>
+          </div>
+        </div>
+        <div v-if="roleError">
+          <div class="error-div text-center">
+            <span>{{ roleError.message }}</span>
+          </div>
+        </div>
+        <div v-if="memberIsLoading || societyIsLoading || smIsLoading || selfIsLoading || roleIsLoading">
+          <div class="text-center mb-20" :style="{width: '100%'}">
+            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+          </div>
+        </div>
 				<div class="row padding" v-if="member">
 					<div class="col-md-4 col-sm-12 text-center"> 
-            <img src="@/assets/passports/avata.png" class="avatar">
-            <h4 class="custom-singleline-heading">Role: Member</h4>
+            <img :src="member.passport" class="avatar" :alt="member.name">
+            <h4 class="mt-20">Role: {{ roleType }}</h4>
           </div><!--/.row-->
-          <div class="col-md-8 col-sm-12 text-center"> 
+          <div class="col-md-8 col-sm-12"> 
             <div class="table-responsive">
-              <table class="table table-striped table-hover table-bordered" id="profile-table">
+              <table class="styled-table" id="profile-table">
                 <tbody>
                   <tr>
                     <th>Name</th>
@@ -58,21 +71,21 @@
           </div><!--/.row-->
         </div>	
 			</div>
+      <FooterBar/>
 		</div>
-  </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav'; 
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import { closeNavbar, toggleAvatarDropDown } from "../../assets/js/helpers/utility";
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
-  name: 'Dashboard',
+  name: 'profile-index-component',
   components: {
     HeaderNav,
-    PageHeader
+    FooterBar
   },
 
   data:()=>({
@@ -81,6 +94,7 @@ export default {
     societies: [], 
     totalAsset:0.0,
     member:[],
+    roleType:null,
     pageTitle: 'My Profile',
     previousPage: 'My Dashboard'
   }),
@@ -90,6 +104,7 @@ export default {
     ...mapActions("app/auth", ["getSelf"]),
     ...mapActions("app/society", ['fetchManySociety']),
     ...mapActions("app/member", ["getOneMember"]),
+    ...mapActions("app/role", ["getOneRole"]),
   },
 
   created(){
@@ -116,33 +131,33 @@ export default {
       }//end if
     })//end then
 
-    this.getSelf()
-    .then(result => {
-      console.log(result)
-      if (result){
-        const member_id = result.member_id
-        this.getOneMember(member_id)
-        .then(data => {
-          if (data){
-            this.$data.member = data.member
-          }
-        })
-      }
-    })
+  
+    if (this.self){
+      this.getOneMember(this.self.member_id)
+      .then(self => {
+        if (self){
+          this.$data.member = self
+        }
+      })
+    }
+    
+
+    if(this.rolePermission){
+      this.getOneRole(this.rolePermission.role_id)
+      .then(role=>{
+        this.$data.roleType = role.name
+      })
+    }
+    
   },
 
   computed: {
     ...mapGetters("app/society_member", {smIsLoading:"isLoading", smError:"error"}),
-    ...mapGetters("app/auth", {selfIsLoading:"isLoading", selfError:"error"}),
+    ...mapGetters("app/auth", {selfIsLoading:"isLoading", selfError:"error", self:"self", rolePermission:"rolePermission"}),
     ...mapGetters("app/society", {societyIsLoading:"isLoading", societyError:"error"}),
     ...mapGetters("app/member", {memberIsLoading:"isLoading", memberError:"error"}),
+    ...mapGetters("app/role", {roleError:"error", roleIsLoading:"isLoading"}),  
     
-  },
-
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
   }
- 
 }
 </script>

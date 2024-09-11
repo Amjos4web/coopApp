@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="successMsg">
           <div class="text-center success-div">
             <span>
@@ -20,26 +18,33 @@
                   <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
                 </div>
               </div>
-              <div class="row">
-                <div class="form-group">
-                  <div class="row">
-                    <div class="form-group col s12">
-                      <label for="Society Name">Society Name</label>
-                      <select class="form-control" @change="getSocietyMembers($event)">
-                        <option value="">Choose a society</option>
-                        <option v-for="society in societies" :key="society.id" :value="society.id">{{ society.name }}</option>
-                      </select>
-                      
-                    </div>
-                  </div>
+
+              <div class="row text-center">
+                <div class="form-group col-sm-6 col-md-6 m-auto">
+                  <label for="member name">Enter Member's Name</label>
+                  <input type="text" class="form-control" v-model="memberSearchMeta" @keyup="filterMember()">
                 </div>
               </div>
+
+              <div class="row">
+                <div class="form-group col-12">
+                  <label for="Society Name">Society Name</label>
+                  <select class="form-control" @change="getSocietyMembers($event)">
+                    <option value="">Choose a society</option>
+                    <option v-for="society in societies" :key="society.id" :value="society.id">{{ society.name }}</option>
+                  </select>
+                </div>
+              </div>
+                </div>
+              </div>
+
+              <SocietyMembersList :societyMembers="searchMemberResult"
+              :removeMemberFromSocietyEventHandler="removeMemberFromSocietyEventHandler"/>
+          
             </div>
-            <SocietyMembersList :societyMembers="societyMembers"
-            :removeMemberFromSocietyEventHandler="removeMemberFromSocietyEventHandler"/>
-          </div>
-        </div>
-      </div>
+            
+      <FooterBar/>
+
       <SelectMembersForSocietyModal 
       :members="members" 
       :modalTitle="modalTitle" 
@@ -53,18 +58,22 @@
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import Notification from '@/components/includes/PageNotification'
 import SelectMembersForSocietyModal from '@/components/societies/SelectMembersForSocietyModal'
 import SocietyMembersList from '@/components/societies/SocietyMembersList'
-import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
+import { openModal, closeModal } from "../../assets/js/helpers/utility";
 import { mapActions , mapGetters, mapMutations } from 'vuex'
+import {turnArrayToObject} from '../../utility'
+
+let serverData = []
+let dataResult = []
 
 export default {
   name: 'AssignMembers',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     Notification,
     SelectMembersForSocietyModal,
     SocietyMembersList
@@ -78,10 +87,12 @@ export default {
       successMsg: '',
       members: [],
       societyMembers: [],
+      searchMemberResult: [],
       modalTitle: '',
       searchMeta: '',
       errorDisplay: '',
       currentSocietyID:null,
+      memberSearchMeta: '',
     } 
   },
   methods: {
@@ -99,8 +110,9 @@ export default {
     ...mapMutations("app/society_member", ['setError']),
   
     getSocietyMembers(event){
-      
+
       this.$data.societyMembers = [];
+      this.$data.memberSearchMeta = ''
 
       const val = event.target.value
 
@@ -111,55 +123,50 @@ export default {
         if(society){
           this.$data.currentSocietyID = society.id;
           this.$data.modalTitle = `Add new members to ${society ? society.name : "Unknown Society"}`
-        }else{
-          this.$data.currentSocietyID = null;
-        }
-        return society;
+          this.fetchMemberInSociety({society_id:this.$data.currentSocietyID})
+          .then(memberData => {
+            if (memberData){
+              this.fetchMembers(memberData)
+            }
+          })
+      }else{
+        this.$data.currentSocietyID = null;
+      }
       })
-      .then(society=>this.fetchMemberInSociety({society_id:society.id}))
-      .then(data=>this.fetchMembers(data))
     }, 
 
     fetchMembers(data) {
       if(data){
-
-        const notDeletedSocietyMember = data.societyMembers.filter(sm=>!sm.deleted)
-
-        console.log({ notDeletedSocietyMember })
-
+        const notDeletedSocietyMember = data.societyMembers.filter(sm=> sm.deleted !== 1)
         const memberIDs = notDeletedSocietyMember.map(sm=>sm.member_id)
-
         this.fetchManyMember(memberIDs)
         .then(result=>{
-          //console.log(result)
-          const tempStore = {};
-          //loop thru what server sent us
-          for(let c = 0; c < result.members.length; c++){
-            const m = result.members[c];
-            //turn to object
-            tempStore[m.id] = m;
-          }//end for loop
-          console.log(tempStore);
-          /**
-           * if request is successful distribute using store resolve
-           */
-          this.$data.societyMembers = notDeletedSocietyMember.map(sm=>{
-            
-            //console.log(sm)
-            const m = tempStore[sm.member_id]
+          if (result){
+            const store = turnArrayToObject(result.members)
+            this.$data.searchMemberResult = notDeletedSocietyMember.map(sms=>{
+              sms.member_name = store[sms.member_id] ? store[sms.member_id].name : 'Unknown'
+              sms.member_phone = store[sms.member_id] ? store[sms.member_id].phone : 'Unknown'
+              return sms
+            })
+          }
+          serverData = this.$data.searchMemberResult
 
-            sm.member = (
-              m ? ({name : m.name, phone:m.phone}) : null
-            )
-            return sm;
-          })//end map
-          console.log(this.$data.societyMembers);
+          this.$data.searchMemberResult = dataResult = serverData
         })//end then
         .catch(e=>{
-          //console.log({e:this.setError})
           this.setError(e)
         })
       }//end if
+    },
+
+    filterMember(){
+      const searchValue = this.$data.memberSearchMeta.toLocaleLowerCase()
+      this.$data.searchMemberResult = dataResult.filter(
+        m=>(
+          (m.member_name.toLocaleLowerCase().indexOf(searchValue) > -1) 
+          && (m.id != dataResult.member_id)
+        )
+      )
     },
 
     showModal(){
@@ -174,7 +181,6 @@ export default {
     },
 
     searchMember(searchMeta){
-      //console.log(searchMeta)
       //let val = this.$data.searchMeta
       if (searchMeta !== ""){
         this.fetchMemberNotInSociety({society_id:this.$data.currentSocietyID, searchMeta})
@@ -194,10 +200,12 @@ export default {
         this.saveSocietyMember({society_id:this.$data.currentSocietyID, member_ids})
         .then(data=>{
           if(data){
-            //this.$data.societyMembers = data.societyMembers;
             this.fetchMembers(data);
-            this.$data.successMsg = 'Members added successfully'
-            this.hideModal();
+            this.$toasted.show(`Member added successfully`, { 
+              type: "success", 
+              icon: 'check-circle'
+            })
+            //this.hideModal();
           }
         })
       } else {
@@ -208,13 +216,21 @@ export default {
     removeMemberFromSocietyEventHandler(id){
       this.$data.societyMembers = [];
       this.removeMemberFromSociety(id)
-      .then(societyMember=>this.fetchMemberInSociety({society_id:societyMember.society_id}))
-      .then(data=>this.fetchMembers(data))
+      .then(societyMember=> this.fetchMemberInSociety({society_id:this.$data.currentSocietyID}))
+      .then(data=> {
+        if (data){
+          this.fetchMembers(data)
+          this.$toasted.show(`Member removed successfully`, { 
+            type: "success", 
+            icon: 'check-circle'
+          }) 
+        }
+      })
     }
   },
 
   created(){
-    this.getSocieties()
+    this.getSocieties({query:{limit:500}})
     .then(data=>{
       if (data){
         this.$data.societies = data.societies
@@ -225,11 +241,6 @@ export default {
   computed: {
     ...mapGetters("app/society_member", ["error", "isLoading"]),
     //...mapGetters("app/member", ["error", "isLoading"]),
-  },
-
-  mounted(){
-    closeNavbar(),
-    toggleAvatarDropDown()
   }
 }
 </script>

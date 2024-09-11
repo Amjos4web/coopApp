@@ -64,14 +64,12 @@ export default{
         
             return axios.get(url)
             .then(resp=>{
-                //console.log(resp);
                 const {roles} = resp.data.data
                 
                 cache.currentPage = {
                     ids:roleStore.addRoleList(roles), 
                     url
                 };
-                //console.log(cache);
                 return {roles};
             })
             .catch(e=>commitError(commit, e))

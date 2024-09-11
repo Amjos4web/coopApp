@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="successMsg">
           <div class="text-center success-div">
             <span>
@@ -14,19 +12,15 @@
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> {{ notificationMessage }}</p>
-                <p class="export-btn">
+                <div class="export-btn text-right">
                   <button class="btn btn-warning btn-sm ml-10"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button>
                   <button class="btn btn-info btn-sm  ml-10" @click="showAddModal"><i class="fa fa-plus"></i>&nbsp;Add Member</button>
-                </p>
-              </div>
+                </div>
             </div>
           </div>
           <form @submit.prevent="searchMember()">
-            <div class="filter-result">
-              <div class="row">
-                <div class="col-md-8 col-md-offset-2">
+            <div class="row">
+                <div class="col-md-8 m-auto">
                   <div class="form-group">
                     <label>Enter member name</label>
                     <input type="text"
@@ -34,38 +28,38 @@
                     v-model="searchMeta"
                     >
                   </div>
+                  <div class="text-center">
+                    <input type="submit" value="Filter Result" class="btn btn-info">
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="text-center">
-              <input type="submit" value="Filter Result" class="btn-general">
             </div>
           </form>
+        </div>
+        <div class="container">
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit" :reloadIndexData="reloadIndexData"/>
+          <div class="text-center mb-20">
+            <h3 class="search-result-title">{{ searchResultData }}</h3>
           </div>
-          <div class="container">
-            <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit"/>
-            <div class="text-center mb-20">
-              <h3 class="search-result-title">{{ searchResultData }}</h3>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr class="theading">
-                    <th>S/N</th>
-                    <th>Name</th>
-                    <th>Phone Number</th>
-                    <th>View</th>
-                    <th>Edit</th>
-                  </tr>
-                </thead>
-                <MembersList :members="members" :error="error" :isLoading="isLoading" :getOneMemberEventHandlerForView="getOneMemberEventHandlerForView" :getOneMemberEventHandlerForEdit="getOneMemberEventHandlerForEdit" 
-                :currentPage="pagination.currentPage" :limit="pagination.limit"/>
-              </table>
-            </div>
+          <div class="table-responsive">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>Name</th>
+                  <th>Phone Number</th>
+                  <th>View</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <MembersList :members="members" :error="error" :isLoading="isLoading" :getOneMemberEventHandlerForView="getOneMemberEventHandlerForView" :getOneMemberEventHandlerForEdit="getOneMemberEventHandlerForEdit" 
+              :currentPage="pagination.currentPage" :limit="pagination.limit"
+              />
+            </table>
           </div>
-          <Pagination :pagination="pagination" :changePage="changePage"/>
+        </div>
+        <Pagination :pagination="pagination" :changePage="changePage"/>
       </div>
-    </div>
+    <FooterBar/>
     <ViewMemberProfileModal ref="viewModal" :member="member"/>
     <RegisterMemberModal :updateMemberOnParent="updateMemberOnParent" :member="member" :modalTitle="modalTitle" ref="addModal"/>
   </div>
@@ -73,14 +67,14 @@
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import MembersList from '@/components/members/MembersList'
 import ViewMemberProfileModal from '@/components/members/ViewMemberProfileModal'
 import RegisterMemberModal from '@/components/members/RegisterMemberModal'
 import Pagination from '@/components/includes/Pagination'
 import LimitDataFetch from '@/components/includes/LimitDataFetch'
-import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
-import { mapActions , mapGetters, mapMutations } from 'vuex'
+import { openModal, closeModal } from "../../assets/js/helpers/utility";
+import { mapActions , mapGetters } from 'vuex'
 
 const initMember = {
   name: '',
@@ -93,10 +87,10 @@ const initMember = {
 }
 
 export default {
-  name: 'Members',
+  name: 'members-component',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     MembersList,
     ViewMemberProfileModal,
     RegisterMemberModal,
@@ -121,6 +115,8 @@ export default {
     ...mapActions("app/member", ["getMembers", "getOneMember"]),
     showAddModal(){
       let element = this.$refs.addModal.$el
+      //initialize member
+      //this.$data.member = initMember
       openModal(element);
     },
     showViewModal(){
@@ -163,23 +159,29 @@ export default {
         this.$data.members = this.$data.members.map(
           m=>((m.id.toString() === member.id.toString()) ? member : m)
         )
-        this.$data.successMsg = 'Member updated successfully'
+        this.$toasted.show('Member updated successfully', {
+          type: "success", 
+          icon: 'check-circle'
+        })
       }else{
-        this.$data.members = [member, ...this.$data.members]
-        this.$data.successMsg = 'Member added successfully'
+        this.$data.members = [member.member, ...this.$data.members]
+        this.$data.successMsg = `Member added successfully. UserID: ${member.auth_detail.userid} - Password: ${member.auth_detail.password}`
+        this.$toasted.show(`Member added successfully. UserID: ${member.auth_detail.userid} - Password: ${member.auth_detail.password}`, { 
+          type: "success", 
+          icon: 'check-circle'
+        })
         if (clearForm){
           this.$data.member = {}
         }
       }
       //initialize member
       this.$data.member = initMember
-      this.hideAddModal();
+      //this.hideAddModal();
     },
     
     getOneMemberEventHandlerForView(id){
       this.getOneMember(id)
       .then(member => {
-        console.log(member)
         if (member){
           this.$data.member = member
           // raise modal here
@@ -187,6 +189,7 @@ export default {
         }
       })
     },
+
     getOneMemberEventHandlerForEdit(id){
       this.getOneMember(id)
       .then(member => {
@@ -194,13 +197,23 @@ export default {
           this.$data.member = member
           this.modalTitle = `Edit ${member.name}'s Profile`
           // raise modal here
-          console.log(this.$data.member)
           this.showAddModal()
         }
       })
     },
+
+    reloadIndexData(){
+      this.getMembers({query:{limit:200}})
+      .then(data => {
+        if(data){
+          this.$data.members = data.members
+          this.$data.pagination = data.pagination
+        }
+      })
+    },
+
     changePage(page){
-      this.getMembers({query:{page, limit:10}})
+      this.getMembers({query:{page, limit:200}})
       .then(data => {
         if(data){
           this.$data.members = data.members
@@ -213,18 +226,13 @@ export default {
     ...mapGetters("app/member", ["error", "isLoading"])
   },
   created(){
-    this.getMembers({query:{limit:10}})
+    this.getMembers({query:{limit:200}})
     .then(data => {
-      console.log(data)
       if(data){
         this.$data.members = data.members
         this.$data.pagination = data.pagination
       }
     })
-  },
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
   }
 }
 </script>

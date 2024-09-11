@@ -1,6 +1,7 @@
 import VueCookie from "vue-cookie"
 import {setIsLoading, auth, setError} from "../constants";
 import userStore from "../normalized-api/user";
+import rolePermissionStore from "../normalized-api/role-permission"
 import axios, {AUTH_URL} from "../api";
 import { emptyStore } from "../normalized-api";
 import refreshToken from "../api/refresh-token";
@@ -17,22 +18,24 @@ export default {
         isLoading:false,
         self:null,
         error:null,
+        rolePermission:null,
     },
     getters:{
         isLoading:(state)=>state.isLoading,
         error:(state)=>state.error,
         self:(state)=>state.self,
         isLogged:(state)=>(!!state.self),
+        rolePermission:(state)=>state.rolePermission,
     },
     mutations:{
         [auth.setSelf]:(state, self)=>(state.self = self),
         [setIsLoading]:(state, loadingState)=>(state.isLoading = loadingState),
         [setError]:(state, error)=>(state.error = error),
+        rolePermission:(state, rolePermission)=>(state.rolePermission=rolePermission),
     },
     
     actions:{
         login({commit}, credentials){
-            console.log(credentials);
             //if user is already logged, return current user
             let self = userStore.getUserByID(myID);
             //user is already logged in
@@ -40,16 +43,20 @@ export default {
             //notify UI that we are loading
             commit(setIsLoading, true)
             //return promise to caller
-            return axios.post(AUTH_URL.login, credentials)
+            return axios.post(AUTH_URL.login, {userid:credentials.userid, password:credentials.password})
             .then(response=>{
                 debug("login response", response);
                 //get user and success from response
-                const {success, data:{user, authorization}} = response.data;
+                const {success, data:{user, authorization, rolePermission}} = response.data;
                 //if request was successful
                 if(success){
                     myID = userStore.addUser(user)
+                    if(rolePermission)
+                        rolePermissionStore.addRolePermission(rolePermission)
+                    //rolePermission.ad
                     //save to store first and then set in state
                     commit(auth.setSelf, user);
+                    commit("rolePermission", rolePermission);
                     //hook up function to always refresh client token 10 seconds before expiry
                     refreshToken(authorization.expires_in);
                     VueCookie.set("token", authorization.token);
@@ -67,23 +74,24 @@ export default {
         logout({ commit }){
             return axios.get(AUTH_URL.logout)
             .then(response=>{
-                console.log(response);
-                const {success, msg} = response.data;
-                if(success){
-                    //save to store first and then set in state
-                    commit(auth.setSelf, null);
-                    emptyStore();
-                    VueCookie.set("token", "")
-                    //cancel token refresh, when clients logs out
-                    event.emit(REFRESH_TOKEN_EVENT_TYPE.CANCEL_REFRESHING_TOKEN);
-                    event.emit(EVENT_TYPE.CLEAN_UP);
-                    //return message
-                    return msg;
-                }
-                commitError(commit, null)
+                // const {success, msg} = response.data;
+                // if(success){
+                    
+                // }
+                // commitError(commit, null)
             })
             .catch(e=>commitError(commit, e))
-            .then((data)=>stopLoadingAndResolve(commit, data))
+            .then((data)=>{
+                //save to store first and then set in state
+                commit(auth.setSelf, null);
+                emptyStore();
+                VueCookie.set("token", "")
+                //cancel token refresh, when clients logs out
+                event.emit(REFRESH_TOKEN_EVENT_TYPE.CANCEL_REFRESHING_TOKEN);
+                event.emit(EVENT_TYPE.CLEAN_UP);
+                //return message
+                stopLoadingAndResolve(commit, data)
+            })
         },
 
         //fetch current user info
@@ -100,14 +108,16 @@ export default {
 
             return axios.get(AUTH_URL.self)
             .then(response=>{
-                console.log(response);
                 //get user and success from response
-                const {success, data:{user}} = response.data;
+                const {success, data:{user, rolePermission}} = response.data;
                 //if request was successful
                 if(success){
                     myID = userStore.addUser(user);
+                    if(rolePermission)
+                        rolePermissionStore.addRolePermission(rolePermission)
                     //save to store first and then set in state
                     commit(auth.setSelf, user);
+                    commit("rolePermission", rolePermission);
                     //hook up function to always refresh client token immediately to get
                     //token refresh interval
                     refreshToken(0);

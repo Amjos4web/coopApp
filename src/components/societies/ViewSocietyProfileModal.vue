@@ -4,13 +4,13 @@
       <!-- Modal content no 1-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">{{ society.name }} Details</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body padtrbl">
+        <div class="modal-body">
           <div class="container" :style="{width: '100%;'}">
             <div class="table-responsive">
-              <table class="table table-striped table-hover table-bordered">
+              <table class="styled-table">
                 <tbody>
                   <tr>
                     <th width="50%">Name</th>
@@ -24,34 +24,7 @@
                     <th width="50%">Date Established</th>
                     <td>{{ society.created_at }}</td>
                   </tr>
-                  <tr>
-                    <th width="50%">Day of Meeting</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>Total Saving</th>
-                    <td id="savings"></td>
-                  </tr>
-                  <tr>
-                    <th>Total Shares</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>Total Buiding Fund</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>Total Loan Issued</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>Total Loan Repaid</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th width="50%">Total Asset</th>
-                    <td></td>
-                  </tr>
+                  
                   <tr>
                     <th width="50%">Notes</th>
                     <td>{{ society.notes }}</td>
@@ -60,7 +33,7 @@
               </table>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
+              <button type="button" class="btn btn-secondary pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
             </div>
           </div>
         </div>

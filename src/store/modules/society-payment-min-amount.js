@@ -64,7 +64,6 @@ export default{
         
             return axios.get(SOCIETY_PAY_MIN_AMOUNT.get_society_pay_min_amounts + society_id)
             .then(resp=>{
-                //console.log(resp);
                 const {societyPaymentMinAmounts} = resp.data.data
                 cache.societyIDs[society_id] = societyPaymentMinAmountStore.addSocietyPaymentMinAmountList(
                     societyPaymentMinAmounts
@@ -80,6 +79,7 @@ export default{
             if(!id) return handleNoIDError(commit, "Society payment minimum amount ID is required");
             //get society payment minimum amount from store
             const societyPaymentMinAmount = societyPaymentMinAmountStore.getSocietyPaymentMinAmountByID(id);
+            
             //if societyPaymentMinAmount is already in store
             if(societyPaymentMinAmount){
                 return resolveWithDataFromStore(commit, societyPaymentMinAmount);

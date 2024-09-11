@@ -65,15 +65,12 @@ export default{
         
             return axios.get(url)
             .then(resp=>{
-                //console.log(resp);
                 const {paymentTypes} = resp.data.data
                 
                 cache.currentPage = {
                     ids:paymentTypeStore.addPaymentTypeList(paymentTypes), 
                     url
                 };
-                //console.log(cache);
-                console.log(paymentTypes);
                 return {paymentTypes};
             })
             .catch(e=>commitError(commit, e))

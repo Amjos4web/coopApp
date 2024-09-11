@@ -1,5 +1,6 @@
 import {setIsLoading, setError} from "../constants";
 import userStore from "../normalized-api/user";
+import memberStore from "../normalized-api/member";
 import axios, { turnObjectToQueryString, USER_URL } from "../api";
 import { commitError, handleNoIDError, resolveWithDataFromStore, stopLoadingAndResolve } from "./app";
 import { debug } from "../../utility";
@@ -58,7 +59,6 @@ export default{
     },
     actions:{
         getUsers({ commit }, {query={}, reload=false}={}){
-            
             const url = USER_URL.index + "?" + turnObjectToQueryString(query);
             debug("url", url);
             //if not to reload and data has already being cache fo this query
@@ -79,7 +79,6 @@ export default{
         
             return axios.get(url)
             .then(resp=>{
-                //console.log(resp);
                 const {success, data:{users}, pagination} = resp.data
                 if(success){
                     cache.currentPage = {
@@ -87,7 +86,6 @@ export default{
                         pagination,
                         url
                     };
-                    //console.log(cache);
                     return {users, pagination};
                 }
                 commitError(commit, null);
@@ -123,7 +121,6 @@ export default{
         },
 
         resetMemberPassword({ commit }, userID){
-
             if(!userID) return handleNoIDError(commit, "User ID is required")
             commit(setIsLoading, true)
         
@@ -161,5 +158,27 @@ export default{
             .catch(e=>commitError(commit, e))
             .then((data)=>stopLoadingAndResolve(commit, data))
         },
+
+        updateUserProfileImage({commit}, {memberID=null, passport=null}){
+            if (!memberID) return handleNoIDError(commit, "Member ID is required")
+            
+            commit (setIsLoading, true)
+
+            return axios.put(USER_URL.update_user_avatar + memberID, {passport})
+            .then(resp=>{
+                //get user from response
+                const {data:{member}} = resp.data;
+                //debug
+                debug("user", member);
+                //cache user on client, this will indicate user has change password
+                memberStore.addMember(member)
+                //return user to client
+                return member;
+            })
+            .catch(e=>commitError(commit, e))
+            .then((data)=>stopLoadingAndResolve(commit, data))
+        },
+
+        
     }//end action
 }//end module

@@ -1,108 +1,74 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i>
-                  {{ notificationMessage }}
-                </p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button></p>
-              </div>
+      <div id="content-page" class="content-page">
+        <div v-if="societyIsLoading">
+          <div class="text-center mb-20" :style="{width: '100%'}">
+            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+          </div>
+        </div>
+        <div class="container" v-else>
+          <div v-if="societyMembersPaymentError">
+            <div class="error-div text-center">
+              <span>{{ societyMembersPaymentError.message }}</span>
             </div>
           </div>
-          <div class="filter-result">
-            <form action="" method="get" id="filter">
+          <form @submit.prevent="getRevenueEventHandler()">
+            <div class="filter-result">
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>From</label>
-                    <input type="date" name="from" id="from">
+                    <input type="date" v-model="from" class="form-control">
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>To</label>
-                    <input type="date" name="to" id="to">
+                    <input type="date" v-model="to" class="form-control">
                   </div>
                 </div>
-             
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>Select society</label>
-                  <select name="society" id="society" class="form-control">
-                    <option value="">Select Society</option>
-                  </select>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Select society</label>
+                    <select class="form-control" v-model="society_id">
+                      <option value="">Select Society</option>
+                      <option v-for="s in societies" :key="s.id" :value="s.id">{{ s.name }}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
+              <div class="text-center">
+                <input type="submit" value="Proceed" class="btn btn-primary">
               </div>
-            </form>
-          </div>
-          <div class="text-center">
-            <input type="submit" value="Proceed" class="btn-general">
-          </div>
+            </div>
+          </form>
         </div>
         
-        <div class="container">
-          <div class="table-responsive">
-            <h4 class="text-center">Income Revenue for All Societies</h4>
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr class="theading">
-                  <th>Society</th>
-                  <th>Savings</th>
-                  <th>Shares</th>
-                  <th>Buiding Fund</th>
-                  <th>Loan Issues Out</th>
-                  <th>Loan Repaid</th>
-                  <th>Interest</th>
-                </tr>
-              </thead>
-              <RevenueList/>
-            </table>
+        <div v-if="societyMembersPaymentIsLoading">
+          <div class="text-center mb-20" :style="{width: '100%'}">
+            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
           </div>
-          <div class="revenue-summary text-center">
-            <h4>Revenue / Transaction Summary for all Societies</h4>
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr class="theading">
-                  <th>Total Asset</th>
-                  <th>Total Outstanding Loan</th>
-                  <th>Total Profit Made</th>
-                  <th>Total Loss</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="tcontent">
-                  <td>&#x20A6;50,000, 000</td>
-                  <td>&#x20A6;33,300, 000</td>
-                  <td>&#x20A6;16,700, 000</td>
-                  <td>&#x20A6;0</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        </div>
+        <div class="container" v-else>
+          <RevenueList :revenueLists="revenueLists" :loanIssueOut="loanIssueOut" :resultText="resultText"/>
         </div> 
       </div>
+      <FooterBar/>
     </div>
-  </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import RevenueList from '@/components/revenue/RevenueList'
-import { closeNavbar, toggleAvatarDropDown } from "../../assets/js/helpers/utility";
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'revenueRecord',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     RevenueList
   },
   data(){
@@ -110,11 +76,69 @@ export default {
       pageTitle: 'Revenue',
       previousPage: 'Dashboard',
       notificationMessage: 'This is where the union total revenue is being calculated and shown based on society',
+      resultText: null,
+      societies: [],
+      revenueLists: [],
+      loanIssueOut: 0.0,
+      society_id: '',
+      from: '',
+      to:''
     }
   },
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
+  methods: {
+    ...mapActions("app/society", ["getSocieties"]),
+    ...mapActions("app/revenue", ["societyMembersPaymentRecordDataAnalysis"]),
+    ...mapActions("app/society", ["getOneSociety"]),
+
+    getRevenueEventHandler(){
+      this.societyMembersPaymentRecordDataAnalysis({society_id:this.$data.society_id, from:this.$data.from, to:this.$data.to})
+      .then(data => {
+        if (data){
+          const store = {};
+          for(const rev of data.result){
+            if(store[rev.payment_type_id]){
+              store[rev.payment_type_id].total += parseFloat(rev.total);
+            }else{
+              store[rev.payment_type_id] = {
+                total:parseFloat(rev.total),
+                name: rev.name,
+                payment_type_id: rev.payment_type_id,
+                society_id: rev.society_id,
+                meeting_calendar_id: rev.meeting_calendar_id 
+              }
+            }
+          }
+          this.$data.revenueLists = Object.values(store)
+          this.$data.loanIssueOut = data.loanIssueOut
+          this.getOneSociety(this.$data.society_id)
+          .then(response => {
+            if (response){
+              if (data.result.length){
+                this.$data.resultText = `All Payment Types Revenue Summary for ${response.name}`
+              } else {
+                this.$data.resultText = `No Payment Type Summary Found for ${response.name}`
+              }
+            } 
+          }) 
+          
+        } 
+      })
+    }
+  },
+
+  created(){
+    // get all societies
+    this.getSocieties({query:{limit:500}})
+    .then(data => {
+      if (data){
+        this.$data.societies = data.societies
+      }
+    })
+  },
+
+  computed: {
+    ...mapGetters("app/society", {societyIsLoading:"isLoading", societyError:"error"}),
+    ...mapGetters("app/revenue", {societyMembersPaymentIsLoading:"isLoading", societyMembersPaymentError:"error"})
   }
 }
 </script>

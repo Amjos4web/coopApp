@@ -9,21 +9,22 @@
       </div>
       <div class="modal-content" v-else>
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Monthly Due For {{meetingDateForModal ? meetingDateForModal : 'Unknown'}}</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body padtrbl">
+        <div class="modal-body">
           <form @submit.prevent="makePaymentEventHandler()">
             <div class="container" :style="{width: '100%;'}">
               <p>List of all monthly payments to be made by <b>{{meetingDateForModal ? meetingDateForModal : 'Unknown'}}</b> for today</p>
               <div class="table-responsive">
-                <table class="table table-bordered table-hover make-payment" :style="{width:'60%', margin:'auto'}">
+                <table class="styled-table make-payment" :style="{width:'60%', margin:'auto'}">
                     <thead>
                       <tr v-for="id in societyPayments.payment_ids" :key="id">
                         <th width="40%">{{ societyPayments.data[id].name }}</th>
                         <td width="60%">
-                          <div class="input-field">
+                          <div class="form-group">
                             <input type="text" 
+                            class="form-control"
                               v-model="societyPayments.data[id].prevAmountPaid"
                             >
                             <label :for="societyPayments.data[id].name">Enter {{ societyPayments.data[id].name }} Amount &#x20A6;</label>
@@ -34,7 +35,7 @@
                     </thead>
                  </table>
                 <div class="text-center">
-                  <input type="submit" name="makePayment" class="btn-general" value="Save">
+                  <input type="submit" name="makePayment" class="btn btn-info" value="Save">
                 </div>
               </div>
             </div>
@@ -94,7 +95,6 @@ export default {
           this.$props.updateParent(true)
         } 
       })
-      console.log(formData)
 
     } // end function
 
@@ -120,8 +120,5 @@ export default {
     ...mapGetters("app/society_payment", {societyPaymentIsLoading:"isLoading", societyPaymentError:"error:"}),
     ...mapGetters("app/society", {societyIsLoading:"isLoading", societyError:"error"}),
   },
-  updated(){
-    console.log(this.$props.societyPaymentDueList)
-  }
 }
 </script>

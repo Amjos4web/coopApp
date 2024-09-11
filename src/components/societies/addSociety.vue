@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
          <div v-if="error"> 
           <div class="text-center error-div">
             <span>
@@ -19,75 +17,84 @@
           </div>
         </div>
         <div class="container">
-          <form @submit.prevent="saveSociety()" class="col s12">
+          <form @submit.prevent="saveSociety()" class="col-12">
             <div class="box">
               <div v-if="isLoading">
                 <div class="text-center">
                   <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
                 </div>
               </div>
-              <div class="row">
-                <div class="form-group">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                        type="text" 
-                        v-model="form.name"
-                        autofocus
-                      >
-                      <label for="Society Name">Soceity Name</label>
-                      <span class="error" v-if="elementHasError('name')">
-                        {{ error.errors.name[0] }}
-                      </span>
-                    </div>
-                  </div>
 
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <textarea 
-                      id="textarea1" 
-                      class="materialize-textarea" 
-                      v-model="form.notes"
-                      >
-                      </textarea>
-                      <label for="notes">Notes</label>
-                      <span class="error" v-if="elementHasError('notes')">
-                        {{ error.errors.notes[0] }}
-                      </span>
-                    </div>
-                  </div>
+              <div class="row">
+                <div class="form-group col-12">
+                  <label for="Society Name">Soceity Name</label>
+                  <input 
+                    type="text" 
+                    v-model="form.name"
+                    class="form-control"
+                    autofocus
+                  >
                   
+                  <span class="error" v-if="elementHasError('name')">
+                    {{ error.errors.name[0] }}
+                  </span>
+                </div>
+              
+                <div class="form-group col-12">
+                  <label for="notes">Notes</label>
+                  <textarea 
+                  id="textarea1" 
+                  class="form-control" 
+                  v-model="form.notes"
+                  >
+                  </textarea>
+                  
+                  <span class="error" v-if="elementHasError('notes')">
+                    {{ error.errors.notes[0] }}
+                  </span>
+                </div>
+
+                <div class="form-group col-12">
+                  <label for="active">Make active</label>
+                  <select v-model="form.active" class="form-control">
+                    <option value="">Select an Option</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                  <span class="error" v-if="elementHasError('active')">
+                    {{ error.errors.active[0] }}
+                  </span>
                 </div>
               </div>
-            </div>
-            <div class="text-center">
-              <input type="submit" value="Save" class="btn-general">
+              <div class="text-center mt-20">
+                <input type="submit" value="Save" class="btn btn-primary">
+              </div>
             </div>
           </form>
         </div>
       </div>
-    </div>
-  </div> 
+    <FooterBar/>
+  </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import { mapActions , mapGetters, mapMutations } from 'vuex'
 import Validator from 'validatorjs'
-import { closeNavbar, toggleAvatarDropDown } from "../../assets/js/helpers/utility";
 
 export default {
   name: 'addSociety',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
   },
   data(){
     return{
       form: {
         name: '',
         notes: '',
+        active: '',
       },
       pageTitle: 'Create Society',
       previousPage: 'Dashboard',
@@ -104,7 +111,8 @@ export default {
 
       let validation = new Validator(this.$data.form, {
         name: 'required|max:200',
-        notes: 'required|max:200'
+        notes: 'required|max:200',
+        active: 'required|max:1',
       })
 
       if (validation.fails()){
@@ -114,8 +122,13 @@ export default {
       } else {
         this.addNewSociety(this.$data.form)
         .then(message => {
-          this.$data.successMsg = 'Society added successfully'
-          this.$data.form = {}
+          if (message){
+            this.$toasted.show(`${message.name} added successfully`, { 
+              type: "success", 
+              icon: 'check-circle'
+            })
+            this.$data.form = {}
+          }
         })
       }
     },
@@ -130,10 +143,6 @@ export default {
   },
   computed: {
     ...mapGetters("app/society", ["error", "isLoading"])
-  },
-  mounted(){
-    closeNavbar(),
-    toggleAvatarDropDown()
   }
 }
 </script>

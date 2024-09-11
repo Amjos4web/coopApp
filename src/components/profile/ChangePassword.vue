@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="error"> 
           <div class="text-center error-div">
             <span>
@@ -26,52 +24,53 @@
                   <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
                 </div>
               </div>
+              
               <div class="row">
-                <div class="form-group">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="password" 
-                      v-model="form.old_psd" 
-                      id="old_password" 
-                      autofocus
-                      >
-                      <label for="old password">Old Password</label>
-                      <span class="error" id="old_password-error" v-if="elementHasError('old_psd')">{{ error.errors.old_psd[0] }}</span>
-                    </div>
-                  </div>
+                <div class="form-group col-12">
+                  <label for="old password">Old Password</label>
+                  <input 
+                  type="password" 
+                  v-model="form.old_psd" 
+                  id="old_password" 
+                  class="form-control"
+                  autofocus
+                  >
+                  <span class="error" id="old_password-error" v-if="elementHasError('old_psd')">{{ error.errors.old_psd[0] }}</span>
+                </div>
+              </div>
 
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="password" 
-                      id="new_password"
-                      v-model="form.new_psd"
-                      >
-                      <label for="new password">New Password</label>
-                      <span class="error" id="new_password-error" v-if="elementHasError('new_psd')">{{ error.errors.new_psd[0] }}</span>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input 
-                      type="password" 
-                      id="cfm_new_password"
-                      v-model="form.cfm_psd"
-                      >
-                      <label for="confirm new password">Confirm New Password</label>
-                      <span class="error" id="cfm_new_password-error" v-if="elementHasError('cfm_psd')">{{ error.errors.cfm_psd[0] }}</span>
-                    </div>
-                  </div>
+              <div class="row">
+                <div class="form-group col-12">
+                  <label for="new password">New Password</label>
+                  <input 
+                  type="password" 
+                  id="new_password"
+                  class="form-control"
+                  v-model="form.new_psd"
+                  >
+                  <span class="error" id="new_password-error" v-if="elementHasError('new_psd')">{{ error.errors.new_psd[0] }}</span>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="form-group col-12">
+                  <label for="confirm new password">Confirm New Password</label>
+                  <input 
+                  type="password" 
+                  id="cfm_new_password"
+                  class="form-control"
+                  v-model="form.cfm_psd"
+                  >
+                  <span class="error" id="cfm_new_password-error" v-if="elementHasError('cfm_psd')">{{ error.errors.cfm_psd[0] }}</span>
                 </div>
               </div>
             </div>
-            <div class="text-center">
+             
+            <div class="text-center mt-20">
               <input 
               type="submit" 
               value="Save Password"
-              class="btn-general" 
+              class="btn btn-primary" 
               name="changePassword"
               :disabled="isLoading"
               >
@@ -79,14 +78,13 @@
           </div> 
         </form>
       </div>
-    </div>  
-  </div>
+      <FooterBar/>
+    </div> 
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
-import {closeNavbar, toggleAvatarDropDown} from "../../assets/js/helpers/utility";
+import FooterBar from '@/components/includes/Footer'
 import Validator from 'validatorjs'
 import { mapActions , mapGetters, mapMutations } from 'vuex'
 
@@ -94,7 +92,7 @@ export default {
   name: 'changePassword',
   components: {
     HeaderNav,
-    PageHeader
+    FooterBar
   },
   data(){
      return{
@@ -152,10 +150,6 @@ export default {
   },
   computed: {
     ...mapGetters("app/auth", ["isLoading", "error"])
-  },
-  mounted(){
-		closeNavbar(); 
-		toggleAvatarDropDown();
-	}
+  }
 }
 </script>

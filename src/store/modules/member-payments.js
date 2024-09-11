@@ -2,6 +2,7 @@ import {setIsLoading, setError} from "../constants";
 import axios, {MEMBER_PAYMENT_URL} from "../api";
 import { commitError, handleNoIDError, stopLoadingAndResolve } from "./app";
 import { debug } from "../../utility";
+import member from "../normalized-api/member";
 
 
 export default{
@@ -43,6 +44,19 @@ export default{
             .catch(e=>commitError(commit, e))
             .then(data=>stopLoadingAndResolve(commit, data));
         },
+        updateMemberPayment({ commit }, {formData, meeting_calendar_id}){
+            if(!meeting_calendar_id) return handleNoIDError(commit, "meeting calendar id is required");
+
+            return axios.put(MEMBER_PAYMENT_URL.update_member_payment + meeting_calendar_id, formData)
+            .then(response=>{
+                debug("member payments", response);
+                const {memberPaymentList} = response.data.data;
+
+                return {memberPaymentList};
+            })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data));
+        },
         fetchMemberMonthlyPayment({ commit }, {society_id=null, member_id=null} = {}){
             if(!society_id) return handleNoIDError(commit, "ID of society to which member belongs is required.");
             if(!member_id) return handleNoIDError(commit, "ID of member is required.");
@@ -75,6 +89,8 @@ export default{
         },
         fetchMyTotalAsset({ commit }, society_id){
             if(!society_id) return handleNoIDError(commit, "ID of society to which member belongs is required.");
+
+            commit(setIsLoading, true)
             return axios.get(MEMBER_PAYMENT_URL.fetch_my_total_asset + society_id)
             .then(response=>{
                 debug("member total assest", response)
@@ -86,9 +102,9 @@ export default{
         },
         //fetch many member total assets
         fetchManyMemberTotalAssets({ commit }, paramIDs=[]){
-            return axios.post(
-                MEMBER_PAYMENT_URL.fetch_many_member_total_assets, 
-                {paramIDs}
+            commit(setIsLoading, true)
+            return axios.get(
+                MEMBER_PAYMENT_URL.fetch_many_member_total_assets + "?paramIDs=" + encodeURIComponent(JSON.stringify(paramIDs)), 
             ).then(response=>{
                 debug("fetching many society", response)
                 //stop loading
@@ -102,5 +118,52 @@ export default{
                 throw e;
             });
         },//end method
+        getMemberPaymentByMeetingCalendarID({ commit }, {society_id = null, member_id = null, meeting_calendar_id = null} = {}){
+            if(!society_id) return handleNoIDError(commit, "society ID is required")
+            if(!member_id) return handleNoIDError(commit, "member ID is required")
+            if(!meeting_calendar_id) return handleNoIDError(commit, "meeting calendar ID is required")
+            
+            commit(setIsLoading, true)
+            return axios.get(
+                `${MEMBER_PAYMENT_URL.fetch_member_payment_with_meeting}/${society_id}/${member_id}/${meeting_calendar_id}`
+            ).then(response=>{
+                debug("fetching many society", response)
+                return response.data.data
+            })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data));
+        },
+
+        getMemberPassbookForAdmin({commit}, {society_id=null, member_id=null, from=null, to=null}){
+            if (!society_id) return handleNoIDError(commit, "society ID is required")
+            if (!member_id) return handleNoIDError(commit, "member ID is required")
+
+            commit (setIsLoading, true)
+
+            return axios.get(
+                `${MEMBER_PAYMENT_URL.fetch_member_passbook_for_admin}/${society_id}/${member_id}?from=${from}&to=${to}`
+            ).then(response=>{
+                debug("fetching member passbook", response)
+                return response.data.data
+            })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data));
+        },
+
+        getMemberPassbookForMember({commit}, {society_id=null, from=null, to=null}){
+            if (!society_id) return handleNoIDError(commit, "society ID is required")
+
+            commit (setIsLoading, true)
+
+            return axios.get(
+                `${MEMBER_PAYMENT_URL.fetch_member_passbook_for_member}/${society_id}?from=${from}&to=${to}`
+            ).then(response=>{
+                
+                debug("fetching member passbook", response)
+                return response.data.data
+            })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data));
+        }
     }
 }

@@ -1,9 +1,12 @@
+
 // import components
 const Login = import("@/components/Login")
 const NotFound = import("@/components/notFound")
 const AddSociety = import("@/components/societies/addSociety")
 const AssignMembers = import("@/components/societies/AssignMembers")
-const AssignDelegates = import("@/components/societies/AssignDelegates")
+const MoveMembers = import("@/components/societies/MoveMembers")
+// const AssignDelegates = import("@/components/societies/AssignDelegates")
+const AssignDelegates = import('@/components/users/AssignDelegates')
 const LoanRequest = import("@/components/societies/LoanRequest")
 const MonthlyDue = import("@/components/societies/MonthlyDue")
 const SetMinimumAmount = import("@/components/societies/SetMinimumAmount")
@@ -13,19 +16,26 @@ const Records = import("@/components/payments/records")
 const MeetingIndex = import("@/components/meeting/index")
 const Request = import("@/components/myLoan/Request")
 const _History = import("@/components/myLoan/History")
-const MemberHistory = import("@/components/loan/member/History")
+// const MemberHistory = import("@/components/loan/member/History")
 const MemberStatus = import("@/components/loan/member/Status")
+const SocietyStatus = import("@/components/loan/society/Status")
 const MemberLoanGuarantors = import("@/components/loan/member/Guarantors")
 const MyLoanGuarantors = import("@/components/myLoan/Guarantors")
 const MemberLoanDetails = import("@/components/loan/member/Details")
+const SocietyLoanDetails = import("@/components/loan/society/Details")
 const SocietyHistory = import("@/components/loan/society/History")
-const SocietyStatus = import("@/components/loan/society/Status")
-const MembersDue = import("@/components/payments/membersDue")
+const MembersDue = import("@/components/payments/MembersDue")
+const MemberPassbook = import("@/components/payments/MemberPassbook")
+const MeetingMemberPassbook = import("@/components/meeting/MemberPassbook")
 const RevenueRecord = import("@/components/revenue/index")
 const Profile = import("@/components/profile/index")
 const ChangePassword = import("@/components/profile/ChangePassword")
-const SocietyDue = import("@/components/payments/societyDue")
-const MyPayments = import("@/components/myPayments/myPayments")
+//const SocietyDue = import("@/components/payments/societyDue")
+const EditMemberPayment = import("@/components/payments/EditMemberPayment")
+const MembersAsset = import("@/components/payments/MembersAsset")
+const MemberListsForPaymentEdit = import("@/components/payments/MemberListsForPaymentEdit")
+const EditPayment = import("@/components/payments/EditPayment")
+const MyPayments = import("@/components/myPayments/Index")
 const Roles = import("@/components/settings/roles")
 const Calendar = import("@/components/Calendar")
 const PaymentTypes = import("@/components/settings/paymentTypes") 
@@ -34,8 +44,14 @@ const Meeting = import("@/components/meeting/meeting")
 const Dashboard = import("@/components/Dashboard")
 const GuarantorRequest = import("@/components/GuarantorRequest")
 const RequestLoanForMember = import("@/components/RequestLoanForMember")
-const Users = import("@/components/users/index")
+const Users = import("@/components/users/Index")
+const UserRolePermission = import("@/components/users/UserRolePermission")
 const MeetingCalendar = import("@/components/meetingCalendar")
+const MakePaymentIndexPage = import("@/components/onlinePayment/Index")
+const MakePaymentPage = import("@/components/onlinePayment/PaymentPage")
+const PaymentResponsePage = import("@/components/onlinePayment/PaymentResponse")
+const OnlinePaymentRecords = import("@/components/adminOnlinePaymentModule/Index")
+
 
 export default [
 	{
@@ -124,16 +140,26 @@ export default [
 			requiresAuth: true
 		}
 	},
-	
+
 	{
-		path: '/societies/AssignDelegates',
-		name: 'AssignDelegates',
-		component: () => AssignDelegates,
+		path: '/societies/MoveMembers',
+		name: 'MoveMembers',
+		component: () => MoveMembers,
 		props: true,
 		meta: {
 			requiresAuth: true
 		}
 	},
+	
+	// {
+	// 	path: '/societies/AssignDelegates',
+	// 	name: 'AssignDelegates',
+	// 	component: () => AssignDelegates,
+	// 	props: true,
+	// 	meta: {
+	// 		requiresAuth: true
+	// 	}
+	// },
 
 	{
 		path: '/societies/monthlyDue',
@@ -186,9 +212,9 @@ export default [
 	},
 
 	{
-		path: '/loan/member/History',
-		name: 'memberHistory',
-		component: () => MemberHistory,
+		path: '/payments/editMemberPayments',
+		name: 'EditMemberPayment',
+		component: () => EditMemberPayment,
 		props: true,
 		meta: {
 			requiresAuth: true
@@ -196,9 +222,59 @@ export default [
 	},
 
 	{
+		path: '/payment/edit/:member_id/:currentSocietyID',
+		name: 'editPayment',
+		component: () => EditPayment,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/payment/membersAsset',
+		name: 'membersAsset',
+		component: () => MembersAsset,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/memberList/:society_id',
+		name: 'memberListForPaymentEdit',
+		component: () => MemberListsForPaymentEdit,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	// {
+	// 	path: '/loan/member/History',
+	// 	name: 'memberHistory',
+	// 	component: () => MemberHistory,
+	// 	props: true,
+	// 	meta: {
+	// 		requiresAuth: true
+	// 	}
+	// },
+
+	{
 		path: '/loan/member/status',
 		name: 'memberStatus',
 		component: () => MemberStatus,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/loan/society/status',
+		name: 'societyStatus',
+		component: () => SocietyStatus,
 		props: true,
 		meta: {
 			requiresAuth: true
@@ -236,14 +312,15 @@ export default [
 	},
 
 	{
-		path: '/loan/society/Status',
-		name: 'societyStatus',
-		component: () => SocietyStatus,
+		path: '/loan/society/details/:loan_request_id',
+		name: 'SocietyLoanDetails',
+		component: () => SocietyLoanDetails,
 		props: true,
 		meta: {
 			requiresAuth: true
 		}
 	},
+	
 
 	{
 		path: '/loan/society/History',
@@ -277,7 +354,7 @@ export default [
 
 	{
 		path: '/payments/membersDue',
-		name: 'membersDue',
+		name: 'MembersDue',
 		component: () => MembersDue,
 		props: true,
 		meta: {
@@ -285,10 +362,20 @@ export default [
 		}
 	},
 
+	// {
+	// 	path: '/payments/societyDue',
+	// 	name: 'societyDue',
+	// 	component: () => SocietyDue,
+	// 	props: true,
+	// 	meta: {
+	// 		requiresAuth: true
+	// 	}
+	// },
+
 	{
-		path: '/payments/societyDue',
-		name: 'societyDue',
-		component: () => SocietyDue,
+		path: '/myPayments/',
+		name: 'myPayments',
+		component: () => MyPayments,
 		props: true,
 		meta: {
 			requiresAuth: true
@@ -296,9 +383,19 @@ export default [
 	},
 
 	{
-		path: '/myPayments/myPayments',
-		name: 'myPayments',
-		component: () => MyPayments,
+		path: '/payments/memberPassbook/:member_id/:society_id',
+		name: 'memberPassbook',
+		component: () => MemberPassbook,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/meeting/memberPassbook/:member_id/:society_id',
+		name: 'meetingMemberPassbook',
+		component: () => MeetingMemberPassbook,
 		props: true,
 		meta: {
 			requiresAuth: true
@@ -382,6 +479,26 @@ export default [
 	},
 
 	{
+		path: '/users/rolePermission/:member_id',
+		name: 'RolePermission',
+		component: () => UserRolePermission,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/users/AssignDelegates/:user_id',
+		name: 'AssignDelegates',
+		component: () => AssignDelegates,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+	
+	{
 		path: '/revenue',
 		name: 'revenue',
 		component: () => RevenueRecord,
@@ -405,6 +522,48 @@ export default [
 		path: '/changePassword/',
 		name: 'ChangePassword',
 		component: () => ChangePassword,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/makePayment/',
+		name: 'MakePaymentIndexPage',
+		component: () => MakePaymentIndexPage,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+		{
+		path: '/makePayment/analysis/:society_id',
+		name: 'PaymentPage',
+		component: () => MakePaymentPage,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/payment/status/:payment_status/:transaction_completed',
+		name: 'PaymentResponse',
+		component: () => PaymentResponsePage,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+
+
+	{
+		path: '/onlinePaymentRecord',
+		name: 'OnlinePaymentRecords',
+		component: () => OnlinePaymentRecords,
 		props: true,
 		meta: {
 			requiresAuth: true

@@ -1,14 +1,12 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-     <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
-        <div v-if="societyIsLoading || meetingDateIsLoading || calendarYearIsLoading || societyPaymentIsLoading">
-          <div class="text-center" :style="{width: '100%'}">
-            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-          </div>
+     <div v-if="societyIsLoading || meetingDateIsLoading || calendarYearIsLoading || societyPaymentIsLoading">
+        <div class="text-center" :style="{width: '100%'}">
+          <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
         </div>
+      </div>
+      <div id="content-page" class="content-page" v-else>
          <div v-if="societyPaymentError">
           <div class="error-div text-center">
             <span>
@@ -45,18 +43,11 @@
           </div>
         </div>
         <div class="container">
-          <!-- <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info text-center">
-                <p style="font-size: 20px"><i class="fa fa-info-home"></i> Odokoto Ife-Oluwa C.I.C.S</p>
-              </div>
-            </div>
-          </div> -->
           <form @submit.prevent="fetchSocietyMonthlyPaymentEventHandler()">
           <div class="filter-result">
             <div class="row">
               <div class="col-md-4">
-                <div class="input-group">
+                <div class="form-group">
                   <label>Select society</label>
                   <select class="form-control" @change="getMeetingDates($event, 's')">
                     <option value="">Select Society</option>
@@ -65,7 +56,7 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="input-group">
+                <div class="form-group">
                   <label>Year</label>
                   <select class="form-control" @change="getMeetingDates($event, 'y')">
                     <option value="">Select Year</option>
@@ -74,7 +65,7 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="input-group">
+                <div class="form-group">
                   <label>Meeting Date</label>
                   <select class="form-control" @change="onMeetingCalendarChangeEventHandler($event)">
                     <option value="">Select Meeting Date</option>
@@ -84,29 +75,29 @@
               </div>
             </div>
           </div>
-          <div class="text-center">
-            <input type="submit" value="Proceed" class="btn-general">
+          <div class="text-center mt-10">
+            <input type="submit" value="Proceed" class="btn btn-info">
           </div>
           </form>
         </div>
       </div>
-    <PaymentRecord/>
-    <MakePaymentModal :societyPaymentDueList="societyPaymentDueList"
-    :updateParent="updateParent" 
-    :meetingDateForModal="meetingDateForModal"
-    :meetingCalendarID="meetingCalendarID"
-    :societyID="societyID"
-    ref="makePayment"/>
-    </div>
+      <FooterBar/>
+        <PaymentRecord/>
+        <MakePaymentModal :societyPaymentDueList="societyPaymentDueList"
+        :updateParent="updateParent" 
+        :meetingDateForModal="meetingDateForModal"
+        :meetingCalendarID="meetingCalendarID"
+        :societyID="societyID"
+        ref="makePayment"/>
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import MakePaymentModal from '@/components/societies/MakePaymentModal'
 import PaymentRecord from '@/components/societies/PaymentRecord'
-import { toggleAvatarDropDown, closeNavbar, openModal, closeModal } from '../../assets/js/helpers/utility';
+import { openModal, closeModal } from '../../assets/js/helpers/utility';
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 const formData = {
@@ -119,7 +110,7 @@ export default {
   name: 'MonthlyDue',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     MakePaymentModal,
     PaymentRecord
   },
@@ -180,7 +171,6 @@ export default {
       if (formData.year != "" && formData.society_id != ""){
         this.getMeetingCalendarForSocietyWithinAyear(formData)
         .then(data => {
-          console.log(data)
           if (data){
             this.$data.meetingDates = data.meetingCalendars
             this.$data.meetingDateForModal = data.meetingCalendars.meeting_date
@@ -200,10 +190,7 @@ export default {
       }
     }
   },
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
-  },
+
   computed: {
     ...mapGetters("app/society_payment", {societyPaymentIsLoading:"isLoading", societyPaymentError:"error"}),
     ...mapGetters("app/society_payment", {meetingDateIsLoading:"isLoading", meetingDateError:"error"}),
@@ -220,7 +207,6 @@ export default {
 
     this.getMeetingCalendarYear()
     .then(data2 => {
-      console.log(data2)
       if (data2){
         this.$data.meetingYear = data2.meetingCalendarYears
       }

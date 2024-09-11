@@ -1,49 +1,51 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper" >
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="memberPaymentIsLoading || memberIsLoading || societyIsLoading || loanRequestIsLoading">
           <div class="text-center" :style="{width: '100%'}">
             <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
           </div>
         </div>
         <div v-if="memberPaymentError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{memberPaymentError.message}}
             </span>
           </div>
         </div>
         <div v-else-if="loanRequestError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{loanRequestError.message}}
             </span>
           </div>
         </div>
         <div v-else-if="societyError">
-          <div class="error-div">
+          <div class="error-div text-center">
             <span>
               {{societyError.message}}
             </span>
           </div>
         </div>
+        <!-- <div v-if="successMsg">
+          <div class="text-center success-div">
+            <span>
+              {{ successMsg }}
+            </span>
+          </div>
+        </div> -->
         <div class="container" v-if="loanRequest.member">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <i class="fa fa-user"></i> {{loanRequest.member.name}} Profile
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa fa-user"></i> {{loanRequest.member.name}} Profile</h5>
               <div class="row">
                 <div class="col-md-4 text-center mb-20">
-                  <img src="@/assets/passports/avata.png" class="avatar">
+                  <img :src="loanRequest.member.passport" class="avatar" :alt="loanRequest.member.name">
                 </div>
                 <div class="col-md-8">
                   <div class="table-responsive">
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="styled-table">
                       <tbody>
                         <tr>
                           <th width="50%">Name</th>
@@ -71,7 +73,7 @@
                         </tr>
                         <tr>
                           <th>Total Asset</th>
-                          <td>&#x20A6;{{loanRequest.totalAsset}}</td>
+                          <td>&#x20A6;{{ Number(loanRequest.totalAsset).toLocaleString() }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -83,15 +85,12 @@
             <!-- /.panel-body -->
           </div>
         
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-users"></i> Guarrantors
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-users"></i> Guarrantors</h5>
                 <div class="row">
                   <div class="table-responsive">
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="styled-table">
                       <thead>
                         <tr>
                           <th>Name</th>
@@ -112,12 +111,20 @@
               </div>
               <!-- /.panel-body -->
             </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-users"></i> List of Guarrantors
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-calendar"></i> Loan Duration</h5>
+                <div class="row">
+                  <div class="col-12 text-center">
+                    <h4 class="custom-heading" :style="{backgroundColor: '#b33f13', fontSize: '14px'}">{{ loanDuration }}</h4>
+                  </div>
+                </div> 
               </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
+              <!-- /.panel-body -->
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-users"></i> List of Guarrantors</h5>
                 <div class="row">
                   <div class="guarantor-lists d-flex">
                     <div class="guarantors" v-for="g in loanRequest.guarantors" :key="g.id">
@@ -132,23 +139,14 @@
               </div>
               <!-- /.panel-body -->
             </div>
-            <div v-if="successMsg">
-              <div class="text-center success-div">
-                <span>
-                  {{ successMsg }}
-                </span>
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-money"></i> Loan Details
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
+            
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-money"></i> Loan Details</h5>
                 <div class="row">
                   <div class="col-md-12">
                     <div class="table-responsive">
-                      <table class="table table-striped table-hover table-bordered">
+                      <table class="styled-table">
                         <tbody v-if="loanRequest.status == 'pending'">
                           <tr>
                             <th>Amount Requested</th>
@@ -169,7 +167,7 @@
                         <tbody v-else>
                           <tr>
                             <th>Amount Requested</th>
-                            <td>&#x20A6; {{loanRequest.amountRequested}}</td>
+                            <td>&#x20A6; {{Number(loanRequest.amountRequested).toLocaleString()}}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -180,16 +178,16 @@
               </div>
               <!-- /.panel-body -->
             </div>
-            <div class="text-center" v-if="loanRequest.status == 'pending'">
+            <div class="text-center mt-20" v-if="loanRequest.status == 'pending'">
               <button type="button" class="btn btn-success ml-10" @click="adminRespondToLoanRequestHandler(true)">Grant</button>
               <button type="button"  class="btn btn-danger ml-10"  @click="adminRespondToLoanRequestHandler(false)">Reject</button>
               <a class="btn btn-warning custom-link ml-10">
                 <router-link to="/loan/member/Status">
-                  Back
+                  View All Loan Requests
                 </router-link>
               </a>
             </div>
-            <div class="text-center" v-else>
+            <div class="text-center mt-10" v-else>
               <a class="btn btn-warning custom-link ml-10">
                 <router-link to="/loan/member/Status">
                   Back
@@ -198,14 +196,14 @@
             </div>
         </div>
       </div> 
+      <FooterBar/>
     </div>
-  </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
-import { toggleAvatarDropDown, closeNavbar } from '../../../assets/js/helpers/utility';
+import FooterBar from '@/components/includes/Footer'
+import { getLoanDurationDifference } from '../../../assets/js/helpers/utility';
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Validator from 'validatorjs'
 import {turnArrayToObject} from '../../../utility'
@@ -215,7 +213,7 @@ export default {
   name: 'MemberLoanDetails',
   components: {
     HeaderNav,
-    PageHeader
+    FooterBar
   },
   data(){
     return{
@@ -233,13 +231,16 @@ export default {
       amountGiven: '',
       fetchManyMemberError:null,
       successMsg: '',
+      loanDuration: null,
+      loanStartDate: null,
+      currentDate: null
     }
    
   },
   methods: {
     ...mapActions("app/member", ["fetchManyMember"]),
     ...mapActions("app/society", ["getOneSociety"]),
-    ...mapActions("app/loan", ['getOneLoan', "getGuarantorForAdmin", "adminRespondToLoanRequest"]),
+    ...mapActions("app/loan", ['getOneLoan', "getGuarantorForAdmin", "adminRespondToLoanRequest", "getLoanDurationForAdmin"]),
     ...mapActions("app/member_payment", ['fetchMemberTotalAsset']),
     ...mapMutations('app/loan', {setLoanRequestError:"setError"}),
 
@@ -273,16 +274,15 @@ export default {
       } else {
         this.adminRespondToLoanRequest(formData)
         .then(data => {
-          console.log(data)
           if (data){
             this.$data.successMsg = `Loan ${fromGranted ? "granted" : "rejected"} successfully`
+            this.$toasted.show(`Loan ${fromGranted ? "granted" : "rejected"} successfully`, { 
+              type: "success", 
+              icon: 'check-circle'
+            })
           }
         })
       }
-    },
-
-    rejectLoanRequestEventHandler(){
-
     },
 
     elementHasError(elemID){
@@ -305,18 +305,15 @@ export default {
     const loan_request_id = this.$route.params.loan_request_id
     Promise.all([
       this.getOneLoan(loan_request_id),
-      this.getGuarantorForAdmin({loanRequestID:loan_request_id})
+      this.getGuarantorForAdmin({loanRequestID:loan_request_id}),
     ])
     .then(result=>{
-      console.log(result);
       //ensure we have all neccessary data
       let noError = result.every(r=>!!r)
       //if no error occur while fetching
       if(noError){
         const loanRequest = result[0]
         const guarantors = result[1].guarantors
-
-        console.log(guarantors)
 
         const memberIDs = guarantors.map(g=>g.member_id).concat(loanRequest.member_id)
 
@@ -326,7 +323,6 @@ export default {
           this.fetchMemberTotalAsset({member_id:loanRequest.member_id, society_id:loanRequest.society_id})
         ])
         .then(result=>{
-          console.log("getOneSociety", result)
           //ensure we have all neccessary data
           noError = result.every(r=>!!r)
 
@@ -345,6 +341,7 @@ export default {
               phone:m.phone,
               can_pay:m.can_pay,
               address:m.address,
+              passport:m.passport
             } : {
               name:"unknown",
               phone:"unknown",
@@ -379,16 +376,22 @@ export default {
             }//end set loanRequest
             
           }//end noError
-          console.log(this.$data.loanRequest.guarantors)
         })
         .catch(e=>this.fetchManyMemberError=e)
       }
+    }),
+
+    this.getLoanDurationForAdmin(loan_request_id)
+    .then(data => {
+      if (data) {
+        this.$data.loanStartDate = data.loanDuration.loanStartDate
+        this.$data.currentDate = data.loanDuration.currentDate
+        this.$data.loanDuration = getLoanDurationDifference(this.$data.currentDate, this.$data.loanStartDate)
+      } else {
+        this.$data.loanDuration = 'Loan duration count has not started'
+      }
     })
-  },
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
-  },
+  }
   
 }
 </script>

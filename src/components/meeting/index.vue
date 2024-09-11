@@ -1,10 +1,8 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
-        <div v-if="societyIsLoading || mCisLoading || societyIsLoading">
+      <div id="content-page" class="content-page">
+        <div v-if="societyIsLoading || mCisLoading">
           <div class="text-center">
             <img src="/img/loadinggif.png" alt="Loading" class="loading-img">
           </div>
@@ -31,30 +29,26 @@
           </div>
         </div>
         <div class="container" v-else>
-         <Notification :notificationMessage="notificationMessage" v-if="meetingCalendars.length > 0"/>
-          <div class="col s12" v-if="meetingCalendars.length == 0 && societyIsLoading && mCisLoading && societyIsLoading">
+          <div class="col-12" v-if="!meetingCalendars.length && !mCisLoading && !societyIsLoading && !smIsLoading">
             <div class="text-center error-div">
               <span>
                 You have no meeting for today
               </span>
             </div>
           </div>
-          <div class="col s12" v-else>
+          <div class="col-12" v-else>
             <MeetingList :meetingCalendars="meetingCalendars"/>
           </div>
         </div>
       </div>
+      <FooterBar />
     </div> 
-    
-  </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
-import Notification from '@/components/includes/PageNotification'
+import FooterBar from '@/components/includes/Footer'
 import MeetingList from '@/components/meeting/MeetingList'
-import { closeNavbar, toggleAvatarDropDown, closeModal, openModal } from "../../assets/js/helpers/utility"
 import { mapActions , mapGetters, mapMutations } from 'vuex'
 import {turnArrayToObject} from '../../utility'
 
@@ -62,13 +56,11 @@ export default {
   name: 'meetingIndex',
   components: {
     HeaderNav,
-    PageHeader,
-    Notification,
+    FooterBar,
     MeetingList,
   },
   data(){
     return {
-      meetingID: 1,
       pageTitle: 'Meeting',
       previousPage: 'Dashboard',
       notificationMessage: 'List of all meetings to be held today',
@@ -92,29 +84,20 @@ export default {
     // get all meeting the current day
     this.listSocietyMemberWhichHasMeetingToday()
     .then(data => {
-      console.log(data);
       if (data){
         this.fetchManySociety(data.meetingCalendars.map(mcs=>mcs.society_id))
         .then(result=>{
-          // console.log(result)
           const store = turnArrayToObject(result.societies)
-          // console.log(store)
           this.$data.meetingCalendars = data.meetingCalendars.map(mcs=>{
             mcs.society_name = store[mcs.society_id] ? store[mcs.society_id].name : "Unknown"
             return mcs;
           })
         })
         .catch(e=>{
-          //console.log({e:this.setError})
           this.setError(e)
         })
       }
     })
-  },
-
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
   }
   
 }

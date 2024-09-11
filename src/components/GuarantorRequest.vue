@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="societyError">
           <div class="error-div text-center">
             <span>
@@ -36,8 +34,9 @@
         
         <div class="container">
           <div class="filter-result mb-20">
+            <RefreshOnly :reloadIndexData="reloadIndexData"/>
             <div class="row">
-                <div class="col-md-8 col-md-offset-2">
+              <div class="col-md-8 m-auto">
                 <div class="form-group">
                   <label>Filter by Loan Status</label>
                   <select class="form-control" @change="filterGuarantorsEventHandler($event)">
@@ -57,19 +56,15 @@
             </div>
           </div>
           <form>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-users"></i> List of member(s) that want you as guarantor
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fa fa-users"></i> List of member(s) that want you as guarantor</h5>
                 <div class="row">
                   <div class="table-responsive">
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="styled-table">
                       <thead>
                         <tr>
                           <th>Name</th>
-                          <!-- <th>Society</th> -->
                           <th>Accept</th>
                           <th>Reject</th>
                           <th>Status</th>
@@ -101,113 +96,115 @@
                     </table>
                   </div>
                 </div> 
+                <!-- <vuetable :fields="columns"></vuetable> -->
               </div>
               <!-- /.panel-body -->
             </div>
           </form>
         </div>
       </div> 
-    </div>
 
-    <div class="modal fade" id="approveGuarantor" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-        <!-- Modal content no 1-->
-         <div v-if="memberIsLoading">
-          <div class="text-center" :style="{width: '100%'}">
-            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+      <FooterBar />
+
+      <div class="modal fade" id="approveGuarantor" role="dialog" style="border-radius: 5px;">
+        <div class="modal-dialog modal-lg">
+          <!-- Modal content no 1-->
+          <div v-if="memberIsLoading">
+            <div class="text-center" :style="{width: '100%'}">
+              <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+            </div>
           </div>
-        </div>
-        <div v-if="memberError">
-          <div class="error-div text-center">
-            <span>
-              {{ memberError.message }}
-            </span>
+          <div v-if="memberError">
+            <div class="error-div text-center">
+              <span>
+                {{ memberError.message }}
+              </span>
+            </div>
           </div>
-        </div>
-       
-        <div class="modal-content" v-show="guarantors">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
-            <h4 class="modal-title" v-if="guarantors && guarantor_name">
-              Approving {{guarantor_name}} as Guarrantor for {{loanRequesterName}}
-            </h4>
-          </div>
-          
-          <div class="modal-body padtrbl">
-            <div v-if="loanRequestError">
-              <div class="error-div">
-                <span>
-                  {{loanRequestError.message}}
-                </span>
+        
+          <div class="modal-content" v-show="guarantors">
+            <div class="modal-header">
+              <h5 class="modal-title" v-if="guarantors && guarantor_name">
+                Approving {{guarantor_name}} as Guarrantor for {{loanRequesterName}}
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+              <div v-if="loanRequestError">
+                <div class="error-div">
+                  <span>
+                    {{loanRequestError.message}}
+                  </span>
+                </div>
+              </div>
+              <div class="container" :style="{width: '100%;'}">
+                <PhotoCapture :onOrOff="onOnOffCamera" :savePicture="savePicture" :snapshotSize="{width:160, height:160}"/> 
+                <div class="text-center modal-footer">
+                  <input type="submit" value="Save" class="btn btn-primary btn-sm" @click="acceptGuarantorRequest()">
+                  <button type="button" class="btn btn-warning btn-sm" @click="switchOffCamera()" data-dismiss="modal">Cancel</button>
+                </div>         
               </div>
             </div>
-            <div class="container" :style="{width: '100%;'}">
-              <PhotoCapture :onOrOff="onOnOffCamera" :savePicture="savePicture" :snapshotSize="{width:160, height:160}"/> 
-              <div class="text-center modal-footer">
-                <input type="submit" value="Save" class="btn btn-primary btn-sm" @click="acceptGuarantorRequest()">
-                <button type="button" class="btn btn-warning btn-sm" @click="switchOffCamera()" data-dismiss="modal">Cancel</button>
-              </div>         
-            </div>
+            
           </div>
-          
         </div>
       </div>
-    </div>
 
-    <div class="modal fade" id="rejectGuarrantor" role="dialog" style="border-radius: 5px;">
-      <div class="modal-dialog modal-lg">
-         <!--Modal content no 1-->
-         <div v-if="memberIsLoading">
-          <div class="text-center" :style="{width: '100%'}">
-            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-          </div>
-        </div>
-        <div v-if="memberError">
-          <div class="error-div">
-            <span>
-              {{ memberError.message }}
-            </span>
-          </div>
-        </div>
-       
-        <div class="modal-content" v-show="loanRequesterName">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
-            <h4 class="modal-title" v-if="loanRequesterName">
-              Reject {{loanRequesterName}} Loan Guarrantor Request
-            </h4>
-          </div>
-          
-          <div class="modal-body padtrbl">
-            <div v-if="loanRequestError">
-              <div class="error-div">
-                <span>
-                  {{loanRequestError.message}}
-                </span>
-              </div>
-            </div>
-            <div class="container" :style="{width: '100%;'}">
-              <div class="text-center mb-20"  v-if="loanRequesterName">
-                <h4>Are you sure of rejecting {{ loanRequesterName }} loan guarantor request</h4>
-              </div>
-              <div class="text-center modal-footer">
-                <button type="button" class="btn btn-warning btn-sm" @click="rejectGuarantorRequest()">Yes</button>
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">No</button>
-              </div>         
+      <div class="modal fade" id="rejectGuarrantor" role="dialog" style="border-radius: 5px;">
+        <div class="modal-dialog modal-lg">
+          <!--Modal content no 1-->
+          <div v-if="memberIsLoading">
+            <div class="text-center" :style="{width: '100%'}">
+              <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
             </div>
           </div>
-          
+          <div v-if="memberError">
+            <div class="error-div">
+              <span>
+                {{ memberError.message }}
+              </span>
+            </div>
+          </div>
+        
+          <div class="modal-content" v-show="loanRequesterName">
+            <div class="modal-header">
+              <h5 class="modal-title" v-if="loanRequesterName">
+                Reject {{loanRequesterName}} Loan Guarrantor Request
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" @click="switchOffCamera()">&times;</button>
+            </div>
+            
+            <div class="modal-body padtrbl">
+              <div v-if="loanRequestError">
+                <div class="error-div">
+                  <span>
+                    {{loanRequestError.message}}
+                  </span>
+                </div>
+              </div>
+              <div class="container" :style="{width: '100%;'}">
+                <div class="text-center mb-20"  v-if="loanRequesterName">
+                  <h4>Are you sure of rejecting {{ loanRequesterName }} loan guarantor request</h4>
+                </div>
+                <div class="text-center modal-footer">
+                  <button type="button" class="btn btn-warning btn-sm" @click="rejectGuarantorRequest()">Yes</button>
+                  <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">No</button>
+                </div>         
+              </div>
+            </div>
+            
+          </div>
         </div>
-      </div>
-    </div> 
+      </div> 
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
+import RefreshOnly from '@/components/includes/RefreshOnly'
 import PhotoCapture from "@/components/includes/PhotoCapture";
-import { closeNavbar, toggleAvatarDropDown } from "../assets/js/helpers/utility";
 import Validator from 'validatorjs'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import {turnArrayToObject} from '../utility'
@@ -227,8 +224,9 @@ export default {
   name: 'GuarantorRequest',
   components: {
     HeaderNav,
-    PageHeader,
-    PhotoCapture
+    FooterBar,
+    PhotoCapture,
+    RefreshOnly
   },
   data() {
     return{
@@ -242,6 +240,7 @@ export default {
       loanRequesterName: "",
       loanRequestID: "",
       successMsg: "",
+      
     } 
   },
   methods: {
@@ -266,7 +265,6 @@ export default {
             }//end anonymous function
           );
         }
-        console.log(data)  
         
         //remove previous snapshot, in preparation for next guarantor
         form.guarantor_img = ''
@@ -280,10 +278,9 @@ export default {
     switchOnCamera(member_id, loanRequesterName, loanRequestID){
       return this.getOneMember(member_id)
       .then(data =>{
-        //console.log(data)
         //if member
         if(data){
-          this.$data.guarantor_name = data.member.name
+          this.$data.guarantor_name = data.name
           this.$data.loanRequesterName = loanRequesterName
           form.loan_request_id = loanRequestID
           rejectGuarrantorForm.loan_request_id = loanRequestID
@@ -300,7 +297,6 @@ export default {
     rejectGuarantor(loanRequesterName, loan_request_id){
       this.$data.loanRequesterName = loanRequesterName 
       rejectGuarrantorForm.loan_request_id = loan_request_id
-      console.log(rejectGuarrantorForm.loan_request_id)
     },
 
     savePicture(snapshotURL){
@@ -325,7 +321,6 @@ export default {
     },
 
     rejectGuarantorRequest(){
-      console.log(rejectGuarrantorForm)
       this.setLoanRequestError(null)
       let validation = new Validator(rejectGuarrantorForm, {
         response: 'required',
@@ -343,13 +338,16 @@ export default {
 
     filterGuarantorsEventHandler(event){
       const search_meta = event.target.value
-      console.log(search_meta)
       this.$data.guarantors = this.$data.guarantors.filter(
         g=>(
           (g.status.toLocaleLowerCase().indexOf(search_meta) > -1)
         )
       )
       this.$data.successMsg = ''
+    },
+
+    reloadIndexData(){
+     
     }
   },
 
@@ -357,7 +355,6 @@ export default {
     let noError = null
     this.getAllMyLoanGuarantorRequest()
     .then(data => {
-      console.log(data)
       if (data) {
         const loanRequesterIDs = data.guarantors.map(g=>g.loan_request_member_id)
 
@@ -366,14 +363,11 @@ export default {
           this.fetchManyMember(loanRequesterIDs),
         ])
         .then(result => {
-          console.log(result)
           //ensure we have all neccessary data
           noError = result.every(r=>!!r)
 
           if(noError){
             const memberObj = turnArrayToObject(result[0].members)
-
-            console.log(memberObj)
 
             this.$data.guarantors = data.guarantors.map((g, index)=>{
               const m = memberObj[g.loan_request_member_id]
@@ -403,16 +397,6 @@ export default {
     ...mapGetters("app/society", {societyError:"error", societyIsLoading:"isLoading"}),
     ...mapGetters("app/loan", {loanRequestError:"error", loanRequestIsLoading:"isLoading"}),
     ...mapGetters("app/society_member", {smIsLoading:"isLoading", smError:"error"})
-  },
-
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
-  },
-
-  updated(){
-    console.log(this.$data.guarantors)
-    console.log(this.loanRequestError)
   }
 }
 </script>

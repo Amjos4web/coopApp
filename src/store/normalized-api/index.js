@@ -11,6 +11,9 @@ import { emptySettingStore } from "./settings";
 import { emptyRolePermissionStore } from "./role-permission";
 import { emptySocietyMemberStore } from "./society-member";
 import { emptySocietyPaymentMinAmountStore } from "./society-minimum-payment-amount";
+import {emptySocietyLoanStore} from "./society-loan"
+import {emptySocietyLoanPaymentHist} from "./society-loan-payment-hist"
+import {emptySocietyLoanAmountGivenHist} from "./society-loan-amount-given-hist"
 
 export const STORE = {
     MEMBER:"member",
@@ -26,7 +29,11 @@ export const STORE = {
     SETTING:"setting",
     ROLE_PERMISSION:"role_permission",
     SOCIETY_MEMBER:'society_member',
-    SOCIETY_PAYMENT_MIN_AMOUNT:"society_pay_min_am"
+    SOCIETY_PAYMENT_MIN_AMOUNT:"society_pay_min_am",
+    //SOCIETY_PAYMENT:"society_payments",
+    SOCIETY_LOAN:"society_loans",
+    SOCIETY_PAY_HIST:"society_pay_hist",
+    SOCIETY_LOAN_AMOUNT_GIVEN_HIST:"society_loan_amount_given",
 }
 
 export function emptyStore(whichStore=[]){
@@ -45,6 +52,9 @@ export function emptyStore(whichStore=[]){
         emptyRolePermissionStore();
         emptySocietyMemberStore();
         emptySocietyPaymentMinAmountStore()
+        emptySocietyLoanStore()
+        emptySocietyLoanPaymentHist()
+        emptySocietyLoanAmountGivenHist()
         return;
     }
 
@@ -88,6 +98,15 @@ export function emptyStore(whichStore=[]){
             break;
             case STORE.SOCIETY_PAYMENT_MIN_AMOUNT:
                 emptySocietyPaymentMinAmountStore()
+            break;
+            case STORE.SOCIETY_LOAN:
+                emptyLoanStore()
+            break;
+            case STORE.SOCIETY_LOAN_AMOUNT_GIVEN_HIST:
+                emptySocietyLoanAmountGivenHist()
+            break;
+            case STORE.SOCIETY_PAY_HIST:
+                emptySocietyLoanPaymentHist()
             break;
         }//end switch
     }//end for loop

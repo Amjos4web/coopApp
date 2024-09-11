@@ -4,23 +4,23 @@
       <!-- Modal content no 1-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Add new loan amount for {{ memberName }}</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <form @submit.prevent="addNewLoanAmountEventHandler()">
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div class="container">
+              <div class="row text-center" v-if="getLoanIsLoading || getOneMemberIsLoading">
+                <div class="col-12">
+                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+                </div>
+              </div>
               <div class="row">
                  <div v-if="successMsg">
                   <div class="success-div text-center">
                     <span>
                       {{ successMsg }}
                     </span>
-                  </div>
-                </div>
-                <div v-if="getLoanIsLoading || getOneMemberIsLoading">
-                  <div class="text-center">
-                    <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
                   </div>
                 </div>
                   <div v-if="getLoanError">
@@ -44,8 +44,8 @@
                       </span>
                     </div>
                   </div>
-                <div class="col-md-8 col-md-offset-2">
-                 <table class="table table-striped table-bordered">
+                <div class="col-md-8 m-auto">
+                 <table class="styled-table">
                    <thead>
                      <tr>
                        <th>Amount Given</th>
@@ -55,14 +55,14 @@
                    </thead>
                    <tbody>
                      <tr v-for="h in loanGivenAmountHistory" :key="h.id">
-                       <td>&#x20A6;{{ h.amount_given }}</td>
+                       <td>&#x20A6;{{ Number(h.amount_given).toLocaleString() }}</td>
                        <td>{{ h.created_at}}</td>
                        <td>{{ h.issueBy }}</td>
                      </tr>
                    </tbody>
                  </table>
                 </div>
-                <div class="col-md-6 col-md-offset-3">
+                <div class="col-md-6 m-auto">
                   <div class="form-group">
                     <label for="new interest rate">New Loan Amount</label>
                     <input type="text" class="form-control" v-model="amount_given">
@@ -116,15 +116,12 @@ export default {
       if(newLoanRequestID.toString() !== oldLoanRequestID.toString()){
         this.loanAmountGivenHistory({loanRequestID:newLoanRequestID})
         .then(data=>{
-          //console.log(data)
           if (data){
             // get all IDs for user that granted the loan
             const grantedByIDs = data.map(d=>d.respond_to_by)
             this.fetchManyMember(grantedByIDs)
             .then(data2=>{
-              //console.log(data2)
               const memberObj = turnArrayToObject(data2.members)
-              //console.log(memberObj)
               this.$data.loanGivenAmountHistory = data.map(d=>{
                 d.issueBy = (
                   memberObj[d.respond_to_by] 
@@ -169,12 +166,14 @@ export default {
           if (data){
             this.getOneMember(data.respond_to_by)
             .then(member => {
-              //console.log(member)
               data.issueBy = member.name;
               this.$data.loanGivenAmountHistory = [data, ...this.$data.loanGivenAmountHistory]
             })
-            //this.$data.loanGivenAmountHistory = 
-            this.$data.successMsg = 'New loan amount granted successfully'
+          
+            this.$toasted.show('New loan amount granted successfully', { 
+              type: "success", 
+              icon: 'check-circle'
+            })
             this.$data.amount_given = ''
           }
         })

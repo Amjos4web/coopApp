@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper" >
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="memberIsLoading || societyIsLoading || loanRequestIsLoading">
           <div class="text-center" :style="{width: '100%'}">
             <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
@@ -25,88 +23,86 @@
           </div>
         </div>
         <div class="container" v-if="loanRequest.guarantors">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-users"></i> Guarrantors
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
-                <div class="row">
-                  <div class="table-responsive">
-                    <table class="table table-striped table-hover table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Society</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody v-if="loanRequestIsLoading || memberIsLoading || societyIsLoading">
-                        <tr>
-                          <td colspan="4">
-                            <div class="text-center" :style="{width: '100%'}">
-                              <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>
-                              <small>Fetching data...</small>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                      <tbody v-else>
-                        <tr v-for="g in loanRequest.guarantors" :key="g.id">
-                          <td>{{g.name}}</td>
-                          <td>{{loanRequest.societyName}}</td>
-                          <td>{{g.status}}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div> 
-              </div>
-              <!-- /.panel-body -->
+          <div class="card">
+            <!-- /.panel-heading -->
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa fa-users"></i> Guarantors</h5>
+              <hr>
+              <div class="row">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Society</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody v-if="loanRequestIsLoading || memberIsLoading || societyIsLoading">
+                      <tr>
+                        <td colspan="4">
+                          <div class="text-center" :style="{width: '100%'}">
+                            <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>
+                            <small>Fetching data...</small>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody v-else>
+                      <tr v-for="g in loanRequest.guarantors" :key="g.id">
+                        <td>{{g.name}}</td>
+                        <td>{{loanRequest.societyName}}</td>
+                        <td>{{g.status}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div> 
             </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-users"></i> List of Guarrantors
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
-                <div class="row">
-                  <div class="col-md-4 text-center" v-for="g in loanRequest.guarantors" :key="g.id">
-                    <img class="avatar" :src="g.guarantor_img"/>
-                    <h5>{{ g.name }}</h5>
-                    <small>{{ loanRequest.societyName }}</small>
+            <!-- /.panel-body -->
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa fa-users"></i> List of Guarantors</h5>
+              <hr>
+              <div class="row">
+                <div class="guarantor-lists d-flex">
+                  <div class="guarantors" v-for="g in loanRequest.guarantors" :key="g.id">
+                    <img :src="g.guarantor_img" :alt="g.name" class="avatar">
+                    <div class="guarantor-info">
+                      <p class="p-title text-center">{{ g.name }}</p>
+                      <small>{{ loanRequest.societyName }}</small>
+                    </div>
                   </div>
                 </div>
               </div>
-              <!-- /.panel-body -->
             </div>
-            <div class="text-center">
-              <a class="btn btn-warning custom-link ml-10">
-                <router-link to="/myLoan/history">
-                  Back
-                </router-link>
-              </a>
-            </div>
+            <!-- /.panel-body -->
+          </div>
+          <div class="text-center">
+            <a class="btn btn-warning custom-link ml-10 mt-20">
+              <router-link to="/myLoan/history">
+                Back
+              </router-link>
+            </a>
+          </div>
         </div>
       </div> 
+      <FooterBar/>
     </div>
-  </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
-import { toggleAvatarDropDown, closeNavbar } from '../../assets/js/helpers/utility';
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import Validator from 'validatorjs'
+import FooterBar from '@/components/includes/Footer';
+import { mapActions, mapGetters } from 'vuex'
 import {turnArrayToObject} from '../../utility'
-
 
 export default {
   name: 'my-loan-guarantors',
   components: {
     HeaderNav,
-    PageHeader
+    FooterBar
   },
   data(){
     return{
@@ -141,15 +137,12 @@ export default {
       this.getGuarantorForMember({loanRequestID:loan_request_id})
     ])
     .then(result=>{
-      console.log(result);
       //ensure we have all neccessary data
       let noError = result.every(r=>!!r)
       //if no error occur while fetching
       if(noError){
         const loanRequest = result[0]
         const guarantors = result[1].guarantors
-
-        //console.log(guarantors)
 
         const memberIDs = guarantors.map(g=>g.member_id).concat(loanRequest.member_id)
 
@@ -215,10 +208,5 @@ export default {
     })
 
   },
-  mounted(){
-    toggleAvatarDropDown(),
-    closeNavbar()
-  },
-  
 }
 </script>

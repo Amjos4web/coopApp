@@ -4,25 +4,27 @@
       <!-- Modal content no 1-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Loan payment history for {{ memberName }}</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body padtrbl">
+        <div class="modal-body">
           <div class="container">
             <div class="row">
               <div v-if="getLoanIsLoading">
-                  <div class="text-center">
-                    <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-                  </div>
+                <div class="text-center">
+                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
                 </div>
-                <div v-if="getLoanError">
-                  <div class="error-div">
-                    <span>
-                      {{ getLoanError.message }}
-                    </span>
-                  </div>
+              </div>
+            </div>
+            <div class="row">
+              <div v-if="getLoanError">
+                <div class="error-div">
+                  <span>
+                    {{ getLoanError.message }}
+                  </span>
                 </div>
-              <div class="col-md-8 col-md-offset-2">
+              </div>
+              <div class="col-md-8 m-auto">
                 <table class="table table-striped table-bordered">
                   <thead>
                     <tr>
@@ -32,16 +34,18 @@
                   </thead>
                   <tbody>
                     <tr v-for="h in loanPaymentHistory.history" :key="h.id">
-                      <td>&#x20A6;{{ h.amount_paid }}</td>
+                      <td>&#x20A6;{{ Number(h.amount_paid).toLocaleString() }}</td>
                       <td>{{ h.created_at }}</td>
                     </tr>
                   </tbody>
                 </table>
-                <h4>Total Amount Given: &#x20A6;{{ loanPaymentHistory.amount_given }}</h4>
-                <h4>Total Loan Repaid: &#x20A6;{{ loanPaymentHistory.total_loan_amount_repaid }}</h4>
-                <h4>Total Loan Amount Remaining: &#x20A6;{{ loanPaymentHistory.total_loan_amount_remaining }}</h4>
+                <div class="text-center">
+                  <div class="alert alert-info"><h4>Total Amount Given: &#x20A6;{{ Number(loanPaymentHistory.amount_given).toLocaleString() }}</h4></div>
+                  <div class="alert alert-success"><h4>Total Loan Repaid: &#x20A6;{{ Number(loanPaymentHistory.total_loan_amount_repaid).toLocaleString() }}</h4></div>
+                  <div class="alert alert-danger"><h4>Total Loan Amount Remaining: &#x20A6;{{ Number(loanPaymentHistory.total_loan_amount_remaining).toLocaleString() }}</h4>
+                  </div>
+                </div>
               </div>
-        
             </div>
           </div>
         </div>
@@ -51,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 const ID = String | Number
 

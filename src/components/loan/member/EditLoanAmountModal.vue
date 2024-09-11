@@ -4,12 +4,17 @@
       <!-- Modal content no 1-->
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Edit loan amount history for {{ memberName }}</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <form @submit.prevent="updateLoanAmountEventHandler()">
-          <div class="modal-body padtrbl">
+          <div class="modal-body">
             <div class="container">
+              <div class="row text-center" v-if="getLoanIsLoading">
+                <div class="col-12">
+                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
+                </div>
+              </div>
               <div class="row">
                  <div v-if="successMsg">
                   <div class="success-div text-center">
@@ -18,11 +23,7 @@
                     </span>
                   </div>
                 </div>
-                <div v-if="getLoanIsLoading">
-                    <div class="text-center">
-                      <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-                    </div>
-                  </div>
+                
                   <div v-if="getLoanError">
                     <div class="error-div">
                       <span>
@@ -37,7 +38,7 @@
                       </span>
                     </div>
                   </div>
-                <div class="col-md-8 col-md-offset-2">
+                <div class="col-md-8 m-auto">
                  <table class="table table-striped table-bordered">
                    <thead>
                      <tr>
@@ -49,7 +50,7 @@
                    </thead>
                    <tbody>
                      <tr v-for="h in loanGivenAmountHistory" :key="h.id">
-                       <td>&#x20A6;{{ h.amount_given }}</td>
+                       <td>&#x20A6;{{ Number(h.amount_given).toLocaleString() }}</td>
                        <td>{{ h.created_at}}</td>
                        <td>{{ h.issueBy }}</td>
                        <td>
@@ -61,8 +62,7 @@
                      </tr>
                    </tbody>
                  </table>
-                </div>
-                <div class="col-md-6 col-md-offset-3">
+                
                   <span class="error" v-if="getLoanError && getLoanError.errors && getLoanError.errors.loan_given_amount_id">
                     {{ getLoanError.errors.loan_given_amount_id[0] }}
                   </span>
@@ -73,15 +73,23 @@
                   <span class="error" v-if="getLoanError && getLoanError.errors && getLoanError.errors.amount_given">
                     {{ getLoanError.errors.amount_given[0] }}
                   </span>
+                
+              
+                  <div class="text-center">
+                    <div class="alert alert-info text-center">
+                      <h4>Total Amount Granted: &#x20A6;{{ Number(totalAmountGranted).toLocaleString() }}</h4>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="text-center modal-footer">
-              <input type="submit" value="Save" class="btn btn-primary ml-20">
-              <button type="button" id="continue" class="btn btn-warning ml-20" data-dismiss="modal">Cancel</button>
+            
+              <div class="text-center modal-footer">
+                <input type="submit" value="Save" class="btn btn-primary ml-20">
+                <button type="button" class="btn btn-warning ml-20" data-dismiss="modal">Cancel</button>
+              </div>
             </div>
           </div>
-         </form>
+        </form>
       </div>
     </div>
   </div>
@@ -110,7 +118,8 @@ export default {
       amount_given: '',
       loanGivenAmountHistory : [],
       fetchManyMemberError:null,
-      successMsg: ''
+      successMsg: '',
+      totalAmountGranted: null
     }
   },
   
@@ -122,15 +131,12 @@ export default {
       if(newLoanRequestID.toString() !== oldLoanRequestID.toString()){
         this.loanAmountGivenHistory({loanRequestID:newLoanRequestID})
         .then(data=>{
-          //console.log(data)
           if (data){
             // get all IDs for user that granted the loan
             const grantedByIDs = data.map(d=>d.respond_to_by)
             this.fetchManyMember(grantedByIDs)
             .then(data2=>{
-              //console.log(data2)
               const memberObj = turnArrayToObject(data2.members)
-              //console.log(memberObj)
               this.$data.loanGivenAmountHistory = data.map(d=>{
                 d.issueBy = (
                   memberObj[d.respond_to_by] 
@@ -152,8 +158,6 @@ export default {
     ...mapActions("app/member", ["fetchManyMember"]),
 
     getLoanGivenAmountAndID(loan_given_amount, loan_given_amount_id){
-      
-      console.log({loan_given_amount, loan_given_amount_id})
 
       this.$data.amount_given = loan_given_amount
       loanAmountGivenHistoryID = loan_given_amount_id
@@ -175,7 +179,6 @@ export default {
 
       if (validation.fails()){
         const error = new Error('You have error in your data, make neccessary change(s) and submit again')
-        //console.log(validation.errors.errors);
         error.errors = validation.errors.errors
         if(validation.errors.errors.loan_given_amount_id){
           error.errors.loan_given_amount_id = ["Select loan given amount to edit"]
@@ -184,17 +187,18 @@ export default {
       } else {
         this.updateLoanAmountGivenHistory({formData:{amount_given:this.$data.amount_given}, loanAmountGivenHistoryID})
         .then(data => {
-          console.log(data)
           if (data){
             this.$data.loanGivenAmountHistory = this.$data.loanGivenAmountHistory.map(d=>{
-              console.log({data_id:data.id.toString(), id:d.id.toString()})
-              if(d.loan_request_id.toString() === data.loan_request_id.toString()){
+              if(d.loan_request_id.toString() === loanAmountGivenHistoryID.toString()){
                 data.issueBy = d.issueBy;
                 return data;
               }
               return d
             })
-            this.$data.successMsg = 'Loan amount updated successfully'
+            this.$toasted.show(`Loan amount updated successfully`, { 
+              type: "success", 
+              icon: 'check-circle'
+            })
             this.$data.amount_given = ''
             loanAmountGivenHistoryID = null
           }
@@ -208,6 +212,11 @@ export default {
     if(getLoanError && getLoanError.errors){
       console.error(getLoanError.errors.loan_given_amount_id)
     }
+
+    this.$data.totalAmountGranted = this.$data.loanGivenAmountHistory.reduce((obj, item)=>{
+      return obj + item.amount_given
+    }, 0)
+
   }
 }
 </script>

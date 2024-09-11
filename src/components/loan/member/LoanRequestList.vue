@@ -19,87 +19,57 @@
      </tr>
   </tbody>
   <tbody v-else>
-    <tr class="tcontent" v-for="(loan, index) in loanRequests" :key="loan.id">
-      <td>{{ (((currentPage - 1) * limit) + ((index) + 1)) }}</td>
+    <tr v-for="loan in loanRequests" :key="loan.id">
+      <td>
+        <div class="bubble" v-if="loan.status == 'granted'">
+          <span class="success-icon"></span>
+        </div>
+        <div class="bubble" v-else-if="loan.status == 'pending'">
+          <span class="pending-icon"></span>
+        </div>
+        <div class="bubble" v-else>
+          <span class="rejected-icon"></span>
+        </div>
+      </td>
       <td>{{ loan.member_name }}</td>
       <td>{{ loan.member_society }}</td>
-      <td>&#x20A6;{{ loan.member_asset }}</td>
-      <td>&#x20A6;{{ loan.amount_requested}}</td>
+      <td>&#x20A6;{{ Number(loan.member_asset).toLocaleString() }}</td>
+      <td>&#x20A6;{{ Number(loan.amount_requested).toLocaleString() }}</td>
       <td>
         <a class="btn btn-info custom-link">
           <router-link :to="'/loan/member/details/' + loan.id">
-            View Details
+            Details
           </router-link>
         </a>
       </td>
       <td>
-        <a class="btn btn-info custom-link">
+        <a class="btn btn-primary custom-link">
           <router-link :to="'/loan/member/guarantors/' + loan.id">
             Guarantors
           </router-link>
         </a>
       </td>
+     
       <td v-if="loan.status == 'granted'">
-        <label class="granted">Granted</label>
-      </td>
-      <td v-else-if="loan.status == 'pending'">
-        <label class="pending in-process">Pending</label>
-      </td>
-      <td v-else>
-        <label class="rejected">Rejected</label>
-      </td>
-      <td v-if="loan.status == 'granted'">
-          <!-- <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-              Actions <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropDown dropdown-right">
-              <li>
-                <button type="button" class="btn btn-default" 
-                  @click="openLoanInterestRateModal(loan.member_name, loan.id, loan.interest_rate)">
-                  Int. Rate
-                </button>
-              </li>
-              <li>
-                <button type="button" class="btn btn-default"
-                   @click="openLoanAmountHistoryEditModal(loan.member_name, loan.id)">
-                   Amt. Granted
-                </button>
-              </li>
-              <li>
-                <button type="button" class="btn btn-default"
-                  @click="openAddNewLoanAmountModal(loan.member_name, loan.id)">
-                  New Amount
-                </button>
-              </li>
-              
-              <li>
-                <button type="button" class="btn btn-default"
-                  @click="openLoanPaymentHistoryModal(loan.member_name, loan.id)">
-                  Payment History
-                </button>
-              </li>
-            </ul>
-          </div> -->
-          <div class="dropdown-2">
-            <button class="dropbtn">
-              Actions <i class="fa fa-arrow-down"></i>
-            </button>
-              <div class="dropdown-content-2">
-                <a href="#" @click="openLoanInterestRateModal(loan.member_name, loan.id, loan.interest_rate)">
-                  Int. Rate 
-                </a>
-                <a href="#"  @click="openLoanAmountHistoryEditModal(loan.member_name, loan.id)">
-                  Amt. Granted
-                </a>
-                <a href="#" @click="openAddNewLoanAmountModal(loan.member_name, loan.id)">
-                  New Amount 
-                </a>
-                <a href="#" @click="openLoanPaymentHistoryModal(loan.member_name, loan.id)">
-                  Payment History
-                </a>
-            </div>
+        <div class="dropdown">
+          <button class="btn btn-danger dropdown-toggle" type="button" id="dropDownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a href="#" class="dropdown-item" @click="openLoanInterestRateModal(loan.member_name, loan.id, loan.interest_rate)">
+              Int. Rate
+            </a>
+            <a href="#"  class="dropdown-item" @click="openLoanAmountHistoryEditModal(loan.member_name, loan.id)">
+              Amt. Granted
+            </a>
+            <a href="#"  class="dropdown-item" @click="openAddNewLoanAmountModal(loan.member_name, loan.id)">
+              Add To Loan
+            </a>
+            <a href="#"  class="dropdown-item" @click="openLoanPaymentHistoryModal(loan.member_name, loan.id)">
+              Repayment History
+            </a>
           </div>
+        </div>
       </td>
       <td v-else>
       </td>

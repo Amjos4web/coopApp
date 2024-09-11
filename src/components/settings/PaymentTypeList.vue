@@ -28,7 +28,7 @@
      </tr>
   </tbody>
    <tbody v-else>
-    <tr v-for="(paymentType, index) in payTypes" :key="paymentType.id" class="tcontent">
+    <tr v-for="(paymentType, index) in payTypes" :key="paymentType.id">
       <td>{{ (index + 1) }}</td>
       <td>{{ paymentType.name }}</td>
       <td>{{ paymentType.type }}</td>

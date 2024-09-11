@@ -55,11 +55,12 @@ export default{
         
             return axios.get(SETTING_URL.index)
             .then(resp=>{
-                //console.log(resp);
                 const { setting } = resp.data.data
-                settingID = settingStore.addSetting(setting);
+                if(setting){
+                    settingID = settingStore.addSetting(setting);
+                }
+                
                 debug('settingID', settingID)
-                //console.log(cache);
                 return { setting };
             })
             .catch(e=>commitError(commit, e))

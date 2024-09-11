@@ -1,11 +1,9 @@
 <template>
   <div>
-		<div id="page-wrapper">
-			<div id="page-inner">
-				<h2>The resource you are looking for is not found</h2>
-			</div>
-		</div>
+	<div id="content-page" class="content-page">
+		<h2>The resource you are looking for is not found</h2>
 	</div>
+</div>
 </template>
 
 <script>

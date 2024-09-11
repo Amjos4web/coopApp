@@ -31,8 +31,10 @@
       >{{dayObject.day}}</li>
     </ul>
 
-    <div class="input-group col s12">
-      <input type="time" 
+    <div class="form-group col-12 mt-10">
+      <input 
+        type="time" 
+        class="form-control"
         :value="meetingDetail ? meetingDetail.time : '' " 
         disabled
       >

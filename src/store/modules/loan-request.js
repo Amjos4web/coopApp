@@ -39,7 +39,6 @@ function getLoans(reload, commit, fromAdmin, query){
         ? LOAN_URL.index 
         : LOAN_URL.get_my_loan_requests 
     ) + "?" + turnObjectToQueryString(query);
-    console.log(url);
     
     //if not to reload and data has already being cache fo this query
     if(!reload && cache.currentPage.url === url){
@@ -60,7 +59,6 @@ function getLoans(reload, commit, fromAdmin, query){
 
     return axios.get(url)
     .then(resp=>{
-        //console.log(resp);
         const {success, data:{loanRequests}, pagination} = resp.data
         if(success){
             cache.currentPage = {
@@ -68,7 +66,6 @@ function getLoans(reload, commit, fromAdmin, query){
                 pagination,
                 url
             };
-            //console.log(cache);
             return {loanRequests, pagination};
         }
         commitError(commit, null);
@@ -153,8 +150,6 @@ function getLoanGuarantors(reload, commit, loanRequestID, fromAdmin){
 function respondToLoanGuarantorRequest(commit, formData, fromAdmin){
     commit(setIsLoading, true);
 
-    console.log({formData, fromAdmin})
-
     return axios.post(
         (
             fromAdmin 
@@ -173,7 +168,7 @@ function respondToLoanGuarantorRequest(commit, formData, fromAdmin){
         return guarantor;
     })
     .catch(e=>{
-        console.error(e)
+        // console.error(e)
         commitError(commit, e)
     })
     .then(data=>stopLoadingAndResolve(commit, data));
@@ -205,7 +200,6 @@ function loanPaymentHistory(commit, loanRequestID, reload, fromAdmin){
     const url = fromAdmin ? LOAN_URL.admin_loan_payment_history :LOAN_URL.member_loan_payment_history
     return axios.get(url + loanRequestID)
     .then(resp=>{
-        //console.log(resp);
         const {loanPaymentHistory} = resp.data.data
 
         cache.loanPaymentHistory[loanRequestID] = loanPaymentHistoryStore.addLoanPaymentHistory(
@@ -252,7 +246,9 @@ export default {
             return axios.get(LOAN_URL.get_one + id)
             .then(resp=>{
                 const {loanRequest} = resp.data.data;
-                loanStore.addLoan(loanRequest);
+                if(loanRequest){
+                    loanStore.addLoan(loanRequest);
+                }
                 return loanRequest;
             })
             .catch(e=>commitError(commit, e))
@@ -276,7 +272,6 @@ export default {
         },
 
         getGuarantorForAdmin({ commit }, {reload=false, loanRequestID=null}={}){
-            console.log({loanRequestID})
             return getLoanGuarantors(reload, commit, loanRequestID, true);
         },
 
@@ -454,6 +449,36 @@ export default {
             })
             .catch(e=>commitError(commit, e))
             .then(data=>stopLoadingAndResolve(commit, data))
-        }//end methods
+        },
+        
+        getLoanDurationForAdmin({commit}, loanRequestID=null){
+            if(!loanRequestID){
+                return handleNoIDError(commit, "Loan request ID is required");
+            }
+            commit(setIsLoading, true);
+
+            return axios.get((LOAN_URL.get_loan_duration_for_admin + loanRequestID), {})
+            .then(resp=>{
+                const {loanDuration} = resp.data.data;
+                return {loanDuration};
+            })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data));
+        },
+
+        getLoanDurationForMember({commit}, loanRequestID=null){
+            if(!loanRequestID){
+                return handleNoIDError(commit, "Loan request ID is required");
+            }
+            commit(setIsLoading, true);
+
+            return axios.get((LOAN_URL.get_loan_duration_for_member + loanRequestID), {})
+            .then(resp=>{
+                const {loanRequest} = resp.data.data;
+                return {loanRequest};
+            })
+            .catch(e=>commitError(commit, e))
+            .then(data=>stopLoadingAndResolve(commit, data));
+        },//end methods
     }//end actions
 }

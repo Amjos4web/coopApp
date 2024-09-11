@@ -54,7 +54,6 @@ export default{
     actions:{
         societyMemberIndex({ commit }, {reload=false, query={}}={}){
             const url = SOCIETY_MEMBER_URL.index + "?" + turnObjectToQueryString(query);
-            //console.log(query);
             
             //if not to reload and data has already being cache fo this query
             if(!reload && cache.currentPage.url === url){
@@ -75,7 +74,6 @@ export default{
         
             return axios.get(url)
             .then(resp=>{
-                //console.log(resp);
                 const {success, data:{societyMembers}, pagination} = resp.data
                 if(success){
                     cache.currentPage = {
@@ -83,7 +81,6 @@ export default{
                         pagination,
                         url
                     };
-                    //console.log(cache);
                     return {societyMembers, pagination};
                 }
                 commitError(commit, null);
@@ -166,11 +163,13 @@ export default{
         fetchMemberInSociety({ commit }, { reload = false, society_id=null } = {}){
             if(!society_id) return handleNoIDError(commit, "society ID is required");
 
-            if(cache.societyIDs[society_id] && !reload){
-                const societyMembersCache = societyMemberStore.getManySocietyMemberByIDArray(cache.societyIDs[society_id]);
-                if(societyMembersCache){
-                    return resolveWithDataFromStore(commit, {societyMembers:societyMembersCache})
-                }//end if(societyMembersCache)
+            if(cache.societyIDs[society_id]){
+                if (reload){
+                    const societyMembersCache = societyMemberStore.getManySocietyMemberByIDArray(cache.societyIDs[society_id]);
+                    if(societyMembersCache){
+                        return resolveWithDataFromStore(commit, {societyMembers:societyMembersCache})
+                    }//end if(societyMembersCache)
+                }
             }//end if(cache.mySocietyIDs && !reload)
             commit(setIsLoading, true)
 
@@ -271,7 +270,6 @@ export default{
         },
 
         getSocietiesToWhichManyMemberBelongsByID({ commit }, paramIDs=[]){
-            //console.log()
             const store = [];
             const toFetch = [];
 
@@ -287,8 +285,6 @@ export default{
             if(toFetch.length < 1){
                 return {societyMembers:store};
             }
-
-            console.log({toFetch, societyMembers:store})
             
             return axios.post(
                 SOCIETY_MEMBER_URL.get_many_society_member_by_member_id, 
@@ -312,5 +308,19 @@ export default{
                 throw e;
             });
         },
+
+        moveMemberToNewSociety({commit}, formData){
+
+            commit(setIsLoading, true)
+
+            return axios.put(SOCIETY_MEMBER_URL.move_member_to_new_society, formData)
+            .then(resp=>{
+                const {data, success, msg} = resp.data;
+                
+                return {data, success, msg};
+            })
+            .catch(e=>commitError(commit, e))
+            .then((data)=>stopLoadingAndResolve(commit, data))
+        },//end method
     }//end action
 }

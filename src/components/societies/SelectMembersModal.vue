@@ -5,8 +5,8 @@
       <form>
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">{{ modalTitle }}</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <div class="modal-body padtrbl">
             <div v-if="errorDisplay"> 
@@ -23,14 +23,14 @@
             </div>
             <form @submit.prevent="searchMember()">
               <div class="row">
-                <div class="input-field col-md-6 col-md-offset-3">
-                  <input type="text" v-model="searchMeta">
-                  <label for="Society Name">Search member</label>
+                <div class="form-group col-md-6 m-auto text-center">
+                  <label for="Society Name">Search Member</label>
+                  <input type="text" v-model="searchMeta" class="form-control">
                   <span class="error"></span>
                 </div>
               </div>
               <div class="text-center">
-                <input type="submit" value="Search" class="btn btn-primary">
+                <input type="submit" value="Search" class="btn btn-secondary">
               </div>
             </form><br>
             
@@ -46,7 +46,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <input type="submit" value="Continue" class="btn btn-info">
+              <input type="submit" value="Continue" class="btn btn-primary">
               <button type="button" class="btn btn-default pull-right cancel" data-dismiss="modal" id="cancel">Cancel</button>
             </div>
           </div>

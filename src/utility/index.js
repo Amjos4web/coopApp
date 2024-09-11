@@ -54,8 +54,8 @@ export function generateUniqueRandomNumber(){
     return (Math.random() * Math.random() * Math.random()).toString(16).replace(".", "");
 }
 
-export function getError(code=500, message="Internal server error, try again later.", errors=null){
-    const error = new Error(message);
+export function getError(code=500, msg="Internal server error, try again later.", errors=null){
+    const error = new Error(msg);
     error.errors = errors;
     error.code = code;
     return error;
@@ -69,16 +69,16 @@ export function getErrorFromResponse(e=null){
     if(!e) return getError();
 
     if(e.response && e.response.data){
-        return getError(e.response.status, e.response.data.message, e.response.data.errors);
+        return getError(e.response.status, e.response.data.msg, e.response.data.errors);
     }
     e.code = 500;
     return e;
 }
 
 export function debug(label="label", ...args){
-    console.group(label)
-    args.forEach(a=>console.log(a))
-    console.groupEnd()
+    // console.group(label)
+    // args.forEach(a=>console.log(a))
+    // console.groupEnd()
 }
 
 export const REFRESH_TOKEN_EVENT_TYPE = {
@@ -89,13 +89,11 @@ export const REFRESH_TOKEN_EVENT_TYPE = {
 };
 
 export const turnArrayToObject = (list)=>{
-    //console.log(list);
     const store = {}
     let curItem = null
     for(let i = 0; i < list.length; i++){
         curItem = list[i]
         store[curItem.id] = curItem
     }//end for loop
-    //console.log(store);
     return store
 }//end function turnA

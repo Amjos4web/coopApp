@@ -21,7 +21,6 @@ export default {
         const {entities, result} = normalize(loanPayHistory, loanPaymentSchema);
         //add to store
         store = setStore(store, entities.loanPayHistories);
-        //console.log(store, result);
         //return id to be kept by clients that'll use the API
         //this value will be use to fetch the data later
         return result;
@@ -47,7 +46,6 @@ export default {
      * @returns {LoanPaymentHistory | null} - return the loan payment history if found else null
      */
     getLoanPaymentHistoryByID(id){
-        //console.log(store, id);
         return store[id] ? store[id] : null;
     },
 

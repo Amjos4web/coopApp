@@ -17,19 +17,17 @@ export default {
   }),
  
   mounted(){
-    console.log("mounted");
     event.on(REFRESH_TOKEN_EVENT_TYPE.REFRESH_TOKEN_ERROR, (error)=>{
       debug("REFRESH_TOKEN_ERROR", error);
     });
   },
   destroyed(){
-    debug("app component", "I was destroyed");
     event.emit(REFRESH_TOKEN_EVENT_TYPE.CANCEL_REFRESHING_TOKEN);    
   },
   
   watch: {
-    path:(oldPath, newPath)=>{
-      console.log(oldPath, newPath)
+    path:function(oldPath, newPath) {
+      // console.log(oldPath, newPath)
     }
   },
   computed:{

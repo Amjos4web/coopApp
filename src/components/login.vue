@@ -2,13 +2,17 @@
 	<div>
 		<!-- <NotLoggedInHeader/> -->
 		<div class="login-form">
+			<div v-if="settingIsLoading">
+				<img src="/img/loadinggif.png" alt="Loading" class="loading-img">
+			</div>
 			<h2>
-				<p class="text-upper">Ogbomoso Oluwalose C.I.C.S <br/>Management System</p>
+				<p class="text-upper">Ogbomoso Oluwalose Cooperative Investment and Credit Union Ltd</p>
 			</h2>
 			<img src="/img/app-logo.png" alt="unionName" class="image-fluid app-logo">
 			<form @submit.prevent="authenticate()">
-				<span class="error" v-if="error">{{error.message}}</span>
-				<div v-if="isLoading">
+				<span class="error" v-if="authError">{{authError.message}}</span>
+				<!-- <span class="error" v-if="settingError">{{settingError.message}}</span> -->
+				<div v-if="authIsLoading">
 					<img src="/img/loadinggif.png" alt="Loading" class="loading-img">
 				</div>
 					<div class="form-group">
@@ -22,7 +26,7 @@
 						
 					</div>
 
-					<div class="input-group">
+					<div class="form-group">
 						<input 
 							type="password" 
 							name="password" 
@@ -32,9 +36,6 @@
 							placeholder="Password"
 						>
 					</div>
-					<!-- <div class="input-group">
-						<input type="checkbox" id="loginPass" @click="showPass()"> Show Password 
-					</div> -->
 				<div class="text-center">
 					<input type="submit" value="Login" class="btn-login" name="login">
 				</div>
@@ -45,57 +46,62 @@
 <script>
 import Validator from 'validatorjs'
 import { mapActions , mapGetters, mapMutations } from 'vuex'
+import event, {EVENT_TYPE} from "../utility/event"
 
 export default {
-		name: 'Login',
-		data() {
-			return {
-				form: {
-					userid: '',
-					password: ''
-				},
-			};	
-		},
-
-		methods: {
-			showPass(){
-				// if (password.type == 'text') {
-				// 	password.type = 'password'
-				// }
-				// else {
-				// 	password.type = 'text'
-				// }
+	name: 'login-component',
+	data() {
+		return {
+			form: {
+				userid: '',
+				password: ''
 			},
-			...mapActions("app/auth/", ["login"]),
-			...mapMutations("app/auth/", ['setError']),
+			unionName: null
+		};	
+	},
 
-			authenticate(){
-				this.setError(null);
-				let validation = new Validator(this.form, {
-					userid: 'required',
-					password: 'required'
+	methods: {
+		...mapActions("app/auth/", ["login"]),
+		...mapMutations("app/auth/", ['setError']),
+		...mapActions("app/setting", ["getSetting"]),
+
+		authenticate(){
+			this.setError(null);
+			let validation = new Validator(this.form, {
+				userid: 'required',
+				password: 'required'
+			});
+
+			if(validation.passes()){
+				this.login(this.$data.form)
+				.then(result=>{
+					if(result){
+						this.$router.replace("/");
+					}
 				});
-
-				if(validation.passes()){
-					this.login(this.$data.form)
-					.then(result=>{
-						if(result){
-							this.$router.replace("/");
-						}
-					});
-				}else{
-					const error = new Error("Invalid Login Detail.");
-					this.setError(error);
-				}
+			}else{
+				const error = new Error("Invalid Login Detail.");
+				this.setError(error);
 			}
-		},
-		computed: {
-			...mapGetters("app/auth", ["isLoading", "error"])
-		},
+		}
+	},
+	computed: {
+		...mapGetters("app/auth", {authIsLoading:"isLoading", authError:"error"}),
+		...mapGetters("app/setting", {settingIsLoading:"isLoading", settingError:"error"})
+	},
+
+	created(){
+		this.getSetting()
+		.then((data) => {
+			event.emit(EVENT_TYPE.DONE_FETCHING_SETTING)
+			if(data){
+				this.$data.unionName = data.setting.union_name
+			}
+		})
+	}
 }
 </script>
 <style scoped>
-
 	.login-form {
 		width: 35%;
 		height: auto;
@@ -122,9 +128,10 @@ export default {
 	}
 
 	input[type="text"], input[type="password"]{
-		border-bottom-left-radius: 10px;
-		border-bottom-right-radius: 10px;
-		border-bottom: 1.6px solid #aaa;
+		width: 80%;
+		background: #fff;
+		border: 1px solid #cecece;
+		padding: 10px;
 		transition: all ease-in 300ms;
 	
 	}
@@ -135,10 +142,10 @@ export default {
 		padding: 10px 5px;
 	}
 	.btn-login {
-		width: 100%;
+		width: 40%;
 		background-color: #41bf4b;
 		border: 0;
-		border-radius: 20px;
+		border-radius: 10px;
 		color: #fff;
 		padding: 5px 20px;
 		text-transform: uppercase;
@@ -149,5 +156,15 @@ export default {
 	}
 	.btn-login:hover {
 		padding: 10px 15px;
+	}
+	@media (max-width: 770px){
+		.login-form {
+			width: 60%;
+		}
+	}
+	@media (max-width: 500px){
+		.login-form {
+			width: 80%;
+		}
 	}
 </style>

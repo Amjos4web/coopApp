@@ -1,4 +1,5 @@
 import axios from "axios";
+import NProgress from 'nprogress'
 import VueCookie from "vue-cookie"
 import {isNumber, isObject, isString, REFRESH_TOKEN_EVENT_TYPE} from "../../utility"
 import event from "../../utility/event"
@@ -29,7 +30,9 @@ export const LOAN_URL = {
     update_loan_amount_given_history:"/api/v1/admin/loan_requests/update_amount_given_as_loan/",
     change_loan_status_to_pending:"/api/v1/admin/loan_requests/change_status_to_pending/",
     give_more_loan_member:"/api/v1/admin/loan_requests/give_more_loan_money_to member/",
-    get_all_my_loan_guarantor_req:"/api/v1/my/get_all/loan_request/guarantors/"
+    get_all_my_loan_guarantor_req:"/api/v1/my/get_all/loan_request/guarantors/",
+    get_loan_duration_for_admin:"/api/v1/admin/loan_request/loan_duration/",
+    get_loan_duration_for_member:"/api/v1/my/loan_request/loan_duration/"
 };
 
 export const MEMBER_URL = {
@@ -37,7 +40,7 @@ export const MEMBER_URL = {
     get_one:"/api/v1/admin/members/",
     add_new_member:"/api/v1/admin/members",
     update_member:"/api/v1/admin/members/",
-    fetch_many_member:"/api/v1/admin/members/fetch_many",
+    fetch_many_member:"/api/v1/admin/members/fetch_many/by_id",
 }
 
 export const MEETING_CALENDAR_URL = {
@@ -76,17 +79,30 @@ export const SOCIETY_URL = {
 
 export const MEMBER_PAYMENT_URL = {
     save_member_payment:"/api/v1/admin/member_payments",
+    update_member_payment:"/api/v1/admin/member_payments/update/payment/",
     fetch_member_monthly_payment:"/api/v1/admin/member_payments/",
     fetch_member_total_asset:"/api/v1/admin/member_payments/total_assets/",
     fetch_my_total_asset:"/api/v1/my/member_payments/total_assets/",
     fetch_many_member_total_assets:"/api/v1/admin/member_payments/many_member/total_assets/",
+    fetch_member_payment_with_meeting:"/api/v1/admin/member_payments/update",
+    fetch_member_passbook_for_admin:"/api/v1/admin/member_payments/data/analysis/member_passbook",
+    fetch_member_passbook_for_member:"/api/v1/my/member_payments/data/analysis/member_passbook"
+}
+
+export const MEMBER_ONLINE_PAYMENT_URL = {
+    save_member_payment:"/api/v1/my/member_payments/monthly/payment/save",
+    fetch_my_monthly_payment:"/api/v1/my/member_payments/monthly/payment",
+    send_payment_data_to_paystack:"/api/v1/my/member_payments/monthly/payment/callback",
+    get_online_payment_for_admin:"/api/v1/admin/online_member_payment/payment",
+    change_reference_no:"/api/v1/admin/member_payments/reference/update",
+    verify_payment:"/api/v1/admin/member_payments/verify/payment"
 }
 
 export const ROLE_PERMISSION_URL = {
-    index:"/api/v1/admin/role_permissions/",
+    index:"/api/v1/admin/role_permissions/accounts/",
     save_society_delegate:"/api/v1/admin/role_permissions/society_delegate",
     save_staff_or_union_exec:"/api/v1/admin/role_permissions/staff_or_union_executive",
-    role_perm_routes_paths:"/api/v1/admin/role_permissions/routes_and_paths",
+    role_perm_routes_paths:"/api/v1/admin/role_permissions/routes_and_paths"
 }
 
 export const SOCIETY_MEMBER_URL = {
@@ -99,13 +115,14 @@ export const SOCIETY_MEMBER_URL = {
     count_member_in_society:"/api/v1/admin/society_members/count_members_in_society",
     get_member_not_in_society:"/api/v1/admin/society_members/not_a_member_of_society/",
     remove_member_from_society:"/api/v1/admin/society_members/remove_member/",
+    move_member_to_new_society:"/api/v1/admin/society_members/move_member",
     get_many_society_member_by_member_id:"/api/v1/admin/society_members/get_many/by_member_id",
 }
 
 export const SOCIETY_PAY_MIN_AMOUNT = {
-    get_one:"/api/v1/admin/society_payments_minimum_amounts",
-    add_new:"/api/v1/admin/society_payments_minimum_amounts/",
-    update:"/api/v1/admin/society_payments_minimum_amounts/",
+    get_one:"/api/v1/admin/society_payments_minimum_amounts/",
+    add_new:"/api/v1/admin/society_payments_minimum_amounts/see",
+    update:"/api/v1/admin/society_payments_minimum_amounts/see/",
     get_society_pay_min_amounts:"/api/v1/admin/society_payments_minimum_amounts/society/",
 }
 
@@ -114,49 +131,87 @@ export const USER_URL = {
     reset_password:"/api/v1/admin/users/reset_password/",
     get_one:"/api/v1/admin/users/",
     toggle_account:"/api/v1/admin/users/activate_or_deactivate_account/",
+    update_user_avatar:"/api/v1/admin/users/upload_member_passport/",
 }
 
 export const SOCIETY_PAYMENTS_URL = {
-    index:"/api/v1/admin/society_payments/",
+    get_society_payment:"/api/v1/admin/society_payments/",
+    save_society_payment:"/api/v1/admin/society_payments"
+}
+
+export const SOCIETY_LOAN_URL = {
+    index:"/api/v1/admin/society_loan",
+    get_one:"/api/v1/admin/society_loan/",
+    save_loan_from_admin:"/api/v1/admin/society_loan/save",
+    get_society_loan_4_society_delegate:"/api/v1/society_delegate/society_loans/",
+    admin_update_loan_interest:"/api/v1/admin/society_loans/update_interest_rate/",
+    get_society_loan_payment_history_4_delegate:"/api/v1/society_delegate/society_loans/society_loan_payment_history/",
+    get_society_loan_payment_history_4_admin:"/api/v1/admin/society_loans/society_loan_payment_history/",
+    get_amount_given_history_4_del:"/api/v1/society_delegates/society_loans/society_amount_given_history/",
+    get_amount_given_history_4_admin:"/api/v1/admin/society_loans/society_amount_given_history/",
+    admin_edit_society_loan_amount:"/api/v1/admin/society_loans/edit_loan_amount_given/",
+    admin_add_to_society_loan_amount:"/api/v1/admin/society_loans/add_new_given_loan_amount/",
+};
+
+export const REVENUE_URL = {
+    view_member_total_assets:"/api/v1/admin/member_payments/data/analysis/view_member_total_assets",
+    society_member_payment_records:"/api/v1/admin/member_payments/data/analysis/society_member_payment_records/"
+}
+
+export const DASHBOARD_URL = {
+    index: "/api/v1/dashboard/user",
+    get_current_loan_payment_balance:"/api/v1/dashboard/loan_balance/",
+    fetch_all_member_total_assets:"/api/v1/admin/member_payments/all_member/get/total_assets/",
+    get_all_loan_issued_out:"/api/v1/admin/member_payments/get_all_loan_issued_out"
 }
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
 //let us delay request until new token is requested and return from server
 let refreshingToken = false
-event.on(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_IN_PROGRESS, ()=>{
-    console.log("refreshing...");
-    refreshingToken = true;
-})
 
 const api = axios.create({
-    baseURL:"http://localhost:8080",
+    baseURL:"http://127.0.0.1:8000",
     timeout:0, 
     withCredentials:true,
 })
 
 api.interceptors.request.use(function(config){
-    //console.log(config);
-    if(refreshingToken && config.url !== AUTH_URL.self && config.url !== AUTH_URL.refresh){
+    if(config.url == AUTH_URL.login) return config
+    
+    if(config.url == AUTH_URL.refresh){
+        refreshingToken = true
+    }
+    else if(config.url == AUTH_URL.self){
+        config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`
+        // Do something before request is sent
+        return config    
+    }
+    else if(refreshingToken){
         return new Promise(resolve=>{
             //wait for refresh to finish
             event.on(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_DONE, ()=>{
                 //add brearer
                 config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`
-                //console.log("done refreshing...");
                 //set it that we are done refreshing
                 refreshingToken = false;
                 resolve(config)
-            })
-        })
-    }
+            })//end event
+        })//end promise
+    }//end else
     config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`
-    //console.log(config.headers.Authorization);
     // Do something before request is sent
+    NProgress.start()
     return config
 }, function(error){
-    return Promise.reject(error);
+    NProgress.done()
+    return Promise.reject(error)
 });
+
+api.interceptors.response.use(function(response) {
+    NProgress.done()
+    return response
+})
 
 export default api;
 
@@ -182,7 +237,6 @@ export const turnObjectToQueryString = function(keyValues = {}, title=null){
             }//end if
             else if(title && isValid(val)){
                 //if title
-                console.log(`${title}[${key}]=${encodeURIComponent(val)}`);
                 store.push(`${title}[${key}]=${encodeURIComponent(val)}`)
             }
             else if(isValid(val)){

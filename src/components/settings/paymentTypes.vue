@@ -1,9 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
-    <div id="page-wrapper">
-      <PageHeader :pageTitle="pageTitle" :previousPage="previousPage" />
-      <div class="page-inner">
+      <div id="content-page" class="content-page">
         <div v-if="successMsg">
           <div class="text-center success-div">
             <span>
@@ -12,18 +10,10 @@
           </div>
         </div>
         <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="alert alert-info flex-container">
-                <p><i class="fa fa-info-circle"></i> {{ notificationMessage }}</p>
-                <p class="export-btn"><button class="btn btn-warning btn-sm" @click="showModal"><i class="fa fa-plus"></i>&nbsp;Add New Payment Type</button></p>
-              </div>
-            </div>
-          </div>
           <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table class="styled-table">
               <thead>
-                <tr class="theading">
+                <tr>
                   <th>S/N</th>
                   <th>Payment Name</th>
                   <th>Type</th>
@@ -35,18 +25,18 @@
           </div>
         </div> 
       </div>
-    </div>  
+      <FooterBar/>
     <AddPaymentTypeModal :updatePayTypesOnParent="updatePayTypesOnParent" :paymentType="paymentType" ref="modal"/>
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/components/includes/headerNav';
-import PageHeader from '@/components/includes/PageBreadCumbHeader'
+import FooterBar from '@/components/includes/Footer'
 import PaymentTypeList from '@/components/settings/PaymentTypeList'
 import AddPaymentTypeModal from '@/components/settings/AddPaymentTypeModal'
-import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
-import { mapActions , mapGetters, mapMutations } from 'vuex'
+import { openModal, closeModal } from "../../assets/js/helpers/utility";
+import { mapActions , mapGetters } from 'vuex'
 
 const initPayTypes = { name:'', type:'' }
 
@@ -54,7 +44,7 @@ export default {
   name: 'paymentTypes',
   components: {
     HeaderNav,
-    PageHeader,
+    FooterBar,
     PaymentTypeList,
     AddPaymentTypeModal,
   },
@@ -83,10 +73,16 @@ export default {
         this.$data.payTypes = this.$data.payTypes.map(
           p=>((p.id.toString() === paymentType.id.toString()) ? paymentType : p)
         )
-        this.$data.successMsg = 'Payment type updated successfully'
+        this.$toasted.show(`Payment type updated successfully`, { 
+          type: "success", 
+          icon: 'check-circle'
+        })
       }else{
         this.$data.payTypes = [paymentType, ...this.$data.payTypes]
-        this.$data.successMsg = 'Payment type created successfully'
+        this.$toasted.show(`Payment type created successfully`, { 
+          type: "success", 
+          icon: 'check-circle'
+        })
       }
       //initialize role
       this.$data.paymentType = initPayTypes
@@ -94,10 +90,8 @@ export default {
       this.hideModal()
     },
     getOnePayTypeEventHandler(id){
-      //console.log(id);
       this.getOnePaymentType(id)
       .then(paymentType=>{
-        console.log(paymentType)
         if(paymentType){
           this.$data.paymentType = paymentType;
           //raise modal here
@@ -118,10 +112,6 @@ export default {
         this.$data.payTypes = data.paymentTypes
       }
     })
-  },
-  mounted(){
-    closeNavbar()
-    toggleAvatarDropDown()
   }
 }
 </script>

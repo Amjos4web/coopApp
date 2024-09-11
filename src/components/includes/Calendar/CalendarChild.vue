@@ -32,8 +32,8 @@
       >{{dayObject.day}}</li>
     </ul>
 
-    <div class="input-group col s12">
-      <input type="time" 
+    <div class="form-group col-12 mt-10">
+      <input type="time" class="form-control" 
         :value="meetingDetail ? meetingDetail.time : '' " 
         @input="getSelectedMeetingTime($event, monthIndex)"
         @blur="validateWhenTimeBlur()"
@@ -97,13 +97,13 @@
 
       validateWhenTimeBlur(){
         const msg = this.$props.validateMeetingDateTime(this.$props.monthIndex)
-        if(msg){
-          document.querySelector(`span.error#${this.$props.monthIndex}`).textContent = msg
-          //$(`span.error#${this.$props.monthIndex}`).text(msg)
-        }else{
-          //$(`span.error#${this.$props.monthIndex}`).text("")
-          document.querySelector(`span.error#${this.$props.monthIndex}`).textContent = ''
-        }
+        // if(msg){
+        //   document.querySelector(`span.error#${this.$props.monthIndex}`).textContent = msg
+        //   //$(`span.error#${this.$props.monthIndex}`).text(msg)
+        // }else{
+        //   //$(`span.error#${this.$props.monthIndex}`).text("")
+        //   document.querySelector(`span.error#${this.$props.monthIndex}`).textContent = ''
+        // }
       }
     },//end methods
     updated(){

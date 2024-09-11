@@ -4,7 +4,6 @@ import event from "../../utility/event";
 import { getErrorFromResponse, REFRESH_TOKEN_EVENT_TYPE } from "../../utility";
 
 function refreshTokenHelper(){
-    console.log("refreshing...");
     //event.emit(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_IN_PROGRESS);
     axios(AUTH_URL.refresh)
     .then(resp=>{
@@ -13,7 +12,6 @@ function refreshTokenHelper(){
         refreshToken(authorization.expires_in);
     })
     .catch(e=>{
-        console.log(e);
         //don't refresh again since client need to relogin again
         clearTimeout(timeout);
         event.emit(
@@ -21,7 +19,6 @@ function refreshTokenHelper(){
         );
     })
     .then(()=>{
-        console.log("last then called....");
         event.emit(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_DONE)
     })
 }
@@ -35,7 +32,11 @@ const SECOND_BEFORE_TOKEN_EXPIRES = 10;
  * @description refresh client token base on token interval sent by server
  */
 export default function refreshToken(refreshTokenInterval=0){
-    console.log(refreshTokenInterval)
+
+    if(refreshTokenInterval == 0){
+        return refreshTokenHelper();
+    }
+
     //
     timeout = setTimeout(
         //this method will be called 10 seconds before current 

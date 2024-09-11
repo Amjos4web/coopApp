@@ -28,15 +28,15 @@
      </tr>
   </tbody>
   <tbody v-else>
-    <tr class="tcontent" v-for="(society, index) in societies" :key="society.id">
+    <tr v-for="(society, index) in societies" :key="society.id">
       <td>{{ (((currentPage - 1) * limit) + ((index) + 1)) }}</td>
       <td>{{ society.name }}</td>
       <td>{{society.totalMember ? society.totalMember : 0}}</td>
       <td>
-        <button class="btn btn-info btn-sm" @click="getOneSocietyEventHandlerForView(society.id)">View</button>
+        <button class="btn btn-info" @click="getOneSocietyEventHandlerForView(society.id)">View</button>
       </td>
       <td>
-        <button class="btn btn-warning btn-sm" @click="getOneSocietyEventHandlerForEdit(society.id)">Edit</button>
+        <button class="btn btn-warning" @click="getOneSocietyEventHandlerForEdit(society.id)">Edit</button>
       </td>
     </tr>
   </tbody>

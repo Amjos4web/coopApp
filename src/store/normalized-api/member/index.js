@@ -21,7 +21,6 @@ export default {
         const {entities, result} = normalize(member, memberSchema);
         //add to store
         store = setStore(store, entities.members);
-        //console.log(store, result);
         //return id to be kept by clients that'll use the API
         //this value will be use to fetch the data later
         return result;
@@ -47,7 +46,6 @@ export default {
      * @returns {Member | null} - return the member if found else null
      */
     getMemberByID(id){
-        //console.log(store, id);
         return store[id] ? store[id] : null;
     },
 
