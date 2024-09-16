@@ -68,6 +68,11 @@
             <a href="#"  class="dropdown-item" @click="openLoanPaymentHistoryModal(loan.member_name, loan.id)">
               Repayment History
             </a>
+            <a class="dropdown-item">
+              <router-link :to="'/loan/performance/analysis/' + loan.id">
+                Performance Analysis
+              </router-link>
+            </a>
           </div>
         </div>
       </td>

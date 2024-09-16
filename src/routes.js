@@ -20,6 +20,7 @@ const _History = import("@/components/myLoan/History")
 const MemberStatus = import("@/components/loan/member/Status")
 const SocietyStatus = import("@/components/loan/society/Status")
 const MemberLoanGuarantors = import("@/components/loan/member/Guarantors")
+const MemberLoanPerformanceAnalysis = import("@/components/loan/member/LoanPerformanceAnalysis")
 const MyLoanGuarantors = import("@/components/myLoan/Guarantors")
 const MemberLoanDetails = import("@/components/loan/member/Details")
 const SocietyLoanDetails = import("@/components/loan/society/Details")
@@ -285,6 +286,16 @@ export default [
 		path: '/loan/member/guarantors/:loan_request_id',
 		name: 'memberLoanGuarantors',
 		component: () => MemberLoanGuarantors,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/loan/performance/analysis/:loan_request_id',
+		name: 'memberLoanPerformanceAnalysis',
+		component: () => MemberLoanPerformanceAnalysis,
 		props: true,
 		meta: {
 			requiresAuth: true
