@@ -7,7 +7,6 @@
         <p class="mb-0">{{ roleType }}</p>
       </div>
     </a>
-
     <AvatarDropDownContent/>
   </div>
 </template>

@@ -31,11 +31,17 @@ const MeetingMemberPassbook = import("@/components/meeting/MemberPassbook")
 const RevenueRecord = import("@/components/revenue/index")
 const Profile = import("@/components/profile/index")
 const ChangePassword = import("@/components/profile/ChangePassword")
+
 //const SocietyDue = import("@/components/payments/societyDue")
 const EditMemberPayment = import("@/components/payments/EditMemberPayment")
 const MembersAsset = import("@/components/payments/MembersAsset")
 const MemberListsForPaymentEdit = import("@/components/payments/MemberListsForPaymentEdit")
 const EditPayment = import("@/components/payments/EditPayment")
+
+/** Asset Withdrawal Routes */
+const AssetWithdrawIndex = import("@/components/assetWithdrawal/Manage")
+const AssetWithdrawPage = import("@/components/assetWithdrawal/SocietyList")
+
 const MyPayments = import("@/components/myPayments/Index")
 const Roles = import("@/components/settings/roles")
 const Calendar = import("@/components/Calendar")
@@ -53,6 +59,8 @@ const MakePaymentPage = import("@/components/onlinePayment/PaymentPage")
 const PaymentResponsePage = import("@/components/onlinePayment/PaymentResponse")
 const OnlinePaymentRecords = import("@/components/adminOnlinePaymentModule/Index")
 
+const SocietyAccountList  = import ("@/components/societyAccounts/pages/SocietyAccountList")
+const SocietyAccountDetail  = import ("@/components/societyAccounts/pages/SocietyAccountDetail")
 
 export default [
 	{
@@ -246,6 +254,35 @@ export default [
 		path: '/memberList/:society_id',
 		name: 'memberListForPaymentEdit',
 		component: () => MemberListsForPaymentEdit,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/assetWithdrawal/manage',
+		name: 'assetWithdrawalManage',
+		component: () => AssetWithdrawIndex,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/assetWithdrawal/start',
+		name: 'assetWithdrawal',
+		component: () => AssetWithdrawPage,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/assetWithdrawal/delete/:asset_withdrawal_id',
+		name: 'deleteAssetWithdrawal',
 		props: true,
 		meta: {
 			requiresAuth: true
@@ -580,6 +617,27 @@ export default [
 			requiresAuth: true
 		}
 	},
+
+	{
+		path: '/society_accounts',
+		name: 'SocietyAccountList',
+		component: () => SocietyAccountList,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/society_account_detail/:society_id',
+		name: 'SocietyAccountDetail',
+		component: () => SocietyAccountDetail,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
 
 	{
 		path: '/*',

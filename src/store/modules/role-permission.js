@@ -94,6 +94,7 @@ export default{
 
         saveStaffOrUnionExecutiveRolePermission({ commit }, formData){
             //notify UI we are currently loading
+            console.log(formData)
             commit(setIsLoading, true);
             return axios.post(ROLE_PERMISSION_URL.save_staff_or_union_exec, formData)
             .then(response=>{

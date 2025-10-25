@@ -9,11 +9,9 @@
         </div>
         <div class="modal-body">
           <div class="container">
-            <div class="row">
-              <div v-if="getLoanIsLoading">
-                <div class="text-center">
-                  <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
-                </div>
+            <div class="row text-center" v-if="getLoanIsLoading">
+              <div class="col-md-6 m-auto">
+                <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
               </div>
             </div>
             <div class="row">

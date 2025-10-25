@@ -111,6 +111,7 @@ export default{
 
             return axios.get(MEMBER_URL.get_one + id)
             .then(resp=>{
+                
                 const {member} = resp.data.data;
                 //No need to add the id to store
                 //Most likely the the data will not have to fetch by axios, client cannot 
@@ -184,7 +185,6 @@ export default{
             if(memberToFetch.length < 1){
                 return {members};
             }
-
            
             return axios.post(
                 MEMBER_URL.fetch_many_member, 

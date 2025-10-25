@@ -55,6 +55,7 @@ export const PAYMENT_TYPE_URL = {
     get_one:"/api/v1/admin/payment_types/",
     add_new_payment_type:"/api/v1/admin/payment_types",
     update_payment_type:"/api/v1/admin/payment_types/",
+    fetch_many_payment_types:"/api/v1/admin/payment_types/fetch_many/by_id"
 }
 
 export const ROLE_URL = {
@@ -87,6 +88,14 @@ export const MEMBER_PAYMENT_URL = {
     fetch_member_payment_with_meeting:"/api/v1/admin/member_payments/update",
     fetch_member_passbook_for_admin:"/api/v1/admin/member_payments/data/analysis/member_passbook",
     fetch_member_passbook_for_member:"/api/v1/my/member_payments/data/analysis/member_passbook"
+}
+
+export const ASSET_WITHDRAWAL_URL = {
+    index:"/api/v1/admin/asset_withdrawal",
+    get_one:"/api/v1/admin/asset_withdrawal/",
+    save_asset_withdrawal:"/api/v1/admin/asset_withdrawal",
+    update_asset_withdrawal:"/api/v1/admin/asset_withdrawal/",
+    delete_asset_withdrawal:"/api/v1/admin/asset_withdrawal/"
 }
 
 export const MEMBER_ONLINE_PAYMENT_URL = {
@@ -165,6 +174,15 @@ export const DASHBOARD_URL = {
     get_all_loan_issued_out:"/api/v1/admin/member_payments/get_all_loan_issued_out"
 }
 
+export const SOCIETY_ACCOUNT_URL = {
+    index: "/api/v1/admin/society_accounts",
+    show: "/api/v1/admin/society_account_detail",
+    deposit: "/api/v1/admin/society_accounts",
+    withdraw: "/api/v1/admin/society_accounts",
+    borrow: "/api/v1/admin/society_accounts",
+    repay: "/api/v1/admin/society_accounts"
+}
+
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
 //let us delay request until new token is requested and return from server
@@ -183,7 +201,8 @@ api.interceptors.request.use(function(config){
         refreshingToken = true
     }
     else if(config.url == AUTH_URL.self){
-        config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`
+        config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`;
+        config.headers['Cache-Control'] = 'no-cache';
         // Do something before request is sent
         return config    
     }
@@ -193,6 +212,7 @@ api.interceptors.request.use(function(config){
             event.on(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_DONE, ()=>{
                 //add brearer
                 config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`
+                config.headers['Cache-Control'] = 'no-cache';
                 //set it that we are done refreshing
                 refreshingToken = false;
                 resolve(config)
@@ -200,6 +220,7 @@ api.interceptors.request.use(function(config){
         })//end promise
     }//end else
     config.headers.Authorization = `Bearer ${VueCookie.get(`token`)}`
+    config.headers['Cache-Control'] = 'no-cache';
     // Do something before request is sent
     NProgress.start()
     return config

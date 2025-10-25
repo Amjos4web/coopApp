@@ -185,11 +185,26 @@
                 </router-link>
               </a>
             </li>
+            <li v-if="pages.includes('Edit Member Payment')" :class="isLedgerActive ? 'active' : ''">
+              <a href="#assetWithdrawal" class="iq-waves-effect collapsed" data-toggle="collapse" :aria-expanded="isLedgerActive"><i class="lab la-wpforms iq-arrow-left"></i><span>Asset Withdrawal</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
+              <ul id="assetWithdrawal" data-parent="#iq-sidebar-toggle" :class="['iq-submenu', isLedgerCollapsed ? 'collapse' : '', isLedgerActive ? 'active' : '']">
+                <li v-if="pages.includes('Edit Member Payment')" :class="{ 'active': isActive('/assetWithdrawal/manage') }">
+                    <router-link to="/assetWithdrawal/manage">
+                      <i class="las la-id-card-alt"></i> Manage
+                    </router-link>
+                </li>
+                <li v-if="pages.includes('Record')" :class="{ 'active': isActive('/assetWithdrawal/start') }">
+                    <router-link to="/assetWithdrawal/start">
+                      <i class="las la-id-card-alt"></i> Withdraw Asset
+                    </router-link>
+                </li>
+              </ul>
+            </li>
             <li v-if="pages.includes('Revenue')" :class="{ 'active': isActiveSingle('/revenue') }">
               <a class="iq-waves-effect"><span class="ripple rippleEffect"></span>
                 <i class="las la-id-card-alt iq-arrow-left"></i>
                 <router-link to="/revenue">
-                  Account Balancing
+                  Account Summary
                 </router-link>
               </a>
             </li>
@@ -252,6 +267,15 @@
                 </router-link>
               </a>
             </li>
+            <li v-if="pages.includes('Society Joint Account')" :class="{ 'active': isActiveSingle('/society_accounts') }">
+              <a class="iq-waves-effect"><span class="ripple rippleEffect"></span>
+                <i class="las la-id-card-alt iq-arrow-left"></i>
+                <router-link to="/society_accounts">
+                  Society Joint Account
+                </router-link>
+              </a>
+            </li>
+            
             <li v-if="pages.includes('Roles') || pages.includes('Config') || pages.includes('Payment Types')" :class="isSettingsActive ? 'active' : ''">
               <a href="#settings" class="iq-waves-effect collapsed" data-toggle="collapse" :aria-expanded="isSettingsActive"><i class="lab la-wpforms iq-arrow-left"></i><span>Settings</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
               <ul id="settings" data-parent="#iq-sidebar-toggle" :class="['iq-submenu', isSettingsCollapsed ? 'collapse' : '', isSettingsActive ? 'active' : '']">
@@ -271,13 +295,13 @@
                 </li>
                 <li v-if="pages.includes('Payment Types')" :class="{ 'active': isActive('/settings/paymentTypes') }">
                   
-                    
                     <router-link to="/settings/paymentTypes">
                       <i class="las la-id-card-alt"></i> Payment Types
                     </router-link>
                 </li>
               </ul>
             </li>
+           
             <li :class="{ 'active': isActiveSingle('/profile') }">
               <a class="iq-waves-effect"><span class="ripple rippleEffect"></span>
                 <i class="las la-id-card-alt iq-arrow-left"></i>
@@ -353,6 +377,14 @@ export default {
 
     isSettingsCollapsed(){
       return !this.isActive('/settings/roles', '/settings/config', '/settings/paymentTypes')
+    },
+
+    isSocietyAccountActive(){
+      return this.isActive('/society_accounts', '/society_account_details', '/society_transactions')
+    }, 
+
+    isSocietyAccountCollapsed(){
+      return !this.isActive('/society_accounts', '/society_account_details', '/society_transactions')
     }
   },
   methods: {

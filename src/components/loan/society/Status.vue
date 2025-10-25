@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        <div class="container" style="width:'100%', padding:'50px 0';">
+        <div class="container" :style="{width:'100%', padding:'50px 0'}">
           <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit" :reloadIndexData="reloadIndexData"/>
           <div v-if="successMsg">
             <div class="success-div text-center">

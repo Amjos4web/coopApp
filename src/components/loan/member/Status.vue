@@ -65,7 +65,7 @@
             <table class="styled-table">
               <thead>
                 <tr>
-                  <th>Status</th>
+                  <th>#</th>
                   <th>Name</th>
                   <th>Society</th>
                   <th>Assets</th>
@@ -169,7 +169,8 @@ export default {
       memberName: '',
       loan_request_id: '',
       interest_rate: '',
-      successMsg: ''
+      successMsg: '',
+     
     } 
   },
 

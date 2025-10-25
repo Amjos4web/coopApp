@@ -14,7 +14,7 @@
             <div class="col-md-12">
                 <div class="export-btn text-right">
                   <button class="btn btn-warning btn-sm ml-10"><i class="fa fa-upload"></i>&nbsp;Export as CSV</button>
-                  <button class="btn btn-info btn-sm  ml-10" @click="showAddModal"><i class="fa fa-plus"></i>&nbsp;Add Member</button>
+                  <button class="btn btn-info btn-sm  ml-10" @click="showAddModal(false)"><i class="fa fa-plus"></i>&nbsp;Add Member</button>
                 </div>
             </div>
           </div>
@@ -36,7 +36,7 @@
           </form>
         </div>
         <div class="container">
-          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit" :reloadIndexData="reloadIndexData"/>
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit" :reloadIndexData="reloadIndexDataEventHandler"/>
           <div class="text-center mb-20">
             <h3 class="search-result-title">{{ searchResultData }}</h3>
           </div>
@@ -113,10 +113,14 @@ export default {
   },
     methods: {
     ...mapActions("app/member", ["getMembers", "getOneMember"]),
-    showAddModal(){
+    
+    showAddModal(isEdit = false){
+      if (!isEdit) {
+        // only reset if adding a new member
+        this.$data.member = { ...initMember }
+        this.modalTitle = "Add New Member"
+      }
       let element = this.$refs.addModal.$el
-      //initialize member
-      //this.$data.member = initMember
       openModal(element);
     },
     showViewModal(){
@@ -178,6 +182,16 @@ export default {
       this.$data.member = initMember
       //this.hideAddModal();
     },
+
+    getAllMembersEventHandler(additional_data={}){
+      this.getMembers(additional_data)
+      .then(data => {
+        if(data){
+          this.$data.members = data.members
+          this.$data.pagination = data.pagination
+        }
+      })
+    },
     
     getOneMemberEventHandlerForView(id){
       this.getOneMember(id)
@@ -191,25 +205,17 @@ export default {
     },
 
     getOneMemberEventHandlerForEdit(id){
-      this.getOneMember(id)
-      .then(member => {
+      this.getOneMember(id).then(member => {
         if (member){
-          this.$data.member = member
+          this.$data.member = member   // set member into modal
           this.modalTitle = `Edit ${member.name}'s Profile`
-          // raise modal here
-          this.showAddModal()
+          this.showAddModal(true)      // pass flag to prevent reset
         }
       })
     },
 
-    reloadIndexData(){
-      this.getMembers({query:{limit:200}})
-      .then(data => {
-        if(data){
-          this.$data.members = data.members
-          this.$data.pagination = data.pagination
-        }
-      })
+    reloadIndexDataEventHandler(){
+      this.getAllMembersEventHandler({query:{limit:200}, reload:true})
     },
 
     changePage(page){
@@ -226,13 +232,7 @@ export default {
     ...mapGetters("app/member", ["error", "isLoading"])
   },
   created(){
-    this.getMembers({query:{limit:200}})
-    .then(data => {
-      if(data){
-        this.$data.members = data.members
-        this.$data.pagination = data.pagination
-      }
-    })
+    this.getAllMembersEventHandler({query:{limit:200}})
   }
 }
 </script>

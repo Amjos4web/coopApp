@@ -143,7 +143,7 @@ export default {
   },
 
   watch: {
-    paymentType(newPaymentType, oldPaymentType){
+    paymentType(newPaymentType){
       this.$data.form = {type:newPaymentType.type, name:newPaymentType.name}
     }
   }

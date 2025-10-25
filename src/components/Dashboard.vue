@@ -1,6 +1,7 @@
 <template>
   <div>
     <HeaderNav/>
+    
 			<div id="content-page" class="content-page">
         <div v-if="smError">
           <div class="error-div text-center">
@@ -40,6 +41,7 @@
             <img src="/img/loadinggif.png" alt="Loading" class="loading-img"><br>       
           </div>
         </div>
+
         <div class="container-fluid" v-else>
           <div class="row" v-if="roleType == 'Manager' || roleType == 'ICT Director' || roleType == 'Super Admin'|| roleType == 'President' || roleType == 'Secretary'">
             <div class="col-sm-6 col-md-6 col-lg-3">
@@ -93,6 +95,13 @@
                     </div>
                 </div>
               </div>
+            </div>
+
+            <!-- <div class="col-md-6 col-sm-12 col-lg-6">
+              <PieChart/>
+            </div> -->
+            <div class="col-md-6 col-sm-12 col-lg-6">
+              
             </div>
         </div>
         </div>
@@ -241,7 +250,7 @@
                     </div>
                     <div class="col-md-8">
                       <div class="table-responsive">
-                        <table id="datatable" class="table table-striped table-bordered">
+                        <table id="datatable" class="table table-bordered">
                           <tbody>
                             <tr>
                               <th width="50%">Name</th>
@@ -344,6 +353,7 @@
 <script>
 import HeaderNav from '@/components/includes/headerNav'; 
 import FooterBar from '@/components/includes/Footer';
+// import PieChart from '@/components/includes/PieChart';
 import { mapActions, mapGetters } from 'vuex'
 import { turnArrayToObject } from '../utility';
 
@@ -351,7 +361,8 @@ export default {
   name: 'dashboard-page',
   components: {
     HeaderNav,
-    FooterBar
+    FooterBar,
+    // PieChart
   },
 
   data:()=>({
@@ -549,3 +560,5 @@ export default {
  
 }
 </script>
+
+

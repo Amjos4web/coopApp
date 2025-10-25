@@ -16,10 +16,10 @@
                     <th width="50%">Name</th>
                     <td>{{ society.name }}</td>
                   </tr>
-                  <tr>
+                  <!-- <tr>
                     <th width="50%">Number of Members</th>
-                    <td></td>
-                  </tr>
+                    <td>{{society.totalMember ? society.totalMember : 0}}</td>
+                  </tr> -->
                   <tr>
                     <th width="50%">Date Established</th>
                     <td>{{ society.created_at }}</td>

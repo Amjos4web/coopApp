@@ -25,10 +25,12 @@
               <div class="text-center">
                 <p>List of all monthly payments to be made by <b>{{name ? name : 'Unknown'}}</b> for today</p>
               </div>
-              
               <div class="table-responsive">
                 <table class="styled-table make-payment" :style="{width:'80%', margin:'auto'}">
                     <thead>
+                      <tr v-if="hasLoan">
+                        <th style='font-size: 16px; text-align: center;' colspan="2">Loan Balance: &#8358;{{ Number(loanBalance).toLocaleString() }}</th>
+                      </tr>
                       <tr v-for="memberMonthlyPayment in memberPaymentDueList" :key="memberMonthlyPayment.id">
                         <th width="40%">{{ memberMonthlyPayment.name }}<br><label>Min. Amount expected to pay is &#8358;{{memberMonthlyPayment.min_amount }}</label></th>
                         <td width="60%">
@@ -72,11 +74,11 @@ export default {
   data(){
     return{
       form: {
-        // society_id: this.$route.params.society_id,
-        // member_id: this.$props.memberID,
       },
       memberPaymentDueList: [],
       name:'',
+      hasLoan: false,
+      loanBalance: 0
     }
   },
 
@@ -93,14 +95,19 @@ export default {
         })
         .then(data=>{
           if(data){
-
             this.$data.form = data.memberPaymentDueList.reduce((prevVal, item)=>{
               prevVal[item.id] = item.prevAmountPaid
               return prevVal
             }, {})
             this.$data.memberPaymentDueList = data.memberPaymentDueList
+
+            for (let i = 0; i < this.$data.memberPaymentDueList.length; i++) {
+              if (this.$data.memberPaymentDueList[i].name === "Loan Repaid"){
+                this.$data.hasLoan = true
+                this.$data.loanBalance = this.$data.memberPaymentDueList[i].amount_remaining
+              } 
+            }
           }
-         
         })
       }
     },

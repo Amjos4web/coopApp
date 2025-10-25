@@ -35,8 +35,8 @@ import HeaderNav from '@/components/includes/headerNav';
 import FooterBar from '@/components/includes/Footer'
 import UserRoleList from '@/components/settings/UserRoleList'
 import AddRoleModal from '@/components/settings/AddRoleModal'
-import { closeNavbar, toggleAvatarDropDown, openModal, closeModal } from "../../assets/js/helpers/utility";
-import { mapActions , mapGetters, mapMutations } from 'vuex'
+import { openModal, closeModal } from "../../assets/js/helpers/utility";
+import { mapActions , mapGetters } from 'vuex'
 
 const initRole = { name:'', type:'' }
 

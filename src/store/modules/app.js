@@ -7,6 +7,7 @@ import role from "./role"
 import setting from "./setting"
 import society from "./society"
 import member_payment from "./member-payments"
+import asset_withdrawal from "./asset-withdrawal"
 import member_online_payment from "./member-online-payments"
 import role_permission from "./role-permission"
 import society_member from "./society-member"
@@ -16,6 +17,7 @@ import society_loan from "./society-loan"
 import user from "./user"
 import revenue from "./revenue"
 import dashboard from "./dashboard"
+import society_account from "./society_account"
 
 import {setError, setIsLoading} from "../constants";
 import { getErrorFromResponse } from "../../utility";
@@ -23,7 +25,7 @@ import { getErrorFromResponse } from "../../utility";
 
 export function stopLoadingAndResolve(commit, data){
     window.scrollTo(0, 0)
-    //debug("stopLoadingAndResolve", data)
+
     //stop loading
     commit(setIsLoading, false);
     //if error occur return null to caller
@@ -87,6 +89,7 @@ export default {
         setting,
         society,
         member_payment,
+        asset_withdrawal,
         member_online_payment,
         role_permission,
         society_member,
@@ -95,6 +98,7 @@ export default {
         society_payment_minimum_amount,
         user,
         revenue,
-        dashboard
+        dashboard,
+        society_account
     },//end inner modules
 }//end app

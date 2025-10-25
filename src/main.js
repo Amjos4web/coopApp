@@ -7,10 +7,14 @@ import Toasted from 'vue-toasted';
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from "./store";
+// import VueApexCharts from "vue-apexcharts";
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(Vuex)
+
+// Vue.use(VueApexCharts);
+// Vue.component("apex-chart", VueApexCharts);
 
 Vue.use(Toasted, {
   duration: 4000,

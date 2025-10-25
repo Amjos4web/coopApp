@@ -6,7 +6,7 @@
 				<img src="/img/loadinggif.png" alt="Loading" class="loading-img">
 			</div>
 			<h2>
-				<p class="text-upper">Ogbomoso Oluwalose Cooperative Investment and Credit Union Ltd</p>
+				<p class="text-upper">Ogbomoso Oluwalose Cooperative Investments and Credit Union</p>
 			</h2>
 			<img src="/img/app-logo.png" alt="unionName" class="image-fluid app-logo">
 			<form @submit.prevent="authenticate()">

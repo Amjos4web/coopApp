@@ -57,9 +57,9 @@ export default{
         listSocietyMemberWhichHasMeetingToday({ commit }, {query={}, reload=false}={}){
             const url = MEETING_CALENDAR_URL.index + "?" + turnObjectToQueryString(query);
             debug("url", url);
+            
             //if not to reload and data has already being cache fo this query
             if(!reload && cache.currentPage.url === url){
-
                 const cacheMeetingCalendars = meetingCalendarStore.getManyMeetingCalendarByIDArray(
                     cache.currentPage.ids
                 )

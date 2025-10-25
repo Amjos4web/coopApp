@@ -1,6 +1,5 @@
 import {setIsLoading, setError} from "../constants";
 import paymentTypeStore from "../normalized-api/payment-types";
-//import {fetchManySingleton} from "../helpers"
 import axios, { PAYMENT_TYPE_URL } from "../api";
 import { commitError, handleNoIDError, resolveWithDataFromStore, stopLoadingAndResolve } from "./app";
 import { debug } from "../../utility";
@@ -148,5 +147,25 @@ export default{
             .catch(e=>commitError(commit, e))
             .then((data)=>stopLoadingAndResolve(commit, data))
         },
+
+        fetchManyPaymentTypes({commit }, paramIDs=[]){
+
+            commit(setIsLoading, true)
+            return axios.get(
+                PAYMENT_TYPE_URL.fetch_many_payment_types + '?'+'paramIDs=' + encodeURIComponent(JSON.stringify(paramIDs))
+            ).then(response=>{
+                debug("fetching many payment types", response)
+
+                //stop loading
+                commit(setIsLoading, false);
+                
+                return {paymentTypes:response.data.data}
+            })
+            .catch(e=>{
+                //stop loading
+                commit(setIsLoading, false);
+                throw e;
+            });
+        }
     }//end action
 }//end module

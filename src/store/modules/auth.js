@@ -45,6 +45,7 @@ export default {
             //return promise to caller
             return axios.post(AUTH_URL.login, {userid:credentials.userid, password:credentials.password})
             .then(response=>{
+                //console.log(response)
                 debug("login response", response);
                 //get user and success from response
                 const {success, data:{user, authorization, rolePermission}} = response.data;

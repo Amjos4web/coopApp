@@ -9,7 +9,7 @@
         </div>
         <div class="card" v-else>
           <div class="card-body">
-            <h3 :style="{fontSize: '18px', textTransform:'uppercase'}" class="card-title">List of all payment to be made for <b>{{ payment_date }}</b></h3>
+            <h3 :style="{fontSize: '1.125rem', textTransform:'uppercase'}" class="card-title">List of all payment to be made for <b>{{ payment_date }}</b></h3>
             <div class="row">
               <div class="col-md-8 m-auto text-center">
                 <div v-if="paymentIsLoading">
@@ -26,11 +26,11 @@
                       <table class="styled-table make-payment" :style="{width:'90%', margin:'auto'}">
                         <thead>
                           <tr v-for="memberMonthlyPayment in memberPaymentDueList" :key="memberMonthlyPayment.id">
-                            <th width="40%">{{ memberMonthlyPayment.name }}<br><label :style="{fontSize: '12px', color: '#a8a7a7'}">Min. Amount expected to pay is &#8358;{{memberMonthlyPayment.min_amount }}</label></th>
+                            <th width="40%">{{ memberMonthlyPayment.name }}<br><label :style="{fontSize: '.75rem', color: '#a8a7a7'}">Min. Amount expected to pay is &#8358;{{memberMonthlyPayment.min_amount }}</label></th>
                             <td width="60%">
                               <div class="form-group">
                                 <label :for="memberMonthlyPayment.name" v-if="memberMonthlyPayment.name == 'Loan Interest'  || memberMonthlyPayment.name == 'Minute'" 
-                                :style="{background: '#333', padding: '5px 18px 5px 3px', color: '#fff', fontSize: '14px'}">&#8358;{{ memberMonthlyPayment.min_amount }}</label>
+                                :style="{background: '#333', padding: '.3125rem 1.125rem .3125rem .1875rem', color: '#fff', fontSize: '.875rem'}">&#8358;{{ memberMonthlyPayment.min_amount }}</label>
 
                                 <input 
                                   type="text"

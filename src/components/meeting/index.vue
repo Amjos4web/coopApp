@@ -29,6 +29,8 @@
           </div>
         </div>
         <div class="container" v-else>
+          <RefreshOnly :reloadIndexData="reloadMeetingHandler"/>
+          <hr>
           <div class="col-12" v-if="!meetingCalendars.length && !mCisLoading && !societyIsLoading && !smIsLoading">
             <div class="text-center error-div">
               <span>
@@ -49,6 +51,7 @@
 import HeaderNav from '@/components/includes/headerNav';
 import FooterBar from '@/components/includes/Footer'
 import MeetingList from '@/components/meeting/MeetingList'
+import RefreshOnly from '@/components/includes/RefreshOnly';
 import { mapActions , mapGetters, mapMutations } from 'vuex'
 import {turnArrayToObject} from '../../utility'
 
@@ -58,6 +61,7 @@ export default {
     HeaderNav,
     FooterBar,
     MeetingList,
+    RefreshOnly
   },
   data(){
     return {
@@ -72,6 +76,31 @@ export default {
     ...mapActions("app/meeting_calendar", ["listSocietyMemberWhichHasMeetingToday"]),
     ...mapActions("app/society", ["fetchManySociety"]),
     ...mapMutations("app/society_member", ['setError']),
+
+    listSocietyMemberWhichHasMeetingTodayHandler(additional_data={}){
+      // get all meeting the current day
+      this.listSocietyMemberWhichHasMeetingToday(additional_data)
+      .then(data => {
+        //console.log(reload)
+        if (data){
+          this.fetchManySociety(data.meetingCalendars.map(mcs=>mcs.society_id))
+          .then(result=>{
+            const store = turnArrayToObject(result.societies)
+            this.$data.meetingCalendars = data.meetingCalendars.map(mcs=>{
+              mcs.society_name = store[mcs.society_id] ? store[mcs.society_id].name : "Unknown"
+              return mcs;
+            })
+          })
+          .catch(e=>{
+            this.setError(e)
+          })
+        }
+      })
+    },
+
+    reloadMeetingHandler(){
+      this.listSocietyMemberWhichHasMeetingTodayHandler({reload:true})
+    }
   },
 
   computed: {
@@ -82,22 +111,7 @@ export default {
 
   created(){
     // get all meeting the current day
-    this.listSocietyMemberWhichHasMeetingToday()
-    .then(data => {
-      if (data){
-        this.fetchManySociety(data.meetingCalendars.map(mcs=>mcs.society_id))
-        .then(result=>{
-          const store = turnArrayToObject(result.societies)
-          this.$data.meetingCalendars = data.meetingCalendars.map(mcs=>{
-            mcs.society_name = store[mcs.society_id] ? store[mcs.society_id].name : "Unknown"
-            return mcs;
-          })
-        })
-        .catch(e=>{
-          this.setError(e)
-        })
-      }
-    })
+    this.listSocietyMemberWhichHasMeetingTodayHandler()
   }
   
 }

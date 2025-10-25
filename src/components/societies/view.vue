@@ -32,7 +32,7 @@
         </div>
         
         <div class="container">
-          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit"/>
+          <LimitDataFetch :getLimit="getLimit" :limit="pagination.limit" :reloadIndexData="reloadIndexDataEventHandler"/>
           <div class="text-center mb-20">
             <h3 class="search-result-title">{{ searchResultData }}</h3>
           </div>
@@ -117,6 +117,26 @@ export default {
     hideEditModal(){
       let element = this.$refs.editModal.$el
       closeModal(element)
+    },
+
+    getSocietiesInitialData(){
+      this.getSocieties({query:{limit:100}})
+      .then(data => {
+        if(data){
+          this.$data.societies = data.societies
+          const societyIDs = data.societies.map(s=>s.id)
+          this.countMemberInSociety({paramIDs:societyIDs})
+          .then(data1=>{
+            if(data1){
+              this.$data.societies = data.societies.map(s=>{
+                s.totalMember = data1.countMemberInSociety[s.id]
+                return s;
+              })
+              this.$data.pagination = data.pagination;
+            }
+          })
+        }
+      })
     },
 
     updateSocietyOnParent(society){
@@ -215,6 +235,11 @@ export default {
           })
         }
       })
+    },
+
+
+    reloadIndexDataEventHandler(){
+      this.getSocietiesInitialData()
     }
   },
   computed: {
@@ -222,23 +247,7 @@ export default {
     ...mapGetters("app/society_member", ["error", "isLoading"])
   },
   created(){
-    this.getSocieties({query:{limit:10}})
-    .then(data => {
-      if(data){
-        this.$data.societies = data.societies
-        const societyIDs = data.societies.map(s=>s.id)
-        this.countMemberInSociety({paramIDs:societyIDs})
-        .then(data1=>{
-          if(data1){
-            this.$data.societies = data.societies.map(s=>{
-              s.totalMember = data1.countMemberInSociety[s.id]
-              return s;
-            })
-            this.$data.pagination = data.pagination;
-          }
-        })
-      }
-    })
+    this.getSocietiesInitialData()
   }
 }
 </script>
