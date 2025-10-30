@@ -65,21 +65,24 @@ export default {
 		...mapMutations("app/auth/", ['setError']),
 		...mapActions("app/setting", ["getSetting"]),
 
-		authenticate(){
+		authenticate() {
 			this.setError(null);
-			let validation = new Validator(this.form, {
+
+			const validation = new Validator(this.form, {
 				userid: 'required',
 				password: 'required'
 			});
 
-			if(validation.passes()){
+			if (validation.passes()) {
 				this.login(this.$data.form)
-				.then(result=>{
-					if(result){
-						this.$router.replace("/");
-					}
-				});
-			}else{
+					.then(result => {
+						if (result) {
+							// ✅ Check for redirect route (r)
+							const redirectTo = this.$route.query.r || "/";
+							this.$router.replace(redirectTo);
+						}
+					});
+			} else {
 				const error = new Error("Invalid Login Detail.");
 				this.setError(error);
 			}

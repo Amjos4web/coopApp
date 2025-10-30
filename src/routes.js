@@ -11,6 +11,7 @@ const LoanRequest = import("@/components/societies/LoanRequest")
 const MonthlyDue = import("@/components/societies/MonthlyDue")
 const SetMinimumAmount = import("@/components/societies/SetMinimumAmount")
 const Members = import("@/components/members/index")
+const SmsLogs = import ("@/components/members/SmsLogs")
 const Societies = import("@/components/societies/view")
 const Records = import("@/components/payments/records")
 const MeetingIndex = import("@/components/meeting/index")
@@ -61,6 +62,7 @@ const OnlinePaymentRecords = import("@/components/adminOnlinePaymentModule/Index
 
 const SocietyAccountList  = import ("@/components/societyAccounts/pages/SocietyAccountList")
 const SocietyAccountDetail  = import ("@/components/societyAccounts/pages/SocietyAccountDetail")
+
 
 export default [
 	{
@@ -632,6 +634,16 @@ export default [
 		path: '/society_account_detail/:society_id',
 		name: 'SocietyAccountDetail',
 		component: () => SocietyAccountDetail,
+		props: true,
+		meta: {
+			requiresAuth: true
+		}
+	},
+
+	{
+		path: '/sms/logs',
+		name: 'SmsLogs',
+		component: () => SmsLogs,
 		props: true,
 		meta: {
 			requiresAuth: true

@@ -86,6 +86,19 @@
                 </span>
               </div>
 
+               <!-- SMS Optin -->
+              <div class="form-group col-12">
+                <label>Activate SMS Alert</label>
+                <select v-model="form.sms_optin" class="form-control">
+                  <option value="">Choose your option</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+                <span class="error" v-if="elementHasError('sms_optin')">
+                  {{ error.errors.sms_optin[0] }}
+                </span>
+              </div>
+
               <!-- Active Switch -->
               <div class="form-group col-12 d-flex justify-content-between">
                 <label>Active</label>
@@ -121,6 +134,7 @@ const initForm = {
   gender: '',
   can_pay: '',
   address: '',
+  sms_optin: '',
   active: false
 }
 
@@ -157,7 +171,8 @@ export default {
         name: "required|max:100",
         gender: "required",
         can_pay: "required|numeric",
-        active: "required"
+        active: "required",
+        sms_optin: "required"
       });
 
       if (validation.fails()) {

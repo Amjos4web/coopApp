@@ -183,6 +183,10 @@ export const SOCIETY_ACCOUNT_URL = {
     repay: "/api/v1/admin/society_accounts"
 }
 
+export const SMS_LOG_URL = {
+    index: "/api/v1/admin/sms/logs",
+}
+
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
 //let us delay request until new token is requested and return from server

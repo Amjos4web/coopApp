@@ -7,6 +7,7 @@ import Toasted from 'vue-toasted';
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from "./store";
+import "./axios";
 // import VueApexCharts from "vue-apexcharts";
 
 Vue.config.productionTip = false
@@ -36,65 +37,29 @@ const router = new VueRouter({
 
 Vue.config.productionTip = false
 
-// router.beforeResolve((to, from, next) => {
-//   // If this isn't an initial page load.
-//   if (to.name){
-//       // Start the route progress bar.
-//       NProgress.start()
-//   }
-//   next();
-// })
 
-// router.afterEach((to, from) => {
-//   // Complete the animation of the route progress bar.
-//   NProgress.done();
-// })
-
-router.beforeEach((to, from, next) => {
-  
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(r => r.meta.requiresAuth);
   const isLoggedIn = store.getters['app/auth/isLogged'];
 
-  if(requiresAuth && !isLoggedIn){ 
-    //check if client already logged in but due to page reload
-    //or page accidental closing, as long as user session is not
-    //expired, client should be able to continue using app without re-logging
-    store._actions['app/auth/getSelf'][0]()
-    .then((self)=>{
-      //return next({path:`login`, replace:true});
-      if(!self){
-        //const redirectPath = to.path//from && from.path !== "/login" ? from.path : '/';
-        const redirectPath = from && from.path !== "/login" ? from.path : '/';
-        return next({path:`login?r=${redirectPath}`});
-      }
-      else if(self){
-        //continue to path no need to wait
-        next(to.path);
-      }
-    });
-  } 
-  else if(to.path == '/login' && isLoggedIn){
-    next("/")
+  if (requiresAuth && !isLoggedIn) {
+    const self = await store._actions['app/auth/getSelf'][0]();
+
+    if (!self) {
+      const redirectPath = to.fullPath !== '/login' ? to.fullPath : '/';
+      return next(`/login?r=${redirectPath}`);
+    }
   }
-  else if(to.path == "/Logout"){
-    store._actions['app/auth/logout'][0]()
-    .then((self)=>{
-      next("/login");
-      // if(!self){
-      //   //const redirectPath = to.path//from && from.path !== "/login" ? from.path : '/';
-      //   //return next(`/login?r=${redirectPath}`);
-      //   next("/")
-      // }
-      // else{
-      //   //continue to path no need to wait
-      //   next("/login");
-      // }
-    });
+
+  if (to.path === '/login' && isLoggedIn) return next('/');
+  if (to.path === '/Logout') {
+    await store._actions['app/auth/logout'][0]();
+    return next('/login');
   }
-  else {
-    next();
-  }
-})
+
+  next();
+});
+
 
 
 new Vue({

@@ -69,11 +69,53 @@ export function getErrorFromResponse(e=null){
     if(!e) return getError();
 
     if(e.response && e.response.data){
+        console.log(e.response)
         return getError(e.response.status, e.response.data.msg, e.response.data.errors);
     }
     e.code = 500;
     return e;
 }
+
+// export function getErrorFromResponse(e = null) {
+//   if (!e) return getError();
+
+//   // Case 1: Axios HTTP error with response
+//   if (e.response && e.response.data) {
+//     const { status, data } = e.response;
+//     let message = "An unexpected error occurred.";
+//     let errors = null;
+
+//     console.log(e.response)
+
+//     // Laravel validation errors
+//     if (status === 422 && data.errors) {
+//       const firstKey = Object.keys(data.errors)[0];
+//       message = data.errors[firstKey][0] || "Validation failed.";
+//       errors = data.errors;
+//     }
+//     // Laravel or custom error message
+//     else if (data.msg) {
+//       message = data.msg;
+//     } 
+//     else if (data.message) {
+//       message = data.message;
+//     } 
+//     else if (data.error) {
+//       message = data.error;
+//     }
+
+//     return getError(status, message, errors);
+//   }
+
+//   // Case 2: Network/timeout or no response
+//   if (e.request && !e.response) {
+//     return getError(503, "Network error — please check your connection and try again.");
+//   }
+
+//   // Case 3: JavaScript or unexpected error
+//   const message = e.message || "Unexpected client-side error occurred.";
+//   return getError(500, message);
+// }
 
 export function debug(label="label", ...args){
     // console.group(label)

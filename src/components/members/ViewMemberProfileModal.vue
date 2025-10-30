@@ -66,6 +66,10 @@
                     <td>{{ member.can_pay ? 'Yes' : 'No' }}</td>
                   </tr>
                   <tr>
+                    <th width="50%">Receive SMS Alert</th>
+                    <td>{{ member.sms_optin ? 'Yes' : 'No' }}</td>
+                  </tr>
+                  <tr>
                     <th>Date of Admission</th>
                     <td>{{ new Date(member.created_at) }}</td>
                   </tr>
@@ -145,6 +149,7 @@ export default {
         //fetch member society
         this.fetchAllSocietyToWhichMemberBelongsForAdmin({member_id:newMember.id})
         .then(data=>{
+          
           if(data){
             if(data.societyMembers.length < 1){
               this.$data.societyName = "No Society Yet"

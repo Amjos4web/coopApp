@@ -169,6 +169,14 @@
                 </router-link>
               </a>
             </li>
+            <li v-if="pages.includes('Members')" :class="{ 'active': isActiveSingle('/sms/logs') }">
+              <a class="iq-waves-effect"><span class="ripple rippleEffect"></span>
+                <i class="las la-users iq-arrow-left"></i>
+                <router-link to="/sms/logs">
+                  SMS & Push Logs
+                </router-link>
+              </a>
+            </li>
             <li v-if="pages.includes('Meeting')" :class="{ 'active': isActiveSingle('/meeting') }">
               <a class="iq-waves-effect"><span class="ripple rippleEffect"></span>
                 <i class="las la-id-card-alt iq-arrow-left"></i>

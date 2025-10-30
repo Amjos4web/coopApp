@@ -96,41 +96,65 @@ export default {
         },
 
         //fetch current user info
-        getSelf({ commit }){
-            //get current user from store
-            let self = userStore.getUserByID(myID);//
-            debug("self from store", self);
-            //if current user, return early
-            if(self) return resolveWithDataFromStore(commit, self);
-            //notify UI we are loading
-            commit(setIsLoading, true);
+        getSelf({ commit }) {
+            return new Promise((resolve) => {
+                try {
+                // Try to get user from store
+                let self = userStore.getUserByID(myID);
+                debug("self from store", self);
 
-            event.emit(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_IN_PROGRESS)
-
-            return axios.get(AUTH_URL.self)
-            .then(response=>{
-                //get user and success from response
-                const {success, data:{user, rolePermission}} = response.data;
-                //if request was successful
-                if(success){
-                    myID = userStore.addUser(user);
-                    if(rolePermission)
-                        rolePermissionStore.addRolePermission(rolePermission)
-                    //save to store first and then set in state
-                    commit(auth.setSelf, user);
-                    commit("rolePermission", rolePermission);
-                    //hook up function to always refresh client token immediately to get
-                    //token refresh interval
-                    refreshToken(0);
-                    //return user back to caller
-                    return user;
+                // If already have user, resolve immediately
+                if (self) {
+                    resolveWithDataFromStore(commit, self);
+                    return resolve(self);
                 }
-                //for some reason request was unsuccessful, this condition should not be possible
-                commitError(commit, null);
-            })
-            .catch(e=>commitError(commit, e))
-            .then((data)=>stopLoadingAndResolve(commit, data));
+
+                // Notify UI we're loading
+                commit(setIsLoading, true);
+                event.emit(REFRESH_TOKEN_EVENT_TYPE.TOKEN_REFRESH_IN_PROGRESS);
+
+                axios
+                    .get(AUTH_URL.self)
+                    .then((response) => {
+                    const { success, data } = response.data || {};
+                    const { user, rolePermission } = data || {};
+
+                    if (success && user) {
+                        myID = userStore.addUser(user);
+                        if (rolePermission) rolePermissionStore.addRolePermission(rolePermission);
+
+                        commit(auth.setSelf, user);
+                        commit("rolePermission", rolePermission);
+
+                        // Immediately schedule token refresh
+                        refreshToken(0);
+
+                        return resolve(user);
+                    } else {
+                        // API said success = false → treat as invalid session
+                        commitError(commit, null);
+                        return resolve(null);
+                    }
+                    })
+                    .catch((error) => {
+                    // If unauthorized (token expired)
+                    if (error.response && error.response.status === 401) {
+                        console.warn("Session expired: redirecting to login...");
+                    }
+                    commitError(commit, error);
+                    resolve(null);
+                    })
+                    .finally(() => {
+                    stopLoadingAndResolve(commit);
+                    });
+                } catch (err) {
+                console.error("getSelf failed:", err);
+                commitError(commit, err);
+                resolve(null);
+                }
+            });
         },
+
 
         changePassword({ commit }, psdForm){
             commit(setIsLoading, true);

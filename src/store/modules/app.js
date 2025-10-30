@@ -18,6 +18,7 @@ import user from "./user"
 import revenue from "./revenue"
 import dashboard from "./dashboard"
 import society_account from "./society_account"
+import sms_logs from "./sms_logs"
 
 import {setError, setIsLoading} from "../constants";
 import { getErrorFromResponse } from "../../utility";
@@ -38,14 +39,59 @@ export function stopLoadingAndResolve(commit, data){
     return data;
 }
 
-export function commitError(commit, e){
-    window.scrollTo(0, 0)
-    commit(setError, getErrorFromResponse(e));
-    //I need to return this error back to caller, because in the 
-    //last resolver, I need to check if e is an instace of error carry out
-    //appropriate action base on this value
-    return e;
+// export function commitError(commit, e){
+//     window.scrollTo(0, 0)
+//     commit(setError, getErrorFromResponse(e));
+//     //I need to return this error back to caller, because in the 
+//     //last resolver, I need to check if e is an instace of error carry out
+//     //appropriate action base on this value
+//     return e;
+// }
+
+// ✅ Handle and commit errors safely for Vue reactivity
+export function commitError(commit, error) {
+  window.scrollTo(0, 0); // optional but nice UX
+
+  const normalizedError = normalizeError(error);
+  commit(setError, normalizedError);
+
+  console.error("📛 Normalized error committed:", normalizedError);
+  return normalizedError;
 }
+
+function normalizeError(error) {
+  if (!error) {
+    return { message: "An unknown error occurred.", code: 500 };
+  }
+
+  if (error.response) {
+    const data = error.response.data;
+
+    // Safely extract message regardless of format
+    let message = "A server error occurred.";
+
+    if (typeof data === "object" && (data.message || data.msg)) {
+      message = data.message || data.msg;
+    } else if (typeof data === "string") {
+      // Likely an HTML or plain-text error response
+      const match = data.match(/<title>(.*?)<\/title>/i);
+      message = match ? match[1] : data.slice(0, 200);
+    }
+
+    return {
+      message,
+      code: error.response.status || 500,
+      errors: (typeof data === "object" && data.errors) || null,
+    };
+  }
+
+  return {
+    message: error.message || "A network error occurred.",
+    code: error.code || 500,
+    errors: null,
+  };
+}
+
 
 export function handleNoIDError(commit, msg){
     commit(setError, new Error(msg));
@@ -99,6 +145,7 @@ export default {
         user,
         revenue,
         dashboard,
-        society_account
+        society_account,
+        sms_logs
     },//end inner modules
 }//end app
