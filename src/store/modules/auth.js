@@ -26,6 +26,11 @@ export default {
         self:(state)=>state.self,
         isLogged:(state)=>(!!state.self),
         rolePermission:(state)=>state.rolePermission,
+
+        // === LOGIN HISTORY GETTERS ===
+        loginHistory: (state) => state.loginHistory,
+        loginHistoryLoading: (state) => state.loginHistoryLoading,
+        loginHistoryError: (state) => state.loginHistoryError,
     },
     mutations:{
         [auth.setSelf]:(state, self)=>(state.self = self),
@@ -165,6 +170,22 @@ export default {
             })
             .catch(e=>commitError(commit, e))
             .then((data)=>stopLoadingAndResolve(commit, data));
-        }
+        },
+
+        // === FETCH LOGIN HISTORY ===
+        async fetchLoginHistory({ commit }) {
+        
+            commit(setIsLoading, true);
+
+            return axios.get(AUTH_URL.login_history)
+            .then((resp)=>{
+                const { success, data } = resp.data;
+                if (success){
+                    return { logs: data };
+                }
+            })
+            .catch(e=>commitError(commit, e))
+            .then((data)=>stopLoadingAndResolve(commit, data));
+        },
     },
 };

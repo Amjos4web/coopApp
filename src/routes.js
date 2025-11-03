@@ -62,6 +62,7 @@ const OnlinePaymentRecords = import("@/components/adminOnlinePaymentModule/Index
 
 const SocietyAccountList  = import ("@/components/societyAccounts/pages/SocietyAccountList")
 const SocietyAccountDetail  = import ("@/components/societyAccounts/pages/SocietyAccountDetail")
+const LoginHistory = import("@/components/tools/login_log")
 
 
 export default [
@@ -650,6 +651,12 @@ export default [
 		}
 	},
 
+	{
+		path: '/login-history',
+		name: 'LoginHistory',
+		component: () => LoginHistory,
+		meta: { requiresAuth: true }
+	},
 
 	{
 		path: '/*',

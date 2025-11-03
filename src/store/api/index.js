@@ -9,6 +9,7 @@ export const AUTH_URL = {
     self : "/api/v1/auth/self",
     logout : "/api/v1/auth/logout",
     refresh:"/api/v1/auth/refresh",
+    login_history: "/api/v1/auth/login-history",
     change_psd:"/api/v1/auth/change_password"
 }
 
@@ -193,7 +194,7 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 let refreshingToken = false
 
 const api = axios.create({
-    baseURL:"http://127.0.0.1:8000",
+    baseURL:"https://dashboard.ogbomosooluwalosecicu.com.ng",
     timeout:0, 
     withCredentials:true,
 })

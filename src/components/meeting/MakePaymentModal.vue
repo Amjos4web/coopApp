@@ -1,13 +1,7 @@
 <template>
    <div class="modal fade" id="makePayment" role="dialog" style="border-radius: 5px;">
     <div class="modal-dialog modal-lg">
-      <div v-if="memberPaymentError">
-          <div class="error-div text-center">
-            <span>
-              {{memberPaymentError.message}}
-            </span>
-          </div>
-        </div>
+      
       <!-- Modal content no 1-->
       <div v-if="memberPaymentIsLoading || memberIsLoading">
         <div class="text-center">
@@ -16,10 +10,18 @@
       </div>
       <div class="modal-content" v-else>
         <div class="modal-header">
+
           <h4 class="modal-title">Monthly Due For {{name ? name : 'Unknown'}}</h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
+          <div v-if="memberPaymentError">
+          <div class="error-div text-center">
+            <span>
+              {{memberPaymentError.message}}
+            </span>
+          </div>
+        </div>
           <form @submit.prevent="makePaymentEventHandler()">
             <div class="container" :style="{width: '100%;'}">
               <div class="text-center">
@@ -101,6 +103,10 @@ export default {
             }, {})
             this.$data.memberPaymentDueList = data.memberPaymentDueList
 
+            // Reset every time
+            this.$data.hasLoan = false
+            this.$data.loanBalance = 0
+
             for (let i = 0; i < this.$data.memberPaymentDueList.length; i++) {
               if (this.$data.memberPaymentDueList[i].name === "Loan Repaid"){
                 this.$data.hasLoan = true
@@ -139,6 +145,7 @@ export default {
 
       this.saveMemberPayment(formData)
       .then(result => {
+        console.log(result)
         if (result){
           this.$props.updateParent(true);
         }
@@ -147,7 +154,7 @@ export default {
   },
 
   computed:{
-    ...mapGetters("app/member_payment", {memberPaymentIsLoading:"isLoading", memberPaymentError:"error:"}),
+    ...mapGetters("app/member_payment", {memberPaymentIsLoading:"isLoading", memberPaymentError:"error"}),
     ...mapGetters("app/member", {memberIsLoading:"isLoading", memberError:"error"})
   },
 
